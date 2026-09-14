@@ -1,18 +1,16 @@
-// ==========================================
-// EXPRESS SERVER
-// ==========================================
-
 const express = require("express");
-const app = express();
-
-const session = require("express-session");
 const path = require("path");
 
-// Database
+const app = express();
+
+// ==========================================
+// DATABASE
+// ==========================================
+
 const db = require("./db");
 
 // ==========================================
-// IMPORT ROUTES
+// ROUTES
 // ==========================================
 
 const indexRoutes = require("./routes/index");
@@ -24,8 +22,6 @@ const employeesRoutes = require("./routes/employees");
 const hsseqdataRoutes = require("./routes/hsseqdata");
 const incidentsRoutes = require("./routes/incidents");
 const inspectionsRoutes = require("./routes/inspections");
-const loginRoutes = require("./routes/login");
-const logoutRoutes = require("./routes/logout");
 const ppeRoutes = require("./routes/ppe");
 const riskRoutes = require("./routes/risk_assesments");
 const permitsRoutes = require("./routes/permits");
@@ -59,33 +55,6 @@ app.use(
 
 app.use(express.json());
 
-app.use(
-    session({
-        secret: "safetypro5-secret",
-        resave: false,
-        saveUninitialized: false
-    })
-);
-
-// ==========================================
-// CHECK ROUTES
-// ==========================================
-
-console.log("indexRoutes:", typeof indexRoutes);
-console.log("trainingGapRoutes:", typeof trainingGapRoutes);
-console.log("auditsRoutes:", typeof auditsRoutes);
-console.log("dashboardRoutes:", typeof dashboardRoutes);
-console.log("departmentRoutes:", typeof departmentRoutes);
-console.log("employeesRoutes:", typeof employeesRoutes);
-console.log("hsseqdataRoutes:", typeof hsseqdataRoutes);
-console.log("incidentsRoutes:", typeof incidentsRoutes);
-console.log("inspectionsRoutes:", typeof inspectionsRoutes);
-console.log("loginRoutes:", typeof loginRoutes);
-console.log("logoutRoutes:", typeof logoutRoutes);
-console.log("ppeRoutes:", typeof ppeRoutes);
-console.log("riskRoutes:", typeof riskRoutes);
-console.log("permitsRoutes:", typeof permitsRoutes);
-
 // ==========================================
 // ROUTES
 // ==========================================
@@ -95,75 +64,83 @@ app.use("/", indexRoutes);
 app.use("/audits", auditsRoutes);
 
 app.use(
-    "/training_gap_analysis",
+    "/training/gap-analysis",
     trainingGapRoutes
 );
 
-app.use(
-    "/dashboard",
-    dashboardRoutes
-);
+app.use("/dashboard", dashboardRoutes);
 
-app.use(
-    "/departments",
-    departmentRoutes
-);
+app.use("/departments", departmentRoutes);
 
-app.use(
-    "/employees",
-    employeesRoutes
-);
+app.use("/employees", employeesRoutes);
+
+app.use("/hsseq", hsseqdataRoutes);
+
+app.use("/incidents", incidentsRoutes);
+
+app.use("/inspections", inspectionsRoutes);
+
+app.use("/ppe", ppeRoutes);
+
+app.use("/risk-assessments", riskRoutes);
+
+app.use("/permits", permitsRoutes);
 
 // ==========================================
-// HSSEQ ROUTES
+// TEST ROUTE
 // ==========================================
 
-app.use(
-    "/hsseq",
-    hsseqdataRoutes
-);
+app.get("/test-training", (req, res) => {
+    res.send("Training route is working");
+});
 
-app.use(
-    "/incidents",
-    incidentsRoutes
-);
+// ==========================================
+// 404
+// ==========================================
 
-app.use(
-    "/inspections",
-    inspectionsRoutes
-);
+app.use((req, res) => {
+    res.status(404).send(`
+        <h1>404 - Page Not Found</h1>
+        <p>Cannot ${req.method} ${req.originalUrl}</p>
+    `);
+});
 
-app.use(
-    "/login",
-    loginRoutes
-);
+// ==========================================
+// SERVER ERROR
+// ==========================================
 
-app.use(
-    "/logout",
-    logoutRoutes
-);
+app.use((err, req, res, next) => {
 
-app.use(
-    "/ppe",
-    ppeRoutes
-);
+    console.error("SERVER ERROR:", err);
 
-app.use(
-    "/risk-assessments",
-    riskRoutes
-);
-
-app.use(
-    "/permits",
-    permitsRoutes
-);
+    res.status(500).send(`
+        <h1>500 - Server Error</h1>
+        <pre>${err.message}</pre>
+    `);
+});
 
 // ==========================================
 // START SERVER
 // ==========================================
 
-app.listen(3000, () => {
+const PORT = 3000;
+
+app.listen(PORT, () => {
+
+    console.log("");
+    console.log("==========================================");
+    console.log("SafetyPro server running");
+    console.log("==========================================");
     console.log(
-        "Server is running on http://localhost:3000"
+        `Main URL: http://localhost:${PORT}`
     );
+    console.log(
+        `Training: http://localhost:${PORT}/training/gap-analysis`
+    );
+    console.log(
+        `Test: http://localhost:${PORT}/test-training`
+    );
+    console.log("==========================================");
+    console.log("");
+
 });

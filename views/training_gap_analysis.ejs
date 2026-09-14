@@ -1,337 +1,1162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Training Requirements &mdash; SafetyPro</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --charcoal: #14181C;
-    --panel: #1B2126;
-    --panel-raised: #232B31;
-    --hazard: #F2B705;
-    --rust: #C6512F;
-    --steel-line: #333D45;
-    --ink: #E9EDEF;
-    --ink-muted: #8B96A1;
-    --safe-green: #4C9A6A;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--charcoal);
-    color: var(--ink);
-    font-family: 'Inter', -apple-system, sans-serif;
-  }
-  a { color: inherit; text-decoration: none; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  header { border-bottom: 1px solid var(--steel-line); padding: 0 32px; }
-  .nav {
-    max-width: 1220px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Archivo Expanded', sans-serif;
-    font-weight: 700;
-    font-size: 17px;
-  }
-  .brand-mark {
-    width: 26px;
-    height: 26px;
-    background: var(--hazard);
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--charcoal);
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 11px;
-  }
-  .navlinks { display: flex; gap: 22px; font-size: 14px; color: var(--ink-muted); }
-  .navlinks a.active, .navlinks a:hover { color: var(--ink); }
+    <title>Training Requirements — SafetyPro</title>
 
-  main { max-width: 1220px; margin: 0 auto; padding: 40px 32px 80px; }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  .page-head {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 26px;
-  }
-  .page-head h1 { font-family: 'Archivo Expanded', sans-serif; font-size: 26px; margin: 0; }
-  .page-head p { color: var(--ink-muted); font-size: 14px; margin: 6px 0 0; }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet"
+    >
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 9px 16px;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 13.5px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-  }
-  .btn-primary { background: var(--hazard); color: #1A1503; }
-  .btn-primary:hover { background: #ffcb1f; }
-  .btn-ghost { color: var(--ink); border-color: var(--steel-line); background: transparent; }
-  .btn-ghost:hover { border-color: var(--ink-muted); }
-  .btn-danger { color: #E38562; border-color: rgba(198,81,47,0.4); background: rgba(198,81,47,0.1); }
-  .btn-danger:hover { background: rgba(198,81,47,0.2); }
-  .btn-small { padding: 6px 11px; font-size: 12.5px; }
+    <style>
+        :root {
+            --charcoal: #14181C;
+            --panel: #1B2126;
+            --panel-raised: #232B31;
+            --hazard: #F2B705;
+            --rust: #C6512F;
+            --steel-line: #333D45;
+            --ink: #E9EDEF;
+            --ink-muted: #8B96A1;
+            --safe-green: #4C9A6A;
+        }
 
-  .flash {
-    background: rgba(76,154,106,0.14);
-    border: 1px solid rgba(76,154,106,0.4);
-    color: #7BC898;
-    font-size: 13.5px;
-    padding: 10px 14px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-  }
-  .flash.error {
-    background: rgba(198,81,47,0.14);
-    border-color: rgba(198,81,47,0.4);
-    color: #E38562;
-  }
+        * {
+            box-sizing: border-box;
+        }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--panel);
-    border: 1px solid var(--steel-line);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  thead th {
-    text-align: left;
-    font-size: 12px;
-    color: var(--ink-muted);
-    font-weight: 600;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--steel-line);
-    background: var(--panel-raised);
-  }
-  tbody td {
-    padding: 13px 16px;
-    font-size: 14px;
-    border-bottom: 1px solid var(--steel-line);
-    vertical-align: top;
-  }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: rgba(255,255,255,0.02); }
-  td.name { font-weight: 500; }
-  td.sub { color: var(--ink-muted); font-size: 12.5px; }
-  .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+        body {
+            margin: 0;
+            background: var(--charcoal);
+            color: var(--ink);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
 
-  .pill {
-    display: inline-block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px;
-    padding: 4px 9px;
-    border-radius: 3px;
-    white-space: nowrap;
-    background: rgba(242,183,5,0.16);
-    color: var(--hazard);
-  }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
 
-  .empty { padding: 48px 20px; text-align: center; color: var(--ink-muted); font-size: 14px; }
+        /* ==========================================
+           HEADER
+        ========================================== */
 
-  /* Modal-style form */
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-    padding: 20px;
-  }
-  .overlay.open { display: flex; }
-  .modal {
-    width: 100%;
-    max-width: 460px;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: var(--panel);
-    border: 1px solid var(--steel-line);
-    border-radius: 6px;
-    padding: 26px 26px 22px;
-  }
-  .modal h2 { font-family: 'Archivo Expanded', sans-serif; font-size: 19px; margin: 0 0 20px; }
-  .field { margin-bottom: 14px; }
-  label { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 6px; }
-  input[type="text"], input[type="number"], select {
-    width: 100%;
-    background: var(--panel-raised);
-    border: 1px solid var(--steel-line);
-    border-radius: 4px;
-    color: var(--ink);
-    font-size: 14px;
-    padding: 10px 11px;
-    font-family: 'Inter', sans-serif;
-  }
-  input:focus, select:focus { outline: none; border-color: var(--hazard); }
-  .hint { font-size: 12px; color: var(--ink-muted); margin-top: 6px; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-</style>
+        header {
+            border-bottom: 1px solid var(--steel-line);
+            padding: 0 32px;
+        }
+
+        .nav {
+            max-width: 1220px;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            min-height: 64px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-family: 'Archivo Expanded', sans-serif;
+            font-weight: 700;
+            font-size: 17px;
+
+            white-space: nowrap;
+        }
+
+        .brand-mark {
+            width: 28px;
+            height: 28px;
+
+            background: var(--hazard);
+
+            clip-path: polygon(
+                50% 0%,
+                100% 50%,
+                50% 100%,
+                0% 50%
+            );
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--charcoal);
+
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 700;
+            font-size: 10px;
+        }
+
+        .navlinks {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+
+            font-size: 14px;
+            color: var(--ink-muted);
+        }
+
+        .navlinks a {
+            transition: color 0.15s ease;
+        }
+
+        .navlinks a:hover,
+        .navlinks a.active {
+            color: var(--ink);
+        }
+
+        /* ==========================================
+           MAIN
+        ========================================== */
+
+        main {
+            max-width: 1220px;
+            margin: 0 auto;
+
+            padding: 40px 32px 80px;
+        }
+
+        .page-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 26px;
+        }
+
+        .page-head h1 {
+            font-family: 'Archivo Expanded', sans-serif;
+
+            font-size: 26px;
+            line-height: 1.2;
+
+            margin: 0;
+        }
+
+        .page-head p {
+            color: var(--ink-muted);
+
+            font-size: 14px;
+
+            margin: 7px 0 0;
+        }
+
+        /* ==========================================
+           BUTTONS
+        ========================================== */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 9px 16px;
+
+            border-radius: 4px;
+
+            font-weight: 600;
+            font-size: 13.5px;
+
+            border: 1px solid transparent;
+
+            cursor: pointer;
+
+            font-family: 'Inter', sans-serif;
+
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .btn-primary {
+            background: var(--hazard);
+            color: #1A1503;
+        }
+
+        .btn-primary:hover {
+            background: #ffcb1f;
+        }
+
+        .btn-ghost {
+            color: var(--ink);
+            border-color: var(--steel-line);
+            background: transparent;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--ink-muted);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .btn-danger {
+            color: #E38562;
+
+            border-color: rgba(198,81,47,0.4);
+
+            background: rgba(198,81,47,0.1);
+        }
+
+        .btn-danger:hover {
+            background: rgba(198,81,47,0.2);
+        }
+
+        .btn-small {
+            padding: 6px 11px;
+            font-size: 12.5px;
+        }
+
+        /* ==========================================
+           FLASH MESSAGES
+        ========================================== */
+
+        .flash {
+            background: rgba(76,154,106,0.14);
+
+            border: 1px solid rgba(76,154,106,0.4);
+
+            color: #7BC898;
+
+            font-size: 13.5px;
+
+            padding: 10px 14px;
+
+            border-radius: 4px;
+
+            margin-bottom: 20px;
+        }
+
+        .flash.error {
+            background: rgba(198,81,47,0.14);
+
+            border-color: rgba(198,81,47,0.4);
+
+            color: #E38562;
+        }
+
+        /* ==========================================
+           TABLE
+        ========================================== */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+
+            border: 1px solid var(--steel-line);
+
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            background: var(--panel);
+
+            min-width: 700px;
+        }
+
+        thead th {
+            text-align: left;
+
+            font-size: 12px;
+
+            color: var(--ink-muted);
+
+            font-weight: 600;
+
+            padding: 12px 16px;
+
+            border-bottom: 1px solid var(--steel-line);
+
+            background: var(--panel-raised);
+        }
+
+        tbody td {
+            padding: 13px 16px;
+
+            font-size: 14px;
+
+            border-bottom: 1px solid var(--steel-line);
+
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        td.name {
+            font-weight: 500;
+        }
+
+        .row-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* ==========================================
+           VALIDITY PILL
+        ========================================== */
+
+        .pill {
+            display: inline-block;
+
+            font-family: 'IBM Plex Mono', monospace;
+
+            font-size: 11.5px;
+
+            padding: 4px 9px;
+
+            border-radius: 3px;
+
+            white-space: nowrap;
+
+            background: rgba(242,183,5,0.16);
+
+            color: var(--hazard);
+        }
+
+        /* ==========================================
+           EMPTY STATE
+        ========================================== */
+
+        .empty {
+            padding: 48px 20px;
+
+            text-align: center;
+
+            color: var(--ink-muted);
+
+            font-size: 14px;
+        }
+
+        /* ==========================================
+           MODAL
+        ========================================== */
+
+        .overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.65);
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 50;
+
+            padding: 20px;
+        }
+
+        .overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+
+            max-width: 460px;
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            background: var(--panel);
+
+            border: 1px solid var(--steel-line);
+
+            border-radius: 6px;
+
+            padding: 26px;
+        }
+
+        .modal h2 {
+            font-family: 'Archivo Expanded', sans-serif;
+
+            font-size: 19px;
+
+            margin: 0 0 20px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+
+            font-size: 12.5px;
+
+            color: var(--ink-muted);
+
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+
+            background: var(--panel-raised);
+
+            border: 1px solid var(--steel-line);
+
+            border-radius: 4px;
+
+            color: var(--ink);
+
+            font-size: 14px;
+
+            padding: 10px 11px;
+
+            font-family: 'Inter', sans-serif;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+
+            border-color: var(--hazard);
+        }
+
+        .hint {
+            font-size: 12px;
+
+            color: var(--ink-muted);
+
+            margin-top: 7px;
+
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 22px;
+        }
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            header {
+                padding: 0 18px;
+            }
+
+            .nav {
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                padding: 16px 0;
+
+                gap: 14px;
+            }
+
+            .navlinks {
+                width: 100%;
+
+                overflow-x: auto;
+
+                padding-bottom: 4px;
+
+                gap: 18px;
+
+                white-space: nowrap;
+            }
+
+            main {
+                padding: 28px 18px 60px;
+            }
+
+            .page-head {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+            .page-head .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .page-head h1 {
+                font-size: 22px;
+            }
+
+            .modal {
+                padding: 22px;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .modal-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
+<!-- ==========================================
+     HEADER
+========================================== -->
+
 <header>
-  <div class="nav">
-    <div class="brand"><span class="brand-mark">SP</span> SafetyPro</div>
-    <nav class="navlinks">
-      <a href="/dashboard">Dashboard</a>
-      <a href="/employees">Employees</a>
-      <a href="/permits">Permits</a>
-      <a href="/ppe">PPE Inventory</a>
-      <a href="/risk-assessments">Risk Assessments</a>
-      <a href="/training_gap_analysis" class="active">training_gap_analysis</a>
-      <a href="/logout">Log out</a>
-    </nav>
-  </div>
+
+    <div class="nav">
+
+        <div class="brand">
+
+            <span class="brand-mark">
+                SP
+            </span>
+
+            SafetyPro
+
+        </div>
+
+        <nav class="navlinks">
+
+            <a href="/dashboard">
+                Dashboard
+            </a>
+
+            <a href="/employees">
+                Employees
+            </a>
+
+            <a href="/permits">
+                Permits
+            </a>
+
+            <a href="/ppe">
+                PPE Inventory
+            </a>
+
+            <a href="/risk-assessments">
+                Risk Assessments
+            </a>
+
+            <a
+                href="/training/gap-analysis"
+                class="active"
+            >
+                Training
+            </a>
+
+        </nav>
+
+    </div>
+
 </header>
 
+
+<!-- ==========================================
+     MAIN CONTENT
+========================================== -->
+
 <main>
-  <div class="page-head">
-    <div>
-      <h1>Training requirements</h1>
-      <p><%= requirements.length %> requirement<%= requirements.length === 1 ? '' : 's' %> defined, by role</p>
+
+    <div class="page-head">
+
+        <div>
+
+            <h1>
+                Training requirements
+            </h1>
+
+            <p>
+                <%= Array.isArray(requirements) ? requirements.length : 0 %>
+
+                requirement
+
+                <%= Array.isArray(requirements) && requirements.length === 1 ? '' : 's' %>
+
+                defined, by role
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="btn btn-primary"
+            onclick="openModal()"
+        >
+            + Add requirement
+        </button>
+
     </div>
-    <button class="btn btn-primary" onclick="openModal()">+ Add requirement</button>
-  </div>
 
-  <% if (typeof flash !== 'undefined' && flash) { %>
-    <div class="flash"><%= flash %></div>
-  <% } %>
-  <% if (typeof error !== 'undefined' && error) { %>
-    <div class="flash error"><%= error %></div>
-  <% } %>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Role</th>
-        <th>Required training</th>
-        <th>Valid for</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (requirements.length === 0) { %>
-        <tr><td colspan="4"><div class="empty">No training requirements yet &mdash; add your first one.</div></td></tr>
-      <% } %>
-      <% requirements.forEach(function(r) { %>
-        <tr>
-          <td class="name">
-            <% var roleMatch = (roles || []).find(function(role) { return role.role_id === r.role_id; }); %>
-            <%= roleMatch ? (roleMatch.role_name || roleMatch.name) : ('Role #' + r.role_id) %>
-          </td>
-          <td><%= r.required_training %></td>
-          <td><span class="pill"><%= r.validity_months %> month<%= r.validity_months === 1 ? '' : 's' %></span></td>
-          <td>
-            <div class="row-actions">
-              <button class="btn btn-ghost btn-small edit-btn"
-                data-req='<%= JSON.stringify(r) %>'>Edit</button>
-              <form method="POST" action="/training_gap_analysis/<%= r.requirement_id %>/delete"
-                onsubmit="return confirm('Delete this training requirement?');" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-small">Delete</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
+    <!-- ==========================================
+         FLASH MESSAGE
+    ========================================== -->
+
+    <% if (typeof flash !== 'undefined' && flash) { %>
+
+        <div class="flash">
+            <%= flash %>
+        </div>
+
+    <% } %>
+
+
+    <!-- ==========================================
+         ERROR MESSAGE
+    ========================================== -->
+
+    <% if (typeof error !== 'undefined' && error) { %>
+
+        <div class="flash error">
+            <%= error %>
+        </div>
+
+    <% } %>
+
+
+    <!-- ==========================================
+         TRAINING REQUIREMENTS TABLE
+    ========================================== -->
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Role
+                    </th>
+
+                    <th>
+                        Required training
+                    </th>
+
+                    <th>
+                        Valid for
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <% if (!requirements || requirements.length === 0) { %>
+
+                    <tr>
+
+                        <td colspan="4">
+
+                            <div class="empty">
+
+                                No training requirements yet —
+                                add your first one.
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                <% } else { %>
+
+
+                    <% requirements.forEach(function(r) { %>
+
+                        <%
+                            var roleMatch = (roles || []).find(
+                                function(role) {
+                                    return String(role.role_id) === String(r.role_id);
+                                }
+                            );
+                        %>
+
+
+                        <tr>
+
+                            <!-- ROLE -->
+
+                            <td class="name">
+
+                                <%= roleMatch
+                                    ? (roleMatch.role_name || roleMatch.name || ('Role #' + r.role_id))
+                                    : ('Role #' + r.role_id)
+                                %>
+
+                            </td>
+
+
+                            <!-- TRAINING -->
+
+                            <td>
+
+                                <%= r.required_training %>
+
+                            </td>
+
+
+                            <!-- VALIDITY -->
+
+                            <td>
+
+                                <span class="pill">
+
+                                    <%= r.validity_months || 12 %>
+
+                                    month<%= Number(r.validity_months || 12) === 1 ? '' : 's' %>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACTIONS -->
+
+                            <td>
+
+                                <div class="row-actions">
+
+
+                                    <!-- EDIT -->
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-ghost btn-small edit-btn"
+                                        data-id="<%= r.requirement_id %>"
+                                        data-role-id="<%= r.role_id %>"
+                                        data-training="<%= r.required_training %>"
+                                        data-validity="<%= r.validity_months || 12 %>"
+                                    >
+                                        Edit
+                                    </button>
+
+
+                                    <!-- DELETE -->
+
+                                    <form
+                                        method="POST"
+                                        action="/training/gap-analysis/<%= r.requirement_id %>/delete"
+                                        onsubmit="return confirm('Delete this training requirement?');"
+                                        style="display:inline;"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger btn-small"
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                    <% }); %>
+
+                <% } %>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </main>
 
-<!-- Add / Edit modal -->
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <h2 id="modalTitle">Add requirement</h2>
-    <form id="reqForm" method="POST" action="/training_gap_analysis">
-      <div class="field">
-        <label for="role_id">Role</label>
-        <% if (roles && roles.length > 0) { %>
-          <select id="role_id" name="role_id" required>
-            <% roles.forEach(function(role) { %>
-              <option value="<%= role.role_id %>"><%= role.role_name || role.name %></option>
-            <% }) %>
-          </select>
-        <% } else { %>
-          <input type="number" id="role_id" name="role_id" min="1" required>
-          <p class="hint">No <code>roles</code> table was found, so this is a raw role ID for now &mdash; tell your developer to wire up a dropdown once one exists.</p>
-        <% } %>
-      </div>
-      <div class="field">
-        <label for="required_training">Required training</label>
-        <input type="text" id="required_training" name="required_training" required>
-      </div>
-      <div class="field">
-        <label for="validity_months">Valid for (months)</label>
-        <input type="number" id="validity_months" name="validity_months" min="1" value="12">
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary" id="submitBtn">Save requirement</button>
-      </div>
-    </form>
-  </div>
+
+<!-- ==========================================
+     ADD / EDIT MODAL
+========================================== -->
+
+<div
+    class="overlay"
+    id="overlay"
+>
+
+    <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+    >
+
+        <h2 id="modalTitle">
+            Add requirement
+        </h2>
+
+
+        <form
+            id="reqForm"
+            method="POST"
+            action="/training/gap-analysis"
+        >
+
+
+            <!-- ROLE -->
+
+            <div class="field">
+
+                <label for="role_id">
+                    Role
+                </label>
+
+
+                <% if (roles && roles.length > 0) { %>
+
+
+                    <select
+                        id="role_id"
+                        name="role_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select a role
+                        </option>
+
+
+                        <% roles.forEach(function(role) { %>
+
+                            <option
+                                value="<%= role.role_id %>"
+                            >
+                                <%= role.role_name || role.name || ('Role #' + role.role_id) %>
+                            </option>
+
+                        <% }); %>
+
+                    </select>
+
+
+                <% } else { %>
+
+
+                    <input
+                        type="number"
+                        id="role_id"
+                        name="role_id"
+                        min="1"
+                        required
+                        placeholder="Enter role ID"
+                    >
+
+
+                    <p class="hint">
+
+                        No roles were found.
+
+                        Enter the role ID manually.
+
+                    </p>
+
+
+                <% } %>
+
+            </div>
+
+
+            <!-- REQUIRED TRAINING -->
+
+            <div class="field">
+
+                <label for="required_training">
+                    Required training
+                </label>
+
+                <input
+                    type="text"
+                    id="required_training"
+                    name="required_training"
+                    required
+                    maxlength="255"
+                    placeholder="e.g. Working at Heights"
+                >
+
+            </div>
+
+
+            <!-- VALIDITY -->
+
+            <div class="field">
+
+                <label for="validity_months">
+                    Valid for (months)
+                </label>
+
+                <input
+                    type="number"
+                    id="validity_months"
+                    name="validity_months"
+                    min="1"
+                    max="120"
+                    value="12"
+                    required
+                >
+
+            </div>
+
+
+            <!-- MODAL BUTTONS -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-ghost"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="submitBtn"
+                >
+                    Save requirement
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
 </div>
 
+
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+
 <script>
-  const overlay = document.getElementById('overlay');
-  const form = document.getElementById('reqForm');
-  const modalTitle = document.getElementById('modalTitle');
-  const submitBtn = document.getElementById('submitBtn');
 
-  function openModal(req) {
-    form.reset();
-    if (req && req.requirement_id) {
-      modalTitle.textContent = 'Edit requirement';
-      submitBtn.textContent = 'Save changes';
-      form.action = '/training-management/' + req.requirement_id + '/update';
-      document.getElementById('role_id').value = req.role_id || '';
-      document.getElementById('required_training').value = req.required_training || '';
-      document.getElementById('validity_months').value = req.validity_months || 12;
-    } else {
-      modalTitle.textContent = 'Add requirement';
-      submitBtn.textContent = 'Save requirement';
-      form.action = '/training-management';
+    const overlay =
+        document.getElementById("overlay");
+
+    const form =
+        document.getElementById("reqForm");
+
+    const modalTitle =
+        document.getElementById("modalTitle");
+
+    const submitBtn =
+        document.getElementById("submitBtn");
+
+    const roleInput =
+        document.getElementById("role_id");
+
+    const trainingInput =
+        document.getElementById("required_training");
+
+    const validityInput =
+        document.getElementById("validity_months");
+
+
+    // ==========================================
+    // OPEN MODAL
+    // ==========================================
+
+    function openModal(req) {
+
+        form.reset();
+
+        if (req) {
+
+            modalTitle.textContent =
+                "Edit requirement";
+
+            submitBtn.textContent =
+                "Save changes";
+
+            form.action =
+                "/training/gap-analysis/" +
+                req.id +
+                "/update";
+
+            roleInput.value =
+                req.roleId || "";
+
+            trainingInput.value =
+                req.training || "";
+
+            validityInput.value =
+                req.validity || 12;
+
+        } else {
+
+            modalTitle.textContent =
+                "Add requirement";
+
+            submitBtn.textContent =
+                "Save requirement";
+
+            form.action =
+                "/training/gap-analysis";
+
+            validityInput.value = 12;
+        }
+
+        overlay.classList.add("open");
+
+        setTimeout(function() {
+
+            if (roleInput) {
+                roleInput.focus();
+            }
+
+        }, 50);
     }
-    overlay.classList.add('open');
-  }
 
-  function closeModal() {
-    overlay.classList.remove('open');
-  }
 
-  overlay.addEventListener('click', function (e) {
-    if (e.target === overlay) closeModal();
-  });
+    // ==========================================
+    // CLOSE MODAL
+    // ==========================================
 
-  // Edit buttons carry their row's data in a data-req attribute
-  // (HTML-escaped by EJS's <%= %>), so quotes/special characters in
-  // any field can't break the inline markup.
-  document.querySelectorAll('.edit-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const req = JSON.parse(btn.getAttribute('data-req'));
-      openModal(req);
-    });
-  });
+    function closeModal() {
+
+        overlay.classList.remove("open");
+
+        form.reset();
+
+        modalTitle.textContent =
+            "Add requirement";
+
+        submitBtn.textContent =
+            "Save requirement";
+
+        form.action =
+            "/training/gap-analysis";
+    }
+
+
+    // ==========================================
+    // CLICK OUTSIDE MODAL
+    // ==========================================
+
+    overlay.addEventListener(
+        "click",
+        function(event) {
+
+            if (event.target === overlay) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // ESCAPE KEY
+    // ==========================================
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Escape" &&
+                overlay.classList.contains("open")
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // EDIT BUTTONS
+    // ==========================================
+
+    document
+        .querySelectorAll(".edit-btn")
+        .forEach(function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    openModal({
+
+                        id:
+                            button.dataset.id,
+
+                        roleId:
+                            button.dataset.roleId,
+
+                        training:
+                            button.dataset.training,
+
+                        validity:
+                            button.dataset.validity
+
+                    });
+
+                }
+            );
+
+        });
+
 </script>
 
 </body>
