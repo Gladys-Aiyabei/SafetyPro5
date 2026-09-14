@@ -1,0 +1,106 @@
+<%- include('partials/header.ejs') %>
+
+<div class="app-layout" style="display: flex; min-height: 100vh;">
+  <!-- Sidebar Navigation Component -->
+  <%- include('partials/sidebar') %>
+
+  <!-- Main Marketing & Feature Showcase Content Area -->
+  <main class="main-content" style="flex: 1; padding: 40px; background-color: #f4f6f9; font-family: Arial, sans-serif;">
+    
+    <!-- Hero Branding Section -->
+    <header class="hero-section" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+      <h1 style="margin: 0 0 10px 0; font-size: 32px; font-weight: bold;">🛡️ Welcome to SafetyPro</h1>
+      <p style="margin: 0; font-size: 18px; opacity: 0.9;">The enterprise-grade HSSEQ Management Ecosystem designed to safeguard your workforce, monitor infrastructure compliance, and mitigate environmental risk.</p>
+    </header>
+
+    <!-- Modules Core Matrix Grid -->
+    <section>
+      <h2 style="color: #333; margin-bottom: 24px; font-size: 22px; border-bottom: 2px solid #ddd; padding-bottom: 8px;">Active Operational Modules</h2>
+      
+      <div class="modules-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+        
+        <!-- Dashboard & Analytical Aggregations -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #007bff; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">📊 Central Dashboard</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Real-time safety metrics, key performance indicators, and automated corporate compliance tracking.</p>
+          </div>
+          <a href="/dashboard" style="display: inline-block; background: #007bff; color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; text-align: center; font-size: 14px; font-weight: bold;">Enter Console</a>
+        </div>
+
+        <!-- Incident Reporting Platform -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #dc3545; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">⚠️ Incident Reporting</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Log site accidents, assign root-cause investigations, and schedule corrective countermeasures instantly.</p>
+          </div>
+          <a href="/incidents" style="display: inline-block; background: #dc3545; color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; text-align: center; font-size: 14px; font-weight: bold;">Launch Reporter</a>
+        </div>
+
+        <!-- Field Inspections Module -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #28a745; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">🔍 Audits & Inspections</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Conduct on-site safety audits, log structural findings, and append multi-file photo attachments directly.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <a href="/inspections" style="flex: 1; background: #28a745; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; text-align: center; font-size: 13px; font-weight: bold;">Inspections</a>
+            <a href="/audits" style="flex: 1; background: #2e5566; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; text-align: center; font-size: 13px; font-weight: bold;">Audits</a>
+          </div>
+        </div>
+
+        <!-- Risk Matrix Platform -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #ffc107; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">⚡ Risk Assessments</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Map operational workplace hazards, evaluate structural risk scores, and deploy critical control barriers.</p>
+          </div>
+          <a href="/risk-assessments" style="display: inline-block; background: #ffc107; color: #212529; text-decoration: none; padding: 8px 16px; border-radius: 4px; text-align: center; font-size: 14px; font-weight: bold;">Analyze Risks</a>
+        </div>
+
+        <!-- Permit to Work Management -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #17a2b8; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">📝 Permits to Work (PTW)</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Isolate high-risk operations with standardized isolation certificates, hazard descriptions, and sign-offs.</p>
+          </div>
+          <a href="/permits" style="display: inline-block; background: #17a2b8; color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; text-align: center; font-size: 14px; font-weight: bold;">Manage PTW</a>
+        </div>
+
+        <!-- PPE Inventory Management -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #6c757d; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">🥽 PPE Stock Inventory</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Track workforce life-saving gear availability, manage distribution parameters, and trigger low-stock alerts.</p>
+          </div>
+          <a href="/ppe" style="display: inline-block; background: #6c757d; color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; text-align: center; font-size: 14px; font-weight: bold;">Check Stock</a>
+        </div>
+
+        <!-- Training Gap Analysis -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #6f42c1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">🎓 Training & Compliance</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Identify structural certification gaps, monitor expiry timelines, and schedule training workflows.</p>
+          </div>
+          <a href="/training/gap-analysis" style="display: inline-block; background: #6f42c1; color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; text-align: center; font-size: 14px; font-weight: bold;">Gap Analysis</a>
+        </div>
+
+        <!-- Enterprise Operations Core Data -->
+        <div class="module-card" style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #343a40; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 10px 0; color: #1e3c72;">🏢 Workforce & Hierarchy</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.5;">Manage corporate organizational departments, coordinate workforce roles, and allocate security keys.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <a href="/employees" style="flex: 1; background: #343a40; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; text-align: center; font-size: 13px; font-weight: bold;">Employees</a>
+            <a href="/departments" style="flex: 1; background: #4b515d; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; text-align: center; font-size: 13px; font-weight: bold;">Departments</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<%- include('partials/footer') %>

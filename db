@@ -1,0 +1,24 @@
+const mysql = require('mysql2');
+
+// Create a connection pool to safely manage multiple queries
+const pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',      // Replace with your MySQL username if different
+    password: 'Gla1985,',      // Replace with your MySQL password if you have one
+    database: 'hsseq_db',
+    waitForConnections: true,
+   
+});
+
+// Test connection on startup safely
+pool.getConnection((err, connection) => {
+    if (err) {
+        console.error('Database connection failed on startup:', err.message);
+    } else {
+        console.log('Connected to MySQL pool successfully!');
+        connection.release(); // Return connection to pool
+    }
+});
+
+// Export the promise-based pool so you can use async/await in your routes
+module.exports = pool.promise();

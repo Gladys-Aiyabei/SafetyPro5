@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inspection #<%= inspection.inspection_id %></title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+    .card { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 6px; }
+    .finding-box { border-left: 4px solid #007bff; background: #f8f9fa; padding: 12px; margin-bottom: 12px; }
+    .input-group { margin-bottom: 8px; display: flex; gap: 8px; }
+    .gallery { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .gallery img { width: 120px; height: 120px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+
+  <!-- Inspection Metadata -->
+  <div class="card">
+    <h1>Inspection #<%= inspection.inspection_id %> Details</h1>
+    <p><strong>Type:</strong> <%= inspection.inspection_type %> | <strong>Location:</strong> <%= inspection.location %></p>
+    <p><strong>Date:</strong> <%= inspection.inspection_date %> | <strong>Inspector ID:</strong> <%= inspection.inspector_id %></p>
+    <p><strong>Score:</strong> <%= inspection.overall_score %> | <strong>Status:</strong> <%= inspection.status %></p>
+  </div>
+
+  <!-- Attachments Section -->
+  <div class="card">
+    <h3>Supporting Documents & Images</h3>
+    <form action="/inspections/<%= inspection.inspection_id %>/attachments" method="POST" enctype="multipart/form-data">
+      <input type="file" name="files" multiple required>
+      <button type="submit">Upload Files</button>
+    </form>
+
+    <div class="gallery">
+      <% attachments.forEach(att => { %>
+        <% if (att.file_type === 'image') { %>
+          <a href="<%= att.file_path %>" target="_blank">
+            <img src="<%= att.file_path %>" alt="Image">
+          </a>
+        <% } else { %>
+          <div>
+            📄 <a href="<%= att.file_path %>" target="_blank">View Document</a>
+          </div>
+        <% } %>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Findings List -->
+  <div class="card">
+    <h3>Findings, Root Causes & Actions</h3>
+    
+    <% findings.forEach(f => { %>
+      <div class="finding-box">
+        <h4>Finding: <%= f.description %></h4>
+        
+        <p><strong>Root Causes:</strong></p>
+        <ul>
+          <% f.rootCauses.forEach(rc => { %>
+            <li><%= rc.root_cause %></li>
+          <% }) %>
+        </ul>
+
+        <p><strong>Actions:</strong></p>
+        <ul>
+          <% f.actions.forEach(act => { %>
+            <li><%= act.action_description %> (Status: <%= act.status %>)</li>
+          <% }) %>
+        </ul>
+      </div>
+    <% }) %>
+
+    <hr>
+
+    <!-- Dynamic Form to Add New Finding -->
+    <h4>+ Add New Finding</h4>
+    <form action="/inspections/<%= inspection.inspection_id %>/findings" method="POST">
+      <label>Finding Description:</label><br>
+      <textarea name="description" rows="2" style="width: 100%;" required></textarea><br><br>
+
+      <label>Root Causes:</label>
+      <div id="root-causes-container">
+        <div class="input-group">
+          <input type="text" name="root_causes[]" placeholder="Enter root cause" style="flex: 1;">
+        </div>
+      </div>
+      <button type="button" onclick="addField('root-causes-container', 'root_causes[]', 'Enter root cause')">+ Add Cause</button>
+      <br><br>
+
+      <label>Actions:</label>
+      <div id="actions-container">
+        <div class="input-group">
+          <input type="text" name="actions[]" placeholder="Enter corrective action" style="flex: 1;">
+        </div>
+      </div>
+      <button type="button" onclick="addField('actions-container', 'actions[]', 'Enter corrective action')">+ Add Action</button>
+      <br><br>
+
+      <button type="submit" style="background: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 4px;">Save Finding</button>
+    </form>
+  </div>
+
+  <script>
+    function addField(containerId, inputName, placeholder) {
+      const container = document.getElementById(containerId);
+      const div = document.createElement('div');
+      div.className = 'input-group';
+      div.innerHTML = `<input type="text" name="${inputName}" placeholder="${placeholder}" style="flex: 1;"> <button type="button" onclick="this.parentElement.remove()">X</button>`;
+      container.appendChild(div);
+    }
+  </script>
+</body>
+</html>

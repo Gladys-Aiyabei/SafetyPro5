@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-save {
+            background: #198754;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Add New Audit</h1>
+
+    <form action="/audits/add" method="POST">
+
+        <!-- Audit Date -->
+        <div class="form-group">
+
+            <label for="audit_date">
+                Audit Date
+            </label>
+
+            <input
+                type="date"
+                id="audit_date"
+                name="audit_date"
+                required>
+
+        </div>
+
+
+        <!-- Audit Type -->
+        <div class="form-group">
+
+            <label for="audit_type">
+                Audit Type
+            </label>
+
+            <input
+                type="text"
+                id="audit_type"
+                name="audit_type"
+                placeholder="e.g. Safety Audit"
+                required>
+
+        </div>
+
+
+        <!-- Department -->
+        <div class="form-group">
+
+            <label for="department_id">
+                Department
+            </label>
+
+            <select
+                id="department_id"
+                name="department_id"
+                required>
+
+                <option value="">
+                    -- Select Department --
+                </option>
+
+                <% departments.forEach(department => { %>
+
+                    <option value="<%= department.department_id %>">
+
+                        <%= department.department_name %>
+
+                        <% if (department.location) { %>
+                            - <%= department.location %>
+                        <% } %>
+
+                    </option>
+
+                <% }); %>
+
+            </select>
+
+        </div>
+
+
+        <!-- Auditor -->
+        <div class="form-group">
+
+            <label for="auditor">
+                Auditor
+            </label>
+
+            <input
+                type="text"
+                id="auditor"
+                name="auditor"
+                placeholder="Enter auditor name"
+                required>
+
+        </div>
+
+
+        <!-- Findings -->
+        <div class="form-group">
+
+            <label for="findings">
+                Findings
+            </label>
+
+            <textarea
+                id="findings"
+                name="findings"
+                placeholder="Enter audit findings"></textarea>
+
+        </div>
+
+
+        <!-- Score -->
+        <div class="form-group">
+
+            <label for="score">
+                Score
+            </label>
+
+            <input
+                type="number"
+                id="score"
+                name="score"
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="e.g. 85.50">
+
+        </div>
+
+
+        <!-- Status -->
+        <div class="form-group">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+                required>
+
+                <option value="">
+                    -- Select Status --
+                </option>
+
+                <option value="Planned">
+                    Planned
+                </option>
+
+                <option value="In Progress">
+                    In Progress
+                </option>
+
+                <option value="Completed">
+                    Completed
+                </option>
+
+                <option value="Closed">
+                    Closed
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- Buttons -->
+        <div class="buttons">
+
+            <button
+                type="submit"
+                class="btn btn-save">
+                Save Audit
+            </button>
+
+            <a
+                href="/audits"
+                class="btn btn-cancel">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= pageTitle %> — HSSEQ Management System</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<div class="app-shell">
+  <%- include('sidebar', { active: active }) %>
+
+  <div class="main-area">
+    <%- include('topbar', {
+      pageIcon: pageIcon || '📊',
+      pageTitle: pageTitle,
+      pageSubtitle: pageSubtitle || '',
+      userInitials: userInitials
+    }) %>
+
+    <div class="page-content">

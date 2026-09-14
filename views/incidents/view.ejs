@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .field .text-block {
+            white-space: pre-wrap;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .severity-low {
+            background: #198754;
+        }
+
+        .severity-medium {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .severity-high {
+            background: #fd7e14;
+        }
+
+        .severity-critical {
+            background: #dc3545;
+        }
+
+        .severity-default {
+            background: #6c757d;
+        }
+
+        .status-open {
+            background: #dc3545;
+        }
+
+        .status-closed {
+            background: #198754;
+        }
+
+        .status-default {
+            background: #6c757d;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Incident Details</h1>
+
+    <% const sevClass = incident.severity
+        ? "severity-" + incident.severity.toLowerCase()
+        : "severity-default"; %>
+
+    <% const statClass = incident.status === "Open"
+        ? "status-open"
+        : incident.status === "Closed"
+            ? "status-closed"
+            : "status-default"; %>
+
+    <div class="field">
+        <label>Incident ID</label>
+        <div><%= incident.incident_id %></div>
+    </div>
+
+    <div class="field">
+        <label>Incident Date &amp; Time</label>
+        <div><%= new Date(incident.incident_date).toLocaleString() %></div>
+    </div>
+
+    <div class="field">
+        <label>Incident Type</label>
+        <div><%= incident.incident_type || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Severity</label>
+        <div>
+            <span class="badge <%= sevClass %>">
+                <%= incident.severity || "N/A" %>
+            </span>
+        </div>
+    </div>
+
+    <div class="field">
+        <label>Location</label>
+        <div><%= incident.location || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Description</label>
+        <div class="text-block"><%= incident.description || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Immediate Action Taken</label>
+        <div class="text-block"><%= incident.immediate_action || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Reported By</label>
+        <div><%= incident.reported_by_name || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Status</label>
+        <div>
+            <span class="badge <%= statClass %>">
+                <%= incident.status || "N/A" %>
+            </span>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <a href="/incidents/edit/<%= incident.incident_id %>" class="btn btn-edit">Edit</a>
+        <a href="/incidents" class="btn btn-back">Back to List</a>
+    </div>
+
+</div>
+
+</body>
+</html>

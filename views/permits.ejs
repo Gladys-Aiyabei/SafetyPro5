@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Permits &mdash; SafetyPro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --charcoal: #14181C;
+    --panel: #1B2126;
+    --panel-raised: #232B31;
+    --hazard: #F2B705;
+    --rust: #C6512F;
+    --steel-line: #333D45;
+    --ink: #E9EDEF;
+    --ink-muted: #8B96A1;
+    --safe-green: #4C9A6A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--charcoal);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  header { border-bottom: 1px solid var(--steel-line); padding: 0 32px; }
+  .nav {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Archivo Expanded', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    background: var(--hazard);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--charcoal);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .navlinks { display: flex; gap: 22px; font-size: 14px; color: var(--ink-muted); }
+  .navlinks a.active, .navlinks a:hover { color: var(--ink); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 26px;
+  }
+  .page-head h1 { font-family: 'Archivo Expanded', sans-serif; font-size: 26px; margin: 0; }
+  .page-head p { color: var(--ink-muted); font-size: 14px; margin: 6px 0 0; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13.5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary { background: var(--hazard); color: #1A1503; }
+  .btn-primary:hover { background: #ffcb1f; }
+  .btn-ghost { color: var(--ink); border-color: var(--steel-line); background: transparent; }
+  .btn-ghost:hover { border-color: var(--ink-muted); }
+  .btn-danger { color: #E38562; border-color: rgba(198,81,47,0.4); background: rgba(198,81,47,0.1); }
+  .btn-danger:hover { background: rgba(198,81,47,0.2); }
+  .btn-small { padding: 6px 11px; font-size: 12.5px; }
+
+  .flash {
+    background: rgba(76,154,106,0.14);
+    border: 1px solid rgba(76,154,106,0.4);
+    color: #7BC898;
+    font-size: 13.5px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .flash.error {
+    background: rgba(198,81,47,0.14);
+    border-color: rgba(198,81,47,0.4);
+    color: #E38562;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--steel-line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  thead th {
+    text-align: left;
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--steel-line);
+    background: var(--panel-raised);
+  }
+  tbody td {
+    padding: 13px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--steel-line);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  td.name { font-weight: 500; }
+  td.sub { color: var(--ink-muted); font-size: 12.5px; }
+  .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .status-pill {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    padding: 4px 9px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .status-pill.approved { background: rgba(76,154,106,0.18); color: #7BC898; }
+  .status-pill.pending { background: rgba(242,183,5,0.16); color: var(--hazard); }
+  .status-pill.expired,
+  .status-pill.rejected { background: rgba(198,81,47,0.18); color: #E38562; }
+  .status-pill.closed { background: rgba(139,150,161,0.16); color: var(--ink-muted); }
+
+  .empty { padding: 48px 20px; text-align: center; color: var(--ink-muted); font-size: 14px; }
+
+  /* Modal-style form */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--steel-line);
+    border-radius: 6px;
+    padding: 26px 26px 22px;
+  }
+  .modal h2 { font-family: 'Archivo Expanded', sans-serif; font-size: 19px; margin: 0 0 20px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid .span-2 { grid-column: 1 / -1; }
+  .field { margin-bottom: 14px; }
+  label { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 6px; }
+  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%;
+    background: var(--panel-raised);
+    border: 1px solid var(--steel-line);
+    border-radius: 4px;
+    color: var(--ink);
+    font-size: 14px;
+    padding: 10px 11px;
+    font-family: 'Inter', sans-serif;
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--hazard); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand"><span class="brand-mark">SP</span> SafetyPro</div>
+    <nav class="navlinks">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/employees">Employees</a>
+      <a href="/permits" class="active">Permits</a>
+      <a href="/logout">Log out</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head">
+    <div>
+      <h1>Permits to work</h1>
+      <p><%= permits.length %> record<%= permits.length === 1 ? '' : 's' %></p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ New permit</button>
+  </div>
+
+  <% if (typeof flash !== 'undefined' && flash) { %>
+    <div class="flash"><%= flash %></div>
+  <% } %>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="flash error"><%= error %></div>
+  <% } %>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Permit</th>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Issued</th>
+        <th>Expires</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (permits.length === 0) { %>
+        <tr><td colspan="7"><div class="empty">No permits yet &mdash; issue your first one.</div></td></tr>
+      <% } %>
+      <% permits.forEach(function(p) { %>
+        <tr>
+          <td class="name">
+            <%= p.permit_number %>
+            <br><span class="sub"><%= p.work_description ? p.work_description.slice(0, 60) : '' %></span>
+          </td>
+          <td><%= p.permit_type %></td>
+          <td><%= p.location %></td>
+          <td><%= p.issue_date ? new Date(p.issue_date).toLocaleDateString() : '&mdash;' %></td>
+          <td><%= p.expiry_date ? new Date(p.expiry_date).toLocaleDateString() : '&mdash;' %></td>
+          <td>
+            <span class="status-pill <%= (p.status || '').toLowerCase() %>">
+              <%= p.status || 'Unknown' %>
+            </span>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-ghost btn-small edit-btn"
+                data-permit='<%= JSON.stringify(p) %>'>Edit</button>
+              <form method="POST" action="/permits/<%= p.permit_id %>/delete"
+                onsubmit="return confirm('Delete this permit?');" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-small">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</main>
+
+<!-- Add / Edit modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">New permit</h2>
+    <form id="permitForm" method="POST" action="/permits">
+      <div class="form-grid">
+        <div class="field">
+          <label for="permit_number">Permit number</label>
+          <input type="text" id="permit_number" name="permit_number" required>
+        </div>
+        <div class="field">
+          <label for="permit_type">Permit type</label>
+          <select id="permit_type" name="permit_type" required>
+            <option value="Hot works">Hot works</option>
+            <option value="Confined space">Confined space</option>
+            <option value="Working at height">Working at height</option>
+            <option value="Excavation">Excavation</option>
+            <option value="Electrical isolation">Electrical isolation</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+        <div class="field span-2">
+          <label for="work_description">Work description</label>
+          <textarea id="work_description" name="work_description"></textarea>
+        </div>
+        <div class="field span-2">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location">
+        </div>
+        <div class="field">
+          <label for="requested_by">Requested by (employee ID)</label>
+          <input type="number" id="requested_by" name="requested_by" min="1">
+        </div>
+        <div class="field">
+          <label for="approved_by">Approved by (employee ID)</label>
+          <input type="number" id="approved_by" name="approved_by" min="1">
+        </div>
+        <div class="field">
+          <label for="issue_date">Issue date</label>
+          <input type="date" id="issue_date" name="issue_date">
+        </div>
+        <div class="field">
+          <label for="expiry_date">Expiry date</label>
+          <input type="date" id="expiry_date" name="expiry_date">
+        </div>
+        <div class="field span-2">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Expired">Expired</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">Save permit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+  const form = document.getElementById('permitForm');
+  const modalTitle = document.getElementById('modalTitle');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function toDateInputValue(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d)) return '';
+    return d.toISOString().slice(0, 10);
+  }
+
+  function openModal(permit) {
+    form.reset();
+    if (permit && permit.permit_id) {
+      modalTitle.textContent = 'Edit permit';
+      submitBtn.textContent = 'Save changes';
+      form.action = '/permits/' + permit.permit_id + '/update';
+      document.getElementById('permit_number').value = permit.permit_number || '';
+      document.getElementById('permit_type').value = permit.permit_type || '';
+      document.getElementById('work_description').value = permit.work_description || '';
+      document.getElementById('location').value = permit.location || '';
+      document.getElementById('requested_by').value = permit.requested_by || '';
+      document.getElementById('approved_by').value = permit.approved_by || '';
+      document.getElementById('issue_date').value = toDateInputValue(permit.issue_date);
+      document.getElementById('expiry_date').value = toDateInputValue(permit.expiry_date);
+      document.getElementById('status').value = permit.status || 'Pending';
+    } else {
+      modalTitle.textContent = 'New permit';
+      submitBtn.textContent = 'Save permit';
+      form.action = '/permits';
+    }
+    overlay.classList.add('open');
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+  }
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Edit buttons carry their row's data in a data-permit attribute
+  // (HTML-escaped by EJS's <%= %>) rather than inline onclick JSON,
+  // so a quote or special character in any field can't break the markup.
+  document.querySelectorAll('.edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const permit = JSON.parse(btn.getAttribute('data-permit'));
+      openModal(permit);
+    });
+  });
+</script>
+
+</body>
+</html>

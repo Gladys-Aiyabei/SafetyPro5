@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPE Inventory &mdash; SafetyPro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --charcoal: #14181C;
+    --panel: #1B2126;
+    --panel-raised: #232B31;
+    --hazard: #F2B705;
+    --rust: #C6512F;
+    --steel-line: #333D45;
+    --ink: #E9EDEF;
+    --ink-muted: #8B96A1;
+    --safe-green: #4C9A6A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--charcoal);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  header { border-bottom: 1px solid var(--steel-line); padding: 0 32px; }
+  .nav {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Archivo Expanded', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    background: var(--hazard);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--charcoal);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .navlinks { display: flex; gap: 22px; font-size: 14px; color: var(--ink-muted); }
+  .navlinks a.active, .navlinks a:hover { color: var(--ink); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 26px;
+  }
+  .page-head h1 { font-family: 'Archivo Expanded', sans-serif; font-size: 26px; margin: 0; }
+  .page-head p { color: var(--ink-muted); font-size: 14px; margin: 6px 0 0; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13.5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary { background: var(--hazard); color: #1A1503; }
+  .btn-primary:hover { background: #ffcb1f; }
+  .btn-ghost { color: var(--ink); border-color: var(--steel-line); background: transparent; }
+  .btn-ghost:hover { border-color: var(--ink-muted); }
+  .btn-danger { color: #E38562; border-color: rgba(198,81,47,0.4); background: rgba(198,81,47,0.1); }
+  .btn-danger:hover { background: rgba(198,81,47,0.2); }
+  .btn-small { padding: 6px 11px; font-size: 12.5px; }
+
+  .flash {
+    background: rgba(76,154,106,0.14);
+    border: 1px solid rgba(76,154,106,0.4);
+    color: #7BC898;
+    font-size: 13.5px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .flash.error {
+    background: rgba(198,81,47,0.14);
+    border-color: rgba(198,81,47,0.4);
+    color: #E38562;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--steel-line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  thead th {
+    text-align: left;
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--steel-line);
+    background: var(--panel-raised);
+  }
+  tbody td {
+    padding: 13px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--steel-line);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  td.name { font-weight: 500; }
+  td.sub { color: var(--ink-muted); font-size: 12.5px; }
+  .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .status-pill {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    padding: 4px 9px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .status-pill.available { background: rgba(76,154,106,0.18); color: #7BC898; }
+  .status-pill.in-use { background: rgba(242,183,5,0.16); color: var(--hazard); }
+  .status-pill.damaged,
+  .status-pill.expired { background: rgba(198,81,47,0.18); color: #E38562; }
+  .status-pill.retired { background: rgba(139,150,161,0.16); color: var(--ink-muted); }
+
+  .qty-low { color: #E38562; font-weight: 600; }
+
+  .empty { padding: 48px 20px; text-align: center; color: var(--ink-muted); font-size: 14px; }
+
+  /* Modal-style form */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--steel-line);
+    border-radius: 6px;
+    padding: 26px 26px 22px;
+  }
+  .modal h2 { font-family: 'Archivo Expanded', sans-serif; font-size: 19px; margin: 0 0 20px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid .span-2 { grid-column: 1 / -1; }
+  .field { margin-bottom: 14px; }
+  label { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 6px; }
+  input[type="text"], input[type="number"], input[type="date"], select {
+    width: 100%;
+    background: var(--panel-raised);
+    border: 1px solid var(--steel-line);
+    border-radius: 4px;
+    color: var(--ink);
+    font-size: 14px;
+    padding: 10px 11px;
+    font-family: 'Inter', sans-serif;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--hazard); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand"><span class="brand-mark">SP</span> SafetyPro</div>
+    <nav class="navlinks">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/employees">Employees</a>
+      <a href="/permits">Permits</a>
+      <a href="/ppe" class="active">PPE Inventory</a>
+      <a href="/logout">Log out</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head">
+    <div>
+      <h1>PPE inventory</h1>
+      <p><%= items.length %> item<%= items.length === 1 ? '' : 's' %> tracked</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ Add item</button>
+  </div>
+
+  <% if (typeof flash !== 'undefined' && flash) { %>
+    <div class="flash"><%= flash %></div>
+  <% } %>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="flash error"><%= error %></div>
+  <% } %>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Category</th>
+        <th>Department</th>
+        <th>Quantity</th>
+        <th>Expiry</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (items.length === 0) { %>
+        <tr><td colspan="7"><div class="empty">No PPE items yet &mdash; add your first one.</div></td></tr>
+      <% } %>
+      <% items.forEach(function(item) { %>
+        <tr>
+          <td class="name"><%= item.item_name %></td>
+          <td><%= item.category || '&mdash;' %></td>
+          <td><%= item.department || '&mdash;' %></td>
+          <td class="<%= (item.quantity !== null && item.quantity <= 5) ? 'qty-low' : '' %>">
+            <%= item.quantity !== null ? item.quantity : 0 %>
+          </td>
+          <td><%= item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : '&mdash;' %></td>
+          <td>
+            <span class="status-pill <%= (item.status || '').toLowerCase().replace(/\s+/g, '-') %>">
+              <%= item.status || 'Available' %>
+            </span>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-ghost btn-small edit-btn"
+                data-item='<%= JSON.stringify(item) %>'>Edit</button>
+              <form method="POST" action="/ppe/<%= item.id %>/delete"
+                onsubmit="return confirm('Delete this PPE item?');" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-small">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</main>
+
+<!-- Add / Edit modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">Add item</h2>
+    <form id="itemForm" method="POST" action="/ppe">
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="item_name">Item name</label>
+          <input type="text" id="item_name" name="item_name" required>
+        </div>
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" name="category">
+            <option value="Respiratory">Respiratory</option>
+            <option value="Head protection">Head protection</option>
+            <option value="Eye protection">Eye protection</option>
+            <option value="Hand protection">Hand protection</option>
+            <option value="Hearing protection">Hearing protection</option>
+            <option value="Foot protection">Foot protection</option>
+            <option value="Fall protection">Fall protection</option>
+            <option value="Body protection">Body protection</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="department">Department</label>
+          <input type="text" id="department" name="department">
+        </div>
+        <div class="field">
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity" min="0" value="0">
+        </div>
+        <div class="field">
+          <label for="expiry_date">Expiry date</label>
+          <input type="date" id="expiry_date" name="expiry_date">
+        </div>
+        <div class="field span-2">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="Available">Available</option>
+            <option value="In Use">In Use</option>
+            <option value="Damaged">Damaged</option>
+            <option value="Expired">Expired</option>
+            <option value="Retired">Retired</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">Add item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+  const form = document.getElementById('itemForm');
+  const modalTitle = document.getElementById('modalTitle');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function toDateInputValue(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d)) return '';
+    return d.toISOString().slice(0, 10);
+  }
+
+  function openModal(item) {
+    form.reset();
+    if (item && item.id) {
+      modalTitle.textContent = 'Edit item';
+      submitBtn.textContent = 'Save changes';
+      form.action = '/ppe/' + item.id + '/update';
+      document.getElementById('item_name').value = item.item_name || '';
+      document.getElementById('category').value = item.category || '';
+      document.getElementById('department').value = item.department || '';
+      document.getElementById('quantity').value = item.quantity != null ? item.quantity : 0;
+      document.getElementById('expiry_date').value = toDateInputValue(item.expiry_date);
+      document.getElementById('status').value = item.status || 'Available';
+    } else {
+      modalTitle.textContent = 'Add item';
+      submitBtn.textContent = 'Add item';
+      form.action = '/ppe';
+    }
+    overlay.classList.add('open');
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+  }
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Edit buttons carry their row's data in a data-item attribute
+  // (HTML-escaped by EJS's <%= %>), so quotes/special characters in
+  // any field can't break the inline markup.
+  document.querySelectorAll('.edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const item = JSON.parse(btn.getAttribute('data-item'));
+      openModal(item);
+    });
+  });
+</script>
+
+</body>
+</html>

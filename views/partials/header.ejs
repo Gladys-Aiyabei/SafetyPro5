@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    <%= typeof pageTitle !== 'undefined'
+      ? pageTitle
+      : 'SafetyPro Platform' %>
+  </title>
+
+  <!-- System Visual Styling and Icons -->
+  <link rel="stylesheet" href="/main.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+
+    /* SafetyPro Topbar */
+    .topbar {
+      width: 100%;
+      min-height: 72px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #0f766e;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .topbar-subtitle {
+      margin-top: 3px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-initials {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #0f766e;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Dynamic System Navigation Dashboard Header Banner -->
+  <header class="topbar">
+
+    <div class="topbar-left">
+
+      <div class="topbar-icon">
+        <%= typeof pageIcon !== 'undefined'
+          ? pageIcon
+          : '🛡️' %>
+      </div>
+
+      <div>
+        <div class="topbar-title">
+          <%= typeof pageTitle !== 'undefined'
+            ? pageTitle
+            : 'SafetyPro Workspace' %>
+        </div>
+
+        <div class="topbar-subtitle">
+          <%= typeof pageSubtitle !== 'undefined'
+            ? pageSubtitle
+            : 'Compliance & Monitoring Control Panel' %>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="topbar-user">
+      <div class="user-initials">
+        <%= typeof userInitials !== 'undefined'
+          ? userInitials
+          : 'SA' %>
+      </div>
+    </div>
+
+  </header>

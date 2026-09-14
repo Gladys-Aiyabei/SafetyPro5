@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8f9fa;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background: #0d6efd;
+        }
+
+        .btn-view {
+            background: #0dcaf0;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        form.inline {
+            display: inline;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-active {
+            background: #198754;
+        }
+
+        .badge-inactive {
+            background: #6c757d;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top-bar">
+        <h1>Employees</h1>
+        <a href="/employees/add" class="btn btn-add">+ Add Employee</a>
+    </div>
+
+    <% if (employees.length === 0) { %>
+
+        <div class="empty">No employees found.</div>
+
+    <% } else { %>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Job Title</th>
+                    <th>Department</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <% employees.forEach(employee => { %>
+
+                    <tr>
+                        <td><%= employee.employee_id %></td>
+                        <td><%= employee.employee_name %></td>
+                        <td><%= employee.job_title || "-" %></td>
+                        <td><%= employee.department_name || "-" %></td>
+                        <td><%= employee.phone || "-" %></td>
+                        <td><%= employee.email || "-" %></td>
+                        <td>
+                            <span class="badge <%= employee.status === 'Active' ? 'badge-active' : 'badge-inactive' %>">
+                                <%= employee.status || "N/A" %>
+                            </span>
+                        </td>
+                        <td class="actions">
+
+                            <a href="/employees/view/<%= employee.employee_id %>" class="btn btn-view">View</a>
+                            <a href="/employees/edit/<%= employee.employee_id %>" class="btn btn-edit">Edit</a>
+
+                            <form
+                                class="inline"
+                                action="/employees/delete/<%= employee.employee_id %>"
+                                method="POST"
+                                onsubmit="return confirm('Delete this employee?');">
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+
+                        </td>
+                    </tr>
+
+                <% }); %>
+
+            </tbody>
+        </table>
+
+    <% } %>
+
+</div>
+
+</body>
+</html>

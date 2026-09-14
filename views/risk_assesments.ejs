@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risk Assessments &mdash; SafetyPro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --charcoal: #14181C;
+    --panel: #1B2126;
+    --panel-raised: #232B31;
+    --hazard: #F2B705;
+    --rust: #C6512F;
+    --steel-line: #333D45;
+    --ink: #E9EDEF;
+    --ink-muted: #8B96A1;
+    --safe-green: #4C9A6A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--charcoal);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  header { border-bottom: 1px solid var(--steel-line); padding: 0 32px; }
+  .nav {
+    max-width: 1220px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Archivo Expanded', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    background: var(--hazard);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--charcoal);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .navlinks { display: flex; gap: 22px; font-size: 14px; color: var(--ink-muted); }
+  .navlinks a.active, .navlinks a:hover { color: var(--ink); }
+
+  main { max-width: 1220px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 26px;
+  }
+  .page-head h1 { font-family: 'Archivo Expanded', sans-serif; font-size: 26px; margin: 0; }
+  .page-head p { color: var(--ink-muted); font-size: 14px; margin: 6px 0 0; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13.5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary { background: var(--hazard); color: #1A1503; }
+  .btn-primary:hover { background: #ffcb1f; }
+  .btn-ghost { color: var(--ink); border-color: var(--steel-line); background: transparent; }
+  .btn-ghost:hover { border-color: var(--ink-muted); }
+  .btn-danger { color: #E38562; border-color: rgba(198,81,47,0.4); background: rgba(198,81,47,0.1); }
+  .btn-danger:hover { background: rgba(198,81,47,0.2); }
+  .btn-small { padding: 6px 11px; font-size: 12.5px; }
+
+  .flash {
+    background: rgba(76,154,106,0.14);
+    border: 1px solid rgba(76,154,106,0.4);
+    color: #7BC898;
+    font-size: 13.5px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .flash.error {
+    background: rgba(198,81,47,0.14);
+    border-color: rgba(198,81,47,0.4);
+    color: #E38562;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--steel-line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  thead th {
+    text-align: left;
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--steel-line);
+    background: var(--panel-raised);
+  }
+  tbody td {
+    padding: 13px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--steel-line);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  td.name { font-weight: 500; }
+  td.sub { color: var(--ink-muted); font-size: 12.5px; }
+  .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .risk-pill {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    padding: 4px 9px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .risk-pill.low { background: rgba(76,154,106,0.18); color: #7BC898; }
+  .risk-pill.medium { background: rgba(242,183,5,0.16); color: var(--hazard); }
+  .risk-pill.high { background: rgba(198,81,47,0.18); color: #E38562; }
+  .risk-pill.critical { background: rgba(198,81,47,0.32); color: #FF8B6A; font-weight: 700; }
+
+  .empty { padding: 48px 20px; text-align: center; color: var(--ink-muted); font-size: 14px; }
+
+  /* Modal-style form */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--steel-line);
+    border-radius: 6px;
+    padding: 26px 26px 22px;
+  }
+  .modal h2 { font-family: 'Archivo Expanded', sans-serif; font-size: 19px; margin: 0 0 20px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid .span-2 { grid-column: 1 / -1; }
+  .field { margin-bottom: 14px; }
+  label { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 6px; }
+  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%;
+    background: var(--panel-raised);
+    border: 1px solid var(--steel-line);
+    border-radius: 4px;
+    color: var(--ink);
+    font-size: 14px;
+    padding: 10px 11px;
+    font-family: 'Inter', sans-serif;
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--hazard); }
+  input[readonly] { color: var(--ink-muted); cursor: not-allowed; }
+  .computed-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--panel-raised);
+    border: 1px solid var(--steel-line);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .computed-row strong { color: var(--ink); font-family: 'IBM Plex Mono', monospace; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand"><span class="brand-mark">SP</span> SafetyPro</div>
+    <nav class="navlinks">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/employees">Employees</a>
+      <a href="/permits">Permits</a>
+      <a href="/ppe">PPE Inventory</a>
+      <a href="/risk-assessments" class="active">Risk Assessments</a>
+      <a href="/logout">Log out</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head">
+    <div>
+      <h1>Risk assessments</h1>
+      <p><%= risks.length %> assessment<%= risks.length === 1 ? '' : 's' %> on record</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ New assessment</button>
+  </div>
+
+  <% if (typeof flash !== 'undefined' && flash) { %>
+    <div class="flash"><%= flash %></div>
+  <% } %>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="flash error"><%= error %></div>
+  <% } %>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Activity</th>
+        <th>Hazard</th>
+        <th>Likelihood &times; Severity</th>
+        <th>Score</th>
+        <th>Risk level</th>
+        <th>Assessed</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (risks.length === 0) { %>
+        <tr><td colspan="7"><div class="empty">No risk assessments yet &mdash; add your first one.</div></td></tr>
+      <% } %>
+      <% risks.forEach(function(r) { %>
+        <tr>
+          <td class="name">
+            <%= r.activity %>
+            <% if (r.consequence) { %>
+              <br><span class="sub"><%= r.consequence.slice(0, 60) %></span>
+            <% } %>
+          </td>
+          <td><%= r.hazard || '&mdash;' %></td>
+          <td><%= r.likelihood != null ? r.likelihood : '&mdash;' %> &times; <%= r.severity != null ? r.severity : '&mdash;' %></td>
+          <td><%= r.risk_score != null ? r.risk_score : '&mdash;' %></td>
+          <td>
+            <span class="risk-pill <%= (r.risk_level || '').toLowerCase() %>">
+              <%= r.risk_level || 'Unrated' %>
+            </span>
+          </td>
+          <td><%= r.assessment_date ? new Date(r.assessment_date).toLocaleDateString() : '&mdash;' %></td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-ghost btn-small edit-btn"
+                data-risk='<%= JSON.stringify(r) %>'>Edit</button>
+              <form method="POST" action="/risk-assessments/<%= r.risk_id %>/delete"
+                onsubmit="return confirm('Delete this risk assessment?');" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-small">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</main>
+
+<!-- Add / Edit modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">New assessment</h2>
+    <form id="riskForm" method="POST" action="/risk-assessments">
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="activity">Activity</label>
+          <input type="text" id="activity" name="activity" required>
+        </div>
+        <div class="field span-2">
+          <label for="hazard">Hazard</label>
+          <input type="text" id="hazard" name="hazard">
+        </div>
+        <div class="field span-2">
+          <label for="consequence">Consequence</label>
+          <input type="text" id="consequence" name="consequence">
+        </div>
+        <div class="field">
+          <label for="likelihood">Likelihood (1&ndash;5)</label>
+          <select id="likelihood" name="likelihood">
+            <option value="1">1 &ndash; Rare</option>
+            <option value="2">2 &ndash; Unlikely</option>
+            <option value="3">3 &ndash; Possible</option>
+            <option value="4">4 &ndash; Likely</option>
+            <option value="5">5 &ndash; Almost certain</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="severity">Severity (1&ndash;5)</label>
+          <select id="severity" name="severity">
+            <option value="1">1 &ndash; Negligible</option>
+            <option value="2">2 &ndash; Minor</option>
+            <option value="3">3 &ndash; Moderate</option>
+            <option value="4">4 &ndash; Major</option>
+            <option value="5">5 &ndash; Catastrophic</option>
+          </select>
+        </div>
+        <div class="field span-2">
+          <div class="computed-row">
+            <span>Risk score (likelihood &times; severity)</span>
+            <strong id="scoreDisplay">1</strong>
+          </div>
+          <input type="hidden" id="risk_score" name="risk_score" value="1">
+        </div>
+        <div class="field span-2">
+          <div class="computed-row">
+            <span>Risk level</span>
+            <strong id="levelDisplay">Low</strong>
+          </div>
+          <input type="hidden" id="risk_level" name="risk_level" value="Low">
+        </div>
+        <div class="field span-2">
+          <label for="control_measures">Control measures</label>
+          <textarea id="control_measures" name="control_measures"></textarea>
+        </div>
+        <div class="field">
+          <label for="responsible_person">Responsible person (employee ID)</label>
+          <input type="number" id="responsible_person" name="responsible_person" min="1">
+        </div>
+        <div class="field">
+          <label for="assessment_date">Assessment date</label>
+          <input type="date" id="assessment_date" name="assessment_date">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">Save assessment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+  const form = document.getElementById('riskForm');
+  const modalTitle = document.getElementById('modalTitle');
+  const submitBtn = document.getElementById('submitBtn');
+  const likelihoodSel = document.getElementById('likelihood');
+  const severitySel = document.getElementById('severity');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const levelDisplay = document.getElementById('levelDisplay');
+  const scoreInput = document.getElementById('risk_score');
+  const levelInput = document.getElementById('risk_level');
+
+  // Standard 5x5 risk matrix bands. Adjust the cutoffs here if your
+  // organization uses different thresholds.
+  function levelFor(score) {
+    if (score <= 4) return 'Low';
+    if (score <= 9) return 'Medium';
+    if (score <= 15) return 'High';
+    return 'Critical';
+  }
+
+  function recompute() {
+    const l = Number(likelihoodSel.value) || 1;
+    const s = Number(severitySel.value) || 1;
+    const score = l * s;
+    const level = levelFor(score);
+    scoreDisplay.textContent = score;
+    levelDisplay.textContent = level;
+    scoreInput.value = score;
+    levelInput.value = level;
+  }
+
+  likelihoodSel.addEventListener('change', recompute);
+  severitySel.addEventListener('change', recompute);
+
+  function toDateInputValue(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d)) return '';
+    return d.toISOString().slice(0, 10);
+  }
+
+  function openModal(risk) {
+    form.reset();
+    if (risk && risk.risk_id) {
+      modalTitle.textContent = 'Edit assessment';
+      submitBtn.textContent = 'Save changes';
+      form.action = '/risk-assessments/' + risk.risk_id + '/update';
+      document.getElementById('activity').value = risk.activity || '';
+      document.getElementById('hazard').value = risk.hazard || '';
+      document.getElementById('consequence').value = risk.consequence || '';
+      likelihoodSel.value = risk.likelihood || 1;
+      severitySel.value = risk.severity || 1;
+      document.getElementById('control_measures').value = risk.control_measures || '';
+      document.getElementById('responsible_person').value = risk.responsible_person || '';
+      document.getElementById('assessment_date').value = toDateInputValue(risk.assessment_date);
+    } else {
+      modalTitle.textContent = 'New assessment';
+      submitBtn.textContent = 'Save assessment';
+      form.action = '/risk-assessments';
+      likelihoodSel.value = 1;
+      severitySel.value = 1;
+    }
+    recompute();
+    overlay.classList.add('open');
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+  }
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Edit buttons carry their row's data in a data-risk attribute
+  // (HTML-escaped by EJS's <%= %>), so quotes/special characters in
+  // any field can't break the inline markup.
+  document.querySelectorAll('.edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const risk = JSON.parse(btn.getAttribute('data-risk'));
+      openModal(risk);
+    });
+  });
+</script>
+
+</body>
+</html>

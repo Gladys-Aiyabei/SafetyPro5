@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title><%= title %></title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+    }
+
+    .container {
+        width: 700px;
+        max-width: 90%;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 15px;
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .buttons {
+        margin-top: 25px;
+        display: flex;
+        gap: 10px;
+    }
+
+    button,
+    .back-btn {
+        padding: 10px 18px;
+        border-radius: 5px;
+        border: none;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 15px;
+    }
+
+    button {
+        background: #198754;
+        color: white;
+    }
+
+    .back-btn {
+        background: #6c757d;
+        color: white;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<h1>Add Inspection</h1>
+
+<form action="/inspections/add" method="POST">
+
+    <div class="form-group">
+
+        <label for="inspection_date">
+            Inspection Date *
+        </label>
+
+        <input
+            type="date"
+            id="inspection_date"
+            name="inspection_date"
+            required>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="inspection_type">
+            Inspection Type
+        </label>
+
+        <input
+            type="text"
+            id="inspection_type"
+            name="inspection_type"
+            placeholder="e.g. Safety Inspection">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="location">
+            Location
+        </label>
+
+        <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="Enter inspection location">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="inspector_id">
+            Inspector
+        </label>
+
+        <select id="inspector_id" name="inspector_id">
+
+            <option value="">
+                -- Select Inspector --
+            </option>
+
+            <% employees.forEach(function(employee) { %>
+
+                <option value="<%= employee.employee_id %>">
+                    <%= employee.employee_name %>
+                </option>
+
+            <% }); %>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="findings">
+            Findings
+        </label>
+
+        <textarea
+            id="findings"
+            name="findings"
+            placeholder="Enter inspection findings"></textarea>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="overall_score">
+            Overall Score
+        </label>
+
+        <input
+            type="number"
+            id="overall_score"
+            name="overall_score"
+            min="0"
+            max="100"
+            step="0.01"
+            placeholder="Enter score">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="status">
+            Status
+        </label>
+
+        <select id="status" name="status">
+
+            <option value="">
+                -- Select Status --
+            </option>
+
+            <option value="Pending">
+                Pending
+            </option>
+
+            <option value="Completed">
+                Completed
+            </option>
+
+            <option value="Failed">
+                Failed
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="buttons">
+
+        <button type="submit">
+            Save Inspection
+        </button>
+
+        <a href="/inspections" class="back-btn">
+            Cancel
+        </a>
+
+    </div>
+
+</form>
+```
+
+</div>
+
+</body>
+</html>

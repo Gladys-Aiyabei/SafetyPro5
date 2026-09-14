@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8f9fa;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background: #0d6efd;
+        }
+
+        .btn-view {
+            background: #0dcaf0;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        form.inline {
+            display: inline;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .severity-low {
+            background: #198754;
+        }
+
+        .severity-medium {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .severity-high {
+            background: #fd7e14;
+        }
+
+        .severity-critical {
+            background: #dc3545;
+        }
+
+        .severity-default {
+            background: #6c757d;
+        }
+
+        .status-open {
+            background: #dc3545;
+        }
+
+        .status-closed {
+            background: #198754;
+        }
+
+        .status-default {
+            background: #6c757d;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top-bar">
+        <h1>Incidents</h1>
+        <a href="/incidents/add" class="btn btn-add">+ Report Incident</a>
+    </div>
+
+    <% if (incidents.length === 0) { %>
+
+        <div class="empty">No incidents found.</div>
+
+    <% } else { %>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Severity</th>
+                    <th>Location</th>
+                    <th>Reported By</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <% incidents.forEach(incident => {
+
+                    const sevClass = incident.severity
+                        ? "severity-" + incident.severity.toLowerCase()
+                        : "severity-default";
+
+                    const statClass = incident.status === "Open"
+                        ? "status-open"
+                        : incident.status === "Closed"
+                            ? "status-closed"
+                            : "status-default";
+                %>
+
+                    <tr>
+                        <td><%= incident.incident_id %></td>
+                        <td><%= new Date(incident.incident_date).toLocaleString() %></td>
+                        <td><%= incident.incident_type || "-" %></td>
+                        <td>
+                            <span class="badge <%= sevClass %>">
+                                <%= incident.severity || "N/A" %>
+                            </span>
+                        </td>
+                        <td><%= incident.location || "-" %></td>
+                        <td><%= incident.reported_by_name || "-" %></td>
+                        <td>
+                            <span class="badge <%= statClass %>">
+                                <%= incident.status || "N/A" %>
+                            </span>
+                        </td>
+                        <td class="actions">
+
+                            <a href="/incidents/view/<%= incident.incident_id %>" class="btn btn-view">View</a>
+                            <a href="/incidents/edit/<%= incident.incident_id %>" class="btn btn-edit">Edit</a>
+
+                            <form
+                                class="inline"
+                                action="/incidents/delete/<%= incident.incident_id %>"
+                                method="POST"
+                                onsubmit="return confirm('Delete this incident?');">
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+
+                        </td>
+                    </tr>
+
+                <% }); %>
+
+            </tbody>
+        </table>
+        </div>
+
+    <% } %>
+
+</div>
+
+</body>
+</html>

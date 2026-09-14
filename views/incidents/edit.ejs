@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-save {
+            background: #198754;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Edit Incident</h1>
+
+    <form action="/incidents/edit/<%= incident.incident_id %>" method="POST">
+
+        <!-- Incident Date -->
+        <div class="form-group">
+            <label for="incident_date">Incident Date &amp; Time</label>
+            <input
+                type="datetime-local"
+                id="incident_date"
+                name="incident_date"
+                value="<%= new Date(incident.incident_date.getTime() - incident.incident_date.getTimezoneOffset() * 60000).toISOString().slice(0, 16) %>"
+                required>
+        </div>
+
+        <!-- Incident Type -->
+        <div class="form-group">
+            <label for="incident_type">Incident Type</label>
+            <input
+                type="text"
+                id="incident_type"
+                name="incident_type"
+                value="<%= incident.incident_type || '' %>">
+        </div>
+
+        <!-- Severity -->
+        <div class="form-group">
+            <label for="severity">Severity</label>
+            <select id="severity" name="severity">
+                <option value="" <%= !incident.severity ? "selected" : "" %>>-- Select Severity --</option>
+                <option value="Low" <%= incident.severity === "Low" ? "selected" : "" %>>Low</option>
+                <option value="Medium" <%= incident.severity === "Medium" ? "selected" : "" %>>Medium</option>
+                <option value="High" <%= incident.severity === "High" ? "selected" : "" %>>High</option>
+                <option value="Critical" <%= incident.severity === "Critical" ? "selected" : "" %>>Critical</option>
+            </select>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input
+                type="text"
+                id="location"
+                name="location"
+                value="<%= incident.location || '' %>">
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"><%= incident.description || '' %></textarea>
+        </div>
+
+        <!-- Immediate Action -->
+        <div class="form-group">
+            <label for="immediate_action">Immediate Action Taken</label>
+            <textarea
+                id="immediate_action"
+                name="immediate_action"><%= incident.immediate_action || '' %></textarea>
+        </div>
+
+        <!-- Reported By -->
+        <div class="form-group">
+            <label for="reported_by">Reported By</label>
+            <select id="reported_by" name="reported_by">
+                <option value="">-- Select Employee --</option>
+
+                <% employees.forEach(employee => { %>
+                    <option
+                        value="<%= employee.employee_id %>"
+                        <%= incident.reported_by === employee.employee_id ? "selected" : "" %>>
+                        <%= employee.employee_name %>
+                    </option>
+                <% }); %>
+
+            </select>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="Open" <%= incident.status === "Open" ? "selected" : "" %>>Open</option>
+                <option value="Under Investigation" <%= incident.status === "Under Investigation" ? "selected" : "" %>>Under Investigation</option>
+                <option value="Closed" <%= incident.status === "Closed" ? "selected" : "" %>>Closed</option>
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <button type="submit" class="btn btn-save">Update Incident</button>
+            <a href="/incidents" class="btn btn-cancel">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

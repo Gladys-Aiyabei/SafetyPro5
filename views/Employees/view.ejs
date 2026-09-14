@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-active {
+            background: #198754;
+        }
+
+        .badge-inactive {
+            background: #6c757d;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Employee Details</h1>
+
+    <div class="field">
+        <label>Employee ID</label>
+        <div><%= employee.employee_id %></div>
+    </div>
+
+    <div class="field">
+        <label>Employee Name</label>
+        <div><%= employee.employee_name %></div>
+    </div>
+
+    <div class="field">
+        <label>Gender</label>
+        <div><%= employee.gender || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Phone</label>
+        <div><%= employee.phone || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Email</label>
+        <div><%= employee.email || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Job Title</label>
+        <div><%= employee.job_title || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Department</label>
+        <div><%= employee.department_name || "-" %></div>
+    </div>
+
+    <div class="field">
+        <label>Employment Date</label>
+        <div>
+            <%= employee.employment_date
+                ? employee.employment_date.toISOString().split('T')[0]
+                : "-" %>
+        </div>
+    </div>
+
+    <div class="field">
+        <label>Status</label>
+        <div>
+            <span class="badge <%= employee.status === 'Active' ? 'badge-active' : 'badge-inactive' %>">
+                <%= employee.status || "N/A" %>
+            </span>
+        </div>
+    </div>
+
+    <div class="field">
+        <label>Role ID</label>
+        <div><%= employee.role_id || "-" %></div>
+    </div>
+
+    <div class="buttons">
+        <a href="/employees/edit/<%= employee.employee_id %>" class="btn btn-edit">Edit</a>
+        <a href="/employees" class="btn btn-back">Back to List</a>
+    </div>
+
+</div>
+
+</body>
+</html>

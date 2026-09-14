@@ -1,0 +1,244 @@
+<aside class="sidebar">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+        <span class="brand-icon">🛡️</span>
+        <span>SafetyPro</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <ul class="sidebar-nav">
+
+            <!-- Dashboard -->
+            <li>
+                <a href="/dashboard"
+                   class="<%= active === 'dashboard' ? 'active' : '' %>">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Audits -->
+            <li>
+                <a href="/audits"
+                   class="<%= active === 'audits' ? 'active' : '' %>">
+                    <span class="nav-icon">📋</span>
+                    <span>Audits</span>
+                </a>
+            </li>
+
+            <!-- Departments -->
+            <li>
+                <a href="/departments"
+                   class="<%= active === 'departments' ? 'active' : '' %>">
+                    <span class="nav-icon">🏢</span>
+                    <span>Departments</span>
+                </a>
+            </li>
+
+            <!-- Employees -->
+            <li>
+                <a href="/employees"
+                   class="<%= active === 'employees' ? 'active' : '' %>">
+                    <span class="nav-icon">👥</span>
+                    <span>Employees</span>
+                </a>
+            </li>
+
+            <!-- HSSEQ Data -->
+            <li>
+                <a href="/hsseqdata"
+                   class="<%= active === 'hsseqdata' ? 'active' : '' %>">
+                    <span class="nav-icon">🌱</span>
+                    <span>HSSEQ Data</span>
+                </a>
+            </li>
+
+            <!-- Incidents -->
+            <li>
+                <a href="/incidents"
+                   class="<%= active === 'incidents' ? 'active' : '' %>">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Incidents</span>
+                </a>
+            </li>
+
+            <!-- Inspections -->
+            <li>
+                <a href="/inspections"
+                   class="<%= active === 'inspections' ? 'active' : '' %>">
+                    <span class="nav-icon">🔍</span>
+                    <span>Inspections</span>
+                </a>
+            </li>
+
+            <!-- Permits -->
+            <li>
+                <a href="/permits"
+                   class="<%= active === 'permits' ? 'active' : '' %>">
+                    <span class="nav-icon">📄</span>
+                    <span>Work Permits</span>
+                </a>
+            </li>
+
+            <!-- PPE -->
+            <li>
+                <a href="/ppe"
+                   class="<%= active === 'ppe' ? 'active' : '' %>">
+                    <span class="nav-icon">🦺</span>
+                    <span>PPE Management</span>
+                </a>
+            </li>
+
+            <!-- Risk Assessments -->
+            <li>
+                <a href="/risk-assessments"
+                   class="<%= active === 'risk-assessments' ? 'active' : '' %>">
+                    <span class="nav-icon">🚧</span>
+                    <span>Risk Assessments</span>
+                </a>
+            </li>
+
+            <!-- Training -->
+            <li>
+                <a href="/training-management/gap-analysis"
+                   class="<%= active === 'training' ? 'active' : '' %>">
+                    <span class="nav-icon">🎓</span>
+                    <span>Training & Gaps</span>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+    <!-- Bottom Section -->
+    <div class="sidebar-bottom">
+
+        <a href="/logout" class="logout-link">
+            <span class="nav-icon">🚪</span>
+            <span>Logout</span>
+        </a>
+
+    </div>
+
+</aside>
+
+
+<style>
+
+    .sidebar {
+        width: 250px;
+        min-height: 100vh;
+        background: #172b4d;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.12);
+        flex-shrink: 0;
+    }
+
+    /* Brand */
+
+    .sidebar-brand {
+        height: 70px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 22px;
+        font-size: 21px;
+        font-weight: bold;
+        background: #10213d;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .brand-icon {
+        font-size: 25px;
+    }
+
+    /* Navigation */
+
+    .sidebar-nav {
+        list-style: none;
+        padding: 15px 10px;
+        margin: 0;
+    }
+
+    .sidebar-nav li {
+        margin-bottom: 5px;
+    }
+
+    .sidebar-nav a,
+    .logout-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 6px;
+        color: #dbe5f5;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .sidebar-nav a:hover,
+    .logout-link:hover {
+        background: #24446f;
+        color: white;
+        transform: translateX(2px);
+    }
+
+    /* Active menu item */
+
+    .sidebar-nav a.active {
+        background: #2a5298;
+        color: white;
+        font-weight: bold;
+        box-shadow: inset 4px 0 0 #4dabf7;
+    }
+
+    .nav-icon {
+        width: 24px;
+        text-align: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    /* Bottom */
+
+    .sidebar-bottom {
+        margin-top: auto;
+        padding: 15px 10px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logout-link {
+        color: #ffcccc;
+    }
+
+    .logout-link:hover {
+        background: #7f2630;
+        color: white;
+    }
+
+    /* Mobile */
+
+    @media (max-width: 768px) {
+
+        .sidebar {
+            width: 210px;
+        }
+
+        .sidebar-brand {
+            font-size: 18px;
+            padding: 0 15px;
+        }
+
+        .sidebar-nav a,
+        .logout-link {
+            font-size: 13px;
+            padding: 10px;
+        }
+    }
+
+</style>

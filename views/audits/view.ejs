@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .detail {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .value {
+            color: #222;
+        }
+
+        .findings {
+            white-space: pre-wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 10px 18px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+            margin-left: 10px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Audit Details</h1>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Audit ID
+        </div>
+
+        <div class="value">
+            <%= audit.audit_id %>
+        </div>
+
+    </div>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Audit Date
+        </div>
+
+        <div class="value">
+
+            <%= audit.audit_date
+                ? audit.audit_date.toISOString().split('T')[0]
+                : '' %>
+
+        </div>
+
+    </div>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Audit Type
+        </div>
+
+        <div class="value">
+            <%= audit.audit_type %>
+        </div>
+
+    </div>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Department
+        </div>
+
+        <div class="value">
+            <%= audit.department_name || audit.department_id %>
+        </div>
+
+    </div>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Auditor
+        </div>
+
+        <div class="value">
+            <%= audit.auditor %>
+        </div>
+
+    </div>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Findings
+        </div>
+
+        <div class="value findings">
+            <%= audit.findings || 'No findings recorded' %>
+        </div>
+
+    </div>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Score
+        </div>
+
+        <div class="value">
+            <%= audit.score !== null ? audit.score : 'Not scored' %>
+        </div>
+
+    </div>
+
+
+    <div class="detail">
+
+        <div class="label">
+            Status
+        </div>
+
+        <div class="value">
+            <%= audit.status %>
+        </div>
+
+    </div>
+
+
+    <a
+        href="/audits"
+        class="btn btn-back">
+        ← Back to Audits
+    </a>
+
+
+    <a
+        href="/audits/edit/<%= audit.audit_id %>"
+        class="btn btn-edit">
+        Edit Audit
+    </a>
+
+</div>
+
+</body>
+
+</html>

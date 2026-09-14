@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-save {
+            background: #198754;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Edit Employee</h1>
+
+    <form action="/employees/edit/<%= employee.employee_id %>" method="POST">
+
+        <!-- Employee Name -->
+        <div class="form-group">
+            <label for="employee_name">Employee Name</label>
+            <input
+                type="text"
+                id="employee_name"
+                name="employee_name"
+                value="<%= employee.employee_name %>"
+                required>
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+                <option value="" <%= !employee.gender ? "selected" : "" %>>-- Select Gender --</option>
+                <option value="Male" <%= employee.gender === "Male" ? "selected" : "" %>>Male</option>
+                <option value="Female" <%= employee.gender === "Female" ? "selected" : "" %>>Female</option>
+                <option value="Other" <%= employee.gender === "Other" ? "selected" : "" %>>Other</option>
+            </select>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input
+                type="text"
+                id="phone"
+                name="phone"
+                value="<%= employee.phone || '' %>">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="<%= employee.email || '' %>">
+        </div>
+
+        <!-- Job Title -->
+        <div class="form-group">
+            <label for="job_title">Job Title</label>
+            <input
+                type="text"
+                id="job_title"
+                name="job_title"
+                value="<%= employee.job_title || '' %>">
+        </div>
+
+        <!-- Department -->
+        <div class="form-group">
+            <label for="department_id">Department</label>
+            <select id="department_id" name="department_id">
+                <option value="">-- Select Department --</option>
+
+                <% departments.forEach(department => { %>
+                    <option
+                        value="<%= department.department_id %>"
+                        <%= employee.department_id === department.department_id ? "selected" : "" %>>
+                        <%= department.department_name %>
+                        <% if (department.location) { %>
+                            - <%= department.location %>
+                        <% } %>
+                    </option>
+                <% }); %>
+
+            </select>
+        </div>
+
+        <!-- Employment Date -->
+        <div class="form-group">
+            <label for="employment_date">Employment Date</label>
+            <input
+                type="date"
+                id="employment_date"
+                name="employment_date"
+                value="<%= employee.employment_date ? employee.employment_date.toISOString().split('T')[0] : '' %>">
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="Active" <%= employee.status === "Active" ? "selected" : "" %>>Active</option>
+                <option value="Inactive" <%= employee.status === "Inactive" ? "selected" : "" %>>Inactive</option>
+                <option value="On Leave" <%= employee.status === "On Leave" ? "selected" : "" %>>On Leave</option>
+                <option value="Terminated" <%= employee.status === "Terminated" ? "selected" : "" %>>Terminated</option>
+            </select>
+        </div>
+
+        <!-- Role ID -->
+        <div class="form-group">
+            <label for="role_id">Role ID</label>
+            <input
+                type="number"
+                id="role_id"
+                name="role_id"
+                value="<%= employee.role_id || '' %>">
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <button type="submit" class="btn btn-save">Update Employee</button>
+            <a href="/employees" class="btn btn-cancel">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

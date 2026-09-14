@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>HSSEQ Executive Dashboard</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <!-- Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- PDF export -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+<div class="app-shell">
+
+  <!-- =========================================================
+       HEADER
+  ========================================================== -->
+  <header class="dashboard-header">
+
+    <div class="header-brand">
+      <div class="brand-mark">H</div>
+
+      <div>
+        <div class="eyebrow">EXECUTIVE CONTROL CENTER</div>
+        <h1>HSSEQ Management Dashboard</h1>
+        <p>
+          Health, Safety, Security, Environment & Quality performance overview
+        </p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+
+      <div class="last-updated">
+        <span class="status-dot"></span>
+        <span>
+          Last updated
+          <strong><%= lastUpdated || new Date().toLocaleString() %></strong>
+        </span>
+      </div>
+
+      <div class="export-menu">
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="exportButton"
+          aria-expanded="false"
+          aria-controls="exportMenu"
+        >
+          <span class="btn-icon">↓</span>
+          Export
+          <span class="chevron">⌄</span>
+        </button>
+
+        <div class="export-dropdown" id="exportMenu">
+
+          <button type="button" data-export="pdf">
+            <span>▣</span>
+            Export PDF
+          </button>
+
+          <button type="button" data-export="excel">
+            <span>▤</span>
+            Export Excel
+          </button>
+
+          <button type="button" data-export="csv">
+            <span>≡</span>
+            Export CSV
+          </button>
+
+          <button type="button" data-export="print">
+            <span>⎙</span>
+            Print
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- =========================================================
+       FILTER PANEL
+  ========================================================== -->
+  <section class="filter-panel">
+
+    <div class="filter-header">
+
+      <div>
+        <div class="eyebrow">DATA FILTERS</div>
+        <h2>Dashboard Scope</h2>
+      </div>
+
+      <button
+        type="button"
+        class="mobile-filter-toggle"
+        id="mobileFilterToggle"
+      >
+        Filters
+      </button>
+
+    </div>
+
+    <form
+      id="globalFilterForm"
+      class="filter-form"
+      action="/dashboard"
+      method="GET"
+    >
+
+      <div class="filter-group">
+
+        <label for="filter-department">Department</label>
+
+        <select id="filter-department" name="department">
+
+          <option value="">All Departments</option>
+
+          <% (departments || []).forEach(dept => { %>
+            <option
+              value="<%= dept.id %>"
+              <%= String(filters?.department || '') === String(dept.id) ? 'selected' : '' %>
+            >
+              <%= dept.name %>
+            </option>
+          <% }) %>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-group">
+
+        <label for="filter-location">Location / Site</label>
+
+        <select id="filter-location" name="location">
+
+          <option value="">All Locations</option>
+
+          <% (locations || []).forEach(loc => { %>
+            <option
+              value="<%= loc.id %>"
+              <%= String(filters?.location || '') === String(loc.id) ? 'selected' : '' %>
+            >
+              <%= loc.name %>
+            </option>
+          <% }) %>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-group">
+
+        <label for="filter-year">Year</label>
+
+        <select id="filter-year" name="year">
+
+          <% (years || []).forEach(year => { %>
+            <option
+              value="<%= year %>"
+              <%= String(filters?.year || '') === String(year) ? 'selected' : '' %>
+            >
+              <%= year %>
+            </option>
+          <% }) %>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-group">
+
+        <label for="filter-month">Period</label>
+
+        <select id="filter-month" name="month">
+
+          <option
+            value="all"
+            <%= !filters?.month || filters.month === 'all' ? 'selected' : '' %>
+          >
+            Full Year
+          </option>
+
+          <% (months || []).forEach((month, index) => { %>
+            <option
+              value="<%= index + 1 %>"
+              <%= String(filters?.month || '') === String(index + 1) ? 'selected' : '' %>
+            >
+              <%= month %>
+            </option>
+          <% }) %>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-group">
+
+        <label for="filter-status">Status</label>
+
+        <select id="filter-status" name="status">
+
+          <option value="">All Statuses</option>
+
+          <option
+            value="open"
+            <%= filters?.status === 'open' ? 'selected' : '' %>
+          >
+            Open / Action Needed
+          </option>
+
+          <option
+            value="closed"
+            <%= filters?.status === 'closed' ? 'selected' : '' %>
+          >
+            Closed / Compliant
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <button type="submit" class="btn btn-primary">
+          Apply Filters
+        </button>
+
+        <a href="/dashboard" class="btn btn-secondary">
+          Reset
+        </a>
+
+      </div>
+
+    </form>
+
+
+    <!-- Active filter chips -->
+    <div class="active-filters">
+
+      <span class="active-filter-label">Viewing:</span>
+
+      <span class="filter-chip">
+        <strong>Department:</strong>
+        <%= activeFilterLabels?.department || 'All' %>
+      </span>
+
+      <span class="filter-chip">
+        <strong>Site:</strong>
+        <%= activeFilterLabels?.location || 'All' %>
+      </span>
+
+      <span class="filter-chip">
+        <strong>Period:</strong>
+        <%= activeFilterLabels?.period || 'Full Year' %>
+      </span>
+
+      <span class="filter-chip">
+        <strong>Status:</strong>
+        <%= activeFilterLabels?.status || 'All' %>
+      </span>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================================================
+       MAIN DASHBOARD
+  ========================================================== -->
+  <main id="dashboard-content">
+
+
+    <!-- =======================================================
+         KPI ROW
+    ======================================================== -->
+    <section class="kpi-grid">
+
+      <!-- Active incidents -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+          <div>
+            <span class="kpi-label">ACTIVE INCIDENTS</span>
+            <h3>Incident Status</h3>
+          </div>
+
+          <div class="kpi-icon danger">!</div>
+        </div>
+
+        <div class="incident-kpi">
+
+          <div>
+            <span class="kpi-number danger-text">
+              <%= kpis.activeIncidents.open %>
+            </span>
+            <span class="kpi-caption">Open</span>
+          </div>
+
+          <div class="kpi-separator"></div>
+
+          <div>
+            <span class="kpi-number success-text">
+              <%= kpis.activeIncidents.resolved %>
+            </span>
+            <span class="kpi-caption">Resolved</span>
+          </div>
+
+        </div>
+
+        <div class="kpi-footer">
+          <span>Current reporting scope</span>
+        </div>
+
+      </article>
+
+
+      <!-- Audit compliance -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+
+          <div>
+            <span class="kpi-label">AUDIT PERFORMANCE</span>
+            <h3>Compliance Rate</h3>
+          </div>
+
+          <div class="kpi-icon primary">✓</div>
+
+        </div>
+
+        <div class="kpi-single">
+
+          <span class="kpi-number primary-text">
+            <%= Number(kpis.auditComplianceRate || 0).toFixed(1) %>%
+          </span>
+
+          <span class="kpi-caption">
+            Passed on schedule
+          </span>
+
+        </div>
+
+        <div class="mini-progress">
+          <div
+            class="mini-progress-fill"
+            style="width:<%= Math.min(Number(kpis.auditComplianceRate || 0), 100) %>%"
+          ></div>
+        </div>
+
+      </article>
+
+
+      <!-- CAPA -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+
+          <div>
+            <span class="kpi-label">CORRECTIVE ACTIONS</span>
+            <h3>Pending CAPA</h3>
+          </div>
+
+          <div class="kpi-icon warning">!</div>
+
+        </div>
+
+        <div class="capa-kpi">
+
+          <div class="capa-item high">
+            <strong><%= kpis.pendingCAPA.high %></strong>
+            <span>High</span>
+          </div>
+
+          <div class="capa-item medium">
+            <strong><%= kpis.pendingCAPA.medium %></strong>
+            <span>Medium</span>
+          </div>
+
+          <div class="capa-item low">
+            <strong><%= kpis.pendingCAPA.low %></strong>
+            <span>Low</span>
+          </div>
+
+        </div>
+
+        <div class="kpi-footer">
+          <span>Prioritised by risk level</span>
+        </div>
+
+      </article>
+
+
+      <!-- PPE -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+
+          <div>
+            <span class="kpi-label">PPE COMPLIANCE</span>
+            <h3>Employee Compliance</h3>
+          </div>
+
+          <div class="kpi-icon success">✓</div>
+
+        </div>
+
+        <div class="kpi-single">
+
+          <span class="kpi-number success-text">
+            <%= Number(kpis.ppeComplianceRate || 0).toFixed(1) %>%
+          </span>
+
+          <span class="kpi-caption">
+            Active employee compliance
+          </span>
+
+        </div>
+
+        <div class="mini-progress success">
+          <div
+            class="mini-progress-fill"
+            style="width:<%= Math.min(Number(kpis.ppeComplianceRate || 0), 100) %>%"
+          ></div>
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- =======================================================
+         INCIDENTS
+    ======================================================== -->
+    <section class="dashboard-section">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="section-number">01</span>
+
+          <div>
+            <span class="eyebrow">SAFETY PERFORMANCE</span>
+            <h2>Incident Analysis</h2>
+          </div>
+        </div>
+
+        <span class="section-period">
+          <%= activeFilterLabels?.period || 'Full Year' %>
+        </span>
+
+      </div>
+
+
+      <!-- Ratios -->
+      <div class="ratio-grid">
+
+        <div class="ratio-card">
+          <span>LTIF</span>
+          <strong><%= ratios.ltif %></strong>
+          <small>Lost Time Injury Frequency</small>
+        </div>
+
+        <div class="ratio-card">
+          <span>TRCF</span>
+          <strong><%= ratios.trcf %></strong>
+          <small>Total Recordable Case Frequency</small>
+        </div>
+
+        <div class="ratio-card">
+          <span>SMVIR</span>
+          <strong><%= ratios.smvir %></strong>
+          <small>Severity / Medical Incident Rate</small>
+        </div>
+
+        <div class="ratio-card">
+          <span>ROLLOVER</span>
+          <strong><%= ratios.rollover %></strong>
+          <small>Rollover Frequency</small>
+        </div>
+
+      </div>
+
+
+      <div class="chart-grid">
+
+        <article class="chart-card large-chart">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>Incident Trend</h3>
+              <p>Monthly incidents within the selected scope</p>
+            </div>
+
+            <button
+              type="button"
+              class="chart-menu"
+              data-chart-download="incidentsTrendChart"
+              title="Download chart"
+            >
+              ↓
+            </button>
+
+          </div>
+
+          <div class="chart-container">
+            <canvas id="incidentsTrendChart"></canvas>
+          </div>
+
+        </article>
+
+
+        <article class="chart-card">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>Inspections Status</h3>
+              <p>Current inspection outcome distribution</p>
+            </div>
+
+          </div>
+
+          <div class="chart-container donut-container">
+            <canvas id="inspectionsStatusChart"></canvas>
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         AUDITS / CAPA
+    ======================================================== -->
+    <section class="dashboard-section">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="section-number">02</span>
+
+          <div>
+            <span class="eyebrow">ASSURANCE</span>
+            <h2>Audits & CAPA Tracking</h2>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="chart-grid">
+
+        <article class="chart-card">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>Audit Performance</h3>
+              <p>Completion and compliance by department</p>
+            </div>
+
+          </div>
+
+          <div class="chart-container">
+            <canvas id="auditScoreChart"></canvas>
+          </div>
+
+        </article>
+
+
+        <article class="chart-card">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>CAPA Resolution</h3>
+              <p>Corrective actions by status</p>
+            </div>
+
+          </div>
+
+          <div class="chart-container">
+            <canvas id="capaResolutionChart"></canvas>
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         RISK / TRAINING
+    ======================================================== -->
+    <section class="dashboard-section">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="section-number">03</span>
+
+          <div>
+            <span class="eyebrow">RISK & COMPETENCY</span>
+            <h2>Risk Assessment & Training</h2>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="chart-grid">
+
+
+        <!-- Risk matrix -->
+        <article class="chart-card risk-card">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>Risk Matrix</h3>
+              <p>5 × 5 likelihood versus severity assessment</p>
+            </div>
+
+            <div class="risk-summary">
+              <span>
+                <strong><%= riskSummary?.total || 0 %></strong>
+                Risks
+              </span>
+            </div>
+
+          </div>
+
+
+          <div class="risk-matrix-wrapper">
+
+            <div class="risk-axis-y">
+              <span>LIKELIHOOD</span>
+            </div>
+
+            <div class="risk-matrix-content">
+
+              <div class="risk-row-labels">
+
+                <% [5,4,3,2,1].forEach(level => { %>
+                  <span>
+                    <strong><%= level %></strong>
+                    <small>
+                      <%= riskLabels?.likelihood?.[level] || '' %>
+                    </small>
+                  </span>
+                <% }) %>
+
+              </div>
+
+
+              <div class="risk-grid">
+
+                <% [5,4,3,2,1].forEach(likelihood => { %>
+
+                  <% [1,2,3,4,5].forEach(severity => { %>
+
+                    <%
+                      const score = likelihood * severity;
+
+                      let level = 'low';
+
+                      if (score >= 15) {
+                        level = 'extreme';
+                      } else if (score >= 10) {
+                        level = 'high';
+                      } else if (score >= 5) {
+                        level = 'medium';
+                      }
+
+                      const count =
+                        riskMatrixData?.[`${likelihood}-${severity}`] || 0;
+                    %>
+
+                    <div
+                      class="risk-cell <%= level %>"
+                      tabindex="0"
+                      title="Likelihood: <%= likelihood %>, Severity: <%= severity %>, Score: <%= score %>, Risks: <%= count %>"
+                      data-risk-score="<%= score %>"
+                      data-risk-level="<%= level %>"
+                      data-risk-count="<%= count %>"
+                    >
+
+                      <span class="risk-score"><%= score %></span>
+
+                      <strong><%= count %></strong>
+
+                    </div>
+
+                  <% }) %>
+
+                <% }) %>
+
+              </div>
+
+
+              <div class="risk-column-labels">
+
+                <% [1,2,3,4,5].forEach(level => { %>
+                  <span>
+                    <strong><%= level %></strong>
+                    <small>
+                      <%= riskLabels?.severity?.[level] || '' %>
+                    </small>
+                  </span>
+                <% }) %>
+
+              </div>
+
+              <div class="risk-axis-x">
+                SEVERITY
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="risk-legend">
+
+            <div>
+              <span class="legend-box low"></span>
+              Low <small>1–4</small>
+            </div>
+
+            <div>
+              <span class="legend-box medium"></span>
+              Medium <small>5–9</small>
+            </div>
+
+            <div>
+              <span class="legend-box high"></span>
+              High <small>10–14</small>
+            </div>
+
+            <div>
+              <span class="legend-box extreme"></span>
+              Extreme <small>15–25</small>
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <!-- Training -->
+        <article class="chart-card">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>Training Completion</h3>
+              <p>Completion progress by employee group and module</p>
+            </div>
+
+          </div>
+
+
+          <div class="training-list">
+
+            <% if (trainingData?.length) { %>
+
+              <% trainingData.forEach(group => { %>
+
+                <div class="training-item">
+
+                  <div class="training-info">
+
+                    <div>
+                      <strong><%= group.employeeGroup %></strong>
+                      <span><%= group.module %></span>
+                    </div>
+
+                    <strong>
+                      <%= Number(group.percentage || 0).toFixed(0) %>%
+                    </strong>
+
+                  </div>
+
+                  <div class="progress-track">
+
+                    <div
+                      class="progress-fill <%= Number(group.percentage) >= 90 ? 'excellent' : Number(group.percentage) >= 70 ? 'good' : 'attention' %>"
+                      style="width:<%= Math.min(Number(group.percentage || 0), 100) %>%"
+                    ></div>
+
+                  </div>
+
+                </div>
+
+              <% }) %>
+
+            <% } else { %>
+
+              <div class="empty-state">
+                No training data available for the selected filters.
+              </div>
+
+            <% } %>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         ENVIRONMENT / PPE
+    ======================================================== -->
+    <section class="dashboard-section">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="section-number">04</span>
+
+          <div>
+            <span class="eyebrow">ENVIRONMENT & CONTROL</span>
+            <h2>HSSEQ Impact & PPE Monitoring</h2>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="chart-grid">
+
+        <article class="chart-card">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>HSSEQ Impact Metrics</h3>
+              <p>Environmental performance against defined targets</p>
+            </div>
+
+          </div>
+
+          <div class="chart-container">
+            <canvas id="impactMetricsChart"></canvas>
+          </div>
+
+        </article>
+
+
+        <article class="chart-card">
+
+          <div class="chart-header">
+
+            <div>
+              <h3>PPE Compliance</h3>
+              <p>Current PPE compliance within selected scope</p>
+            </div>
+
+          </div>
+
+          <div class="ppe-gauge">
+
+            <div class="gauge-chart">
+              <canvas id="ppeGaugeChart"></canvas>
+
+              <div class="gauge-value">
+                <strong><%= Number(kpis.ppeComplianceRate || 0).toFixed(0) %>%</strong>
+                <span>Compliant</span>
+              </div>
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         FOOTER
+    ======================================================== -->
+    <footer class="dashboard-footer">
+
+      <div>
+        <strong>HSSEQ Management Dashboard</strong>
+        <span>Executive performance reporting</span>
+      </div>
+
+      <div>
+        Reporting period:
+        <strong><%= activeFilterLabels?.period || 'Full Year' %></strong>
+      </div>
+
+    </footer>
+
+  </main>
+
+</div>
+
+
+<!-- Server-side chart data -->
+<script>
+  window.HSSEQ_DASHBOARD = <%- JSON.stringify({
+    filters: filters || {},
+    chartData: chartData || {},
+    ratios: ratios || {},
+    kpis: kpis || {},
+    exportRows: exportRows || []
+  }).replace(/</g, '\\u003c') %>;
+</script>
+
+<script src="/js/dashboard.js"></script>
+
+</body>
+</html>

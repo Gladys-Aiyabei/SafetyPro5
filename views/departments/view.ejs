@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Department Details</h1>
+
+    <div class="field">
+        <label>Department ID</label>
+        <div><%= department.department_id %></div>
+    </div>
+
+    <div class="field">
+        <label>Department Name</label>
+        <div><%= department.department_name %></div>
+    </div>
+
+    <div class="field">
+        <label>Location</label>
+        <div><%= department.location || "-" %></div>
+    </div>
+
+    <div class="buttons">
+        <a href="/departments/edit/<%= department.department_id %>" class="btn btn-edit">Edit</a>
+        <a href="/departments" class="btn btn-back">Back to List</a>
+    </div>
+
+</div>
+
+</body>
+</html>

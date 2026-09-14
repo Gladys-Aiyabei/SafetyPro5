@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-save {
+            background: #198754;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Report New Incident</h1>
+
+    <form action="/incidents/add" method="POST">
+
+        <!-- Incident Date -->
+        <div class="form-group">
+            <label for="incident_date">Incident Date &amp; Time</label>
+            <input
+                type="datetime-local"
+                id="incident_date"
+                name="incident_date"
+                required>
+        </div>
+
+        <!-- Incident Type -->
+        <div class="form-group">
+            <label for="incident_type">Incident Type</label>
+            <input
+                type="text"
+                id="incident_type"
+                name="incident_type"
+                placeholder="e.g. Near Miss, Injury, Spill">
+        </div>
+
+        <!-- Severity -->
+        <div class="form-group">
+            <label for="severity">Severity</label>
+            <select id="severity" name="severity">
+                <option value="">-- Select Severity --</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+            </select>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input
+                type="text"
+                id="location"
+                name="location"
+                placeholder="e.g. Warehouse Bay 3">
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Describe what happened"></textarea>
+        </div>
+
+        <!-- Immediate Action -->
+        <div class="form-group">
+            <label for="immediate_action">Immediate Action Taken</label>
+            <textarea
+                id="immediate_action"
+                name="immediate_action"
+                placeholder="Describe any immediate action taken"></textarea>
+        </div>
+
+        <!-- Reported By -->
+        <div class="form-group">
+            <label for="reported_by">Reported By</label>
+            <select id="reported_by" name="reported_by">
+                <option value="">-- Select Employee --</option>
+
+                <% employees.forEach(employee => { %>
+                    <option value="<%= employee.employee_id %>">
+                        <%= employee.employee_name %>
+                    </option>
+                <% }); %>
+
+            </select>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="Open" selected>Open</option>
+                <option value="Under Investigation">Under Investigation</option>
+                <option value="Closed">Closed</option>
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <button type="submit" class="btn btn-save">Save Incident</button>
+            <a href="/incidents" class="btn btn-cancel">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

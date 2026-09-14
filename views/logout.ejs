@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log Out — HSSEQ Management System</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-brand"><span class="icon">🛡️</span> HSSEQ</div>
+      <p class="auth-subtitle">Signed in as <strong><%= user.name %></strong></p>
+
+      <p style="text-align:center; margin: 0 0 1.5rem; color: var(--hsseq-text);">
+        Are you sure you want to log out?
+      </p>
+
+      <form method="POST" action="/logout">
+        <button type="submit" class="btn btn-accent">Log Out</button>
+      </form>
+
+      <a href="javascript:history.back()" class="auth-footer-note" style="display:block; text-decoration: underline; cursor: pointer;">
+        Cancel and go back
+      </a>
+    </div>
+  </div>
+</body>
+</html>
+
+
