@@ -1,41 +1,99 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcrypt");
 
-// TODO: replace this with your real user store / DB lookup and
-// a proper password hash comparison (e.g. bcrypt.compare).
-const USERS = [
-  { id: 1, email: 'admin@safetypro.local', password: 'admin123', name: 'Admin', role: 'admin' },
-];
+// Import MySQL database connection/pool
+const db = require("../db");
 
-// GET /login — show the login form
-router.get('/login', (req, res) => {
-  if (req.session && req.session.user) {
-    return res.redirect('/dashboard');
-  }
-  res.render('login', { error: null });
-});
 
-// POST /login — authenticate the submitted credentials
-router.post('/login', (req, res) => {
-  const { email, password } = req.body;
+// =====================================================
+// 1. SHOW LOGIN FORM
+// GET /login
+// =====================================================
+router.get("/", (req, res) => {
 
-  const user = USERS.find(
-    (u) => u.email.toLowerCase() === String(email || '').toLowerCase()
-  );
+    // If already logged in, skip straight to dashboard
+    if (req.session.user) {
+        return res.redirect("/");
+    }
 
-  if (!user || user.password !== password) {
-    return res.status(401).render('login', {
-      error: 'Incorrect email or password.',
+    res.render("login/index", {
+        title: "Login",
+        error: null
     });
-  }
 
-  // Store the logged-in user on the session.
-  // Requires express-session to be configured in app.js:
-  //   const session = require('express-session');
-  //   app.use(session({ secret: 'change-me', resave: false, saveUninitialized: false }));
-  req.session.user = { id: user.id, name: user.name, role: user.role };
-
-  res.redirect('/dashboard');
 });
+
+
+// =====================================================
+// 2. HANDLE LOGIN SUBMISSION
+// POST /login
+// =====================================================
+router.post("/", async (req, res) => {
+
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.render("login/index", {
+            title: "Login",
+            error: "Username/email and password are required."
+        });
+    }
+
+    try {
+
+        const [users] = await db.query(`
+            SELECT *
+            FROM users
+            WHERE username = ? OR email = ?
+        `, [username, username]);
+
+        if (users.length === 0) {
+            return res.render("login/index", {
+                title: "Login",
+                error: "Invalid username or password."
+            });
+        }
+
+        const user = users[0];
+
+        if (user.status !== "Active") {
+            return res.render("login/index", {
+                title: "Login",
+                error: "This account is inactive. Please contact an administrator."
+            });
+        }
+
+        const passwordMatches = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatches) {
+            return res.render("login/index", {
+                title: "Login",
+                error: "Invalid username or password."
+            });
+        }
+
+        // Store minimal, non-sensitive user info in session
+        req.session.user = {
+            user_id: user.user_id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            employee_id: user.employee_id
+        };
+
+        res.redirect("/");
+
+    } catch (error) {
+
+        console.error("Error during login:", error);
+
+        res.render("login/index", {
+            title: "Login",
+            error: "An error occurred while logging in. Please try again."
+        });
+    }
+});
+
 
 module.exports = router;

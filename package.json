@@ -14,7 +14,7 @@
     "bcryptjs": "^3.0.3",
     "docx": "^9.7.1",
     "ejs": "^6.0.1",
-    "exceljs": "^4.4.0",
+    "exceljs": "^3.4.0",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "method-override": "^3.0.0",

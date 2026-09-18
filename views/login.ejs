@@ -1,154 +1,411 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Log in &mdash; SafetyPro</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --charcoal: #14181C;
-    --panel: #1B2126;
-    --panel-raised: #232B31;
-    --hazard: #F2B705;
-    --rust: #C6512F;
-    --steel-line: #333D45;
-    --ink: #E9EDEF;
-    --ink-muted: #8B96A1;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: var(--charcoal);
-    color: var(--ink);
-    font-family: 'Inter', -apple-system, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-  .card {
-    width: 100%;
-    max-width: 380px;
-    background: var(--panel);
-    border: 1px solid var(--steel-line);
-    border-radius: 6px;
-    padding: 34px 32px 30px;
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Archivo Expanded', sans-serif;
-    font-weight: 700;
-    font-size: 19px;
-    margin-bottom: 28px;
-  }
-  .brand-mark {
-    width: 28px;
-    height: 28px;
-    background: var(--hazard);
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--charcoal);
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 12px;
-  }
-  h1 {
-    font-family: 'Archivo Expanded', sans-serif;
-    font-size: 22px;
-    margin: 0 0 6px;
-  }
-  .sub {
-    font-size: 14px;
-    color: var(--ink-muted);
-    margin: 0 0 26px;
-  }
-  .field { margin-bottom: 16px; }
-  label {
-    display: block;
-    font-size: 13px;
-    color: var(--ink-muted);
-    margin-bottom: 6px;
-  }
-  input[type="email"], input[type="password"], input[type="text"] {
-    width: 100%;
-    background: var(--panel-raised);
-    border: 1px solid var(--steel-line);
-    border-radius: 4px;
-    color: var(--ink);
-    font-size: 14.5px;
-    padding: 11px 12px;
-    font-family: 'Inter', sans-serif;
-  }
-  input:focus {
-    outline: none;
-    border-color: var(--hazard);
-  }
-  .error {
-    background: rgba(198, 81, 47, 0.14);
-    border: 1px solid rgba(198, 81, 47, 0.4);
-    color: #E38562;
-    font-size: 13.5px;
-    padding: 10px 12px;
-    border-radius: 4px;
-    margin-bottom: 18px;
-  }
-  .btn-primary {
-    width: 100%;
-    padding: 12px;
-    background: var(--hazard);
-    color: #1A1503;
-    border: none;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 14.5px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-  }
-  .btn-primary:hover { background: #ffcb1f; }
-  .foot {
-    text-align: center;
-    font-size: 13px;
-    color: var(--ink-muted);
-    margin-top: 20px;
-  }
-  a { color: var(--hazard); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login — SafetyPro</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        :root {
+            --charcoal: #14181C;
+            --panel: #1B2126;
+            --panel-raised: #232B31;
+            --hazard: #F2B705;
+            --rust: #C6512F;
+            --steel-line: #333D45;
+            --ink: #E9EDEF;
+            --ink-muted: #8B96A1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(242, 183, 5, 0.08),
+                    transparent 35%
+                ),
+                var(--charcoal);
+
+            color: var(--ink);
+
+            font-family: 'Inter', Arial, sans-serif;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 24px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 410px;
+
+            background: var(--panel);
+
+            border: 1px solid var(--steel-line);
+            border-radius: 8px;
+
+            padding: 36px 34px 30px;
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        /* ================================
+           BRAND
+        ================================= */
+
+        .brand {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 30px;
+
+            font-family: 'Archivo Expanded', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+
+            background: var(--hazard);
+
+            clip-path: polygon(
+                50% 0%,
+                100% 50%,
+                50% 100%,
+                0% 50%
+            );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--charcoal);
+
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* ================================
+           HEADER
+        ================================= */
+
+        h1 {
+            margin: 0 0 7px;
+
+            font-family: 'Archivo Expanded', sans-serif;
+
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            margin: 0 0 28px;
+
+            color: var(--ink-muted);
+
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ================================
+           ERROR MESSAGE
+        ================================= */
+
+        .error {
+            background: rgba(198, 81, 47, 0.14);
+
+            border: 1px solid rgba(198, 81, 47, 0.45);
+
+            color: #E38562;
+
+            padding: 11px 13px;
+
+            border-radius: 5px;
+
+            margin-bottom: 20px;
+
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        /* ================================
+           FORM
+        ================================= */
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: var(--ink-muted);
+
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+
+            background: var(--panel-raised);
+
+            border: 1px solid var(--steel-line);
+
+            border-radius: 5px;
+
+            color: var(--ink);
+
+            font-family: 'Inter', sans-serif;
+
+            font-size: 14px;
+
+            padding: 12px 13px;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
+        }
+
+        input::placeholder {
+            color: #66717B;
+        }
+
+        input:focus {
+            outline: none;
+
+            border-color: var(--hazard);
+
+            box-shadow:
+                0 0 0 2px rgba(242, 183, 5, 0.12);
+        }
+
+        /* ================================
+           BUTTON
+        ================================= */
+
+        .login-button {
+            width: 100%;
+
+            margin-top: 4px;
+
+            padding: 13px;
+
+            background: var(--hazard);
+
+            color: #1A1503;
+
+            border: none;
+
+            border-radius: 5px;
+
+            font-family: 'Inter', sans-serif;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s,
+                transform 0.1s;
+        }
+
+        .login-button:hover {
+            background: #ffcb1f;
+        }
+
+        .login-button:active {
+            transform: translateY(1px);
+        }
+
+        /* ================================
+           FOOTER
+        ================================= */
+
+        .footer {
+            margin: 22px 0 0;
+
+            text-align: center;
+
+            color: var(--ink-muted);
+
+            font-size: 12.5px;
+
+            line-height: 1.5;
+        }
+
+        /* ================================
+           MOBILE
+        ================================= */
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 16px;
+            }
+
+            .login-card {
+                padding: 30px 24px 26px;
+            }
+
+            h1 {
+                font-size: 21px;
+            }
+
+        }
+
+    </style>
 </head>
+
 <body>
-  <div class="card">
-    <div class="brand">
-      <span class="brand-mark">SP</span>
-      SafetyPro
+
+    <div class="login-card">
+
+        <!-- ================================
+             SAFETYPRO BRAND
+        ================================= -->
+
+        <div class="brand">
+
+            <span class="brand-mark">
+                SP
+            </span>
+
+            <span>
+                SafetyPro
+            </span>
+
+        </div>
+
+
+        <!-- ================================
+             LOGIN HEADER
+        ================================= -->
+
+        <h1>
+            Log in
+        </h1>
+
+        <p class="subtitle">
+            Access your site's HSSEQ records.
+        </p>
+
+
+        <!-- ================================
+             LOGIN ERROR
+        ================================= -->
+
+        <% if (typeof error !== 'undefined' && error) { %>
+
+            <div class="error">
+                <%= error %>
+            </div>
+
+        <% } %>
+
+
+        <!-- ================================
+             LOGIN FORM
+        ================================= -->
+
+        <form
+            method="POST"
+            action="/login"
+        >
+
+            <!-- EMAIL -->
+
+            <div class="field">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="field">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- LOGIN BUTTON -->
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                Log in
+            </button>
+
+        </form>
+
+
+        <!-- ================================
+             FOOTER
+        ================================= -->
+
+        <p class="footer">
+            Trouble signing in?
+            Contact your site administrator.
+        </p>
+
     </div>
-    <h1>Log in</h1>
-    <p class="sub">Access your site's HSSEQ records.</p>
 
-    <% if (typeof error !== 'undefined' && error) { %>
-      <div class="error"><%= error %></div>
-    <% } %>
-
-    <form method="POST" action="/login">
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required autofocus>
-      </div>
-      <div class="field">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-      <button type="submit" class="btn-primary">Log in</button>
-    </form>
-
-    <p class="foot">Trouble signing in? Contact your site administrator.</p>
-  </div>
 </body>
+
 </html>
