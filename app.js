@@ -46,6 +46,7 @@ const trainingGapRoutes = require("./routes/training_gap_analysis");
 const auditsRoutes = require("./routes/audits");
 const dashboardRoutes = require("./routes/dashboard");
 const departmentRoutes = require("./routes/department");
+const documentsRoutes = require("./routes/documents");
 const employeesRoutes = require("./routes/employees");
 const hsseqdataRoutes = require("./routes/hsseqdata");
 const incidentsRoutes = require("./routes/incidents");
@@ -53,6 +54,17 @@ const inspectionsRoutes = require("./routes/inspections");
 const ppeRoutes = require("./routes/ppe");
 const riskRoutes = require("./routes/risk_assesments");
 const permitsRoutes = require("./routes/permits");
+const findingsRoutes = require("./routes/findings");
+const mocRoutes = require("./routes/moc");
+const erpRoutes = require("./routes/erp");
+const meetingsRoutes = require("./routes/meetings");
+const trainingRoutes = require("./routes/training");
+const toolsRoutes = require("./routes/tools");
+const checklistRoutes = require("./routes/checklists");
+const usersRoutes = require("./routes/users");
+
+const { guard, requireAdmin } = require("./lib/access");
+const { fmtDate, fmtDateTime, slug } = require("./lib/format");
 
 
 // =====================================================
@@ -60,6 +72,11 @@ const permitsRoutes = require("./routes/permits");
 // =====================================================
 
 app.set("view engine", "ejs");
+
+// Helpers available in every EJS view
+app.locals.fmtDate = fmtDate;
+app.locals.fmtDateTime = fmtDateTime;
+app.locals.slug = slug;
 
 app.set(
     "views",
@@ -104,6 +121,15 @@ app.use(
 app.use((req, res, next) => {
 
     res.locals.user = req.session.user || null;
+
+    // Which top-nav item is highlighted
+    res.locals.navPath = req.path;
+
+    // Safe defaults; guard() overrides these for module routes
+    res.locals.can = { add: false, edit: false, delete: false };
+    res.locals.locations = [];
+    res.locals.location = "";
+    res.locals.trainingNotice = null;
 
     next();
 });
@@ -531,6 +557,7 @@ app.use(
 app.use(
     "/audits",
     requireLogin,
+    guard("audits"),
     auditsRoutes
 );
 
@@ -539,6 +566,7 @@ app.use(
 app.use(
     "/training/gap-analysis",
     requireLogin,
+    guard("requirements"),
     trainingGapRoutes
 );
 
@@ -555,7 +583,16 @@ app.use(
 app.use(
     "/departments",
     requireLogin,
+    guard("departments"),
     departmentRoutes
+);
+
+
+// Document Management
+app.use(
+    "/documents",
+    requireLogin,
+    documentsRoutes
 );
 
 
@@ -563,6 +600,7 @@ app.use(
 app.use(
     "/employees",
     requireLogin,
+    guard("employees"),
     employeesRoutes
 );
 
@@ -571,6 +609,7 @@ app.use(
 app.use(
     "/hsseq",
     requireLogin,
+    guard("hsseq"),
     hsseqdataRoutes
 );
 
@@ -579,6 +618,7 @@ app.use(
 app.use(
     "/incidents",
     requireLogin,
+    guard("incidents"),
     incidentsRoutes
 );
 
@@ -587,6 +627,7 @@ app.use(
 app.use(
     "/inspections",
     requireLogin,
+    guard("inspections"),
     inspectionsRoutes
 );
 
@@ -595,6 +636,7 @@ app.use(
 app.use(
     "/ppe",
     requireLogin,
+    guard("ppe"),
     ppeRoutes
 );
 
@@ -603,6 +645,7 @@ app.use(
 app.use(
     "/risk-assessments",
     requireLogin,
+    guard("risks"),
     riskRoutes
 );
 
@@ -611,7 +654,78 @@ app.use(
 app.use(
     "/permits",
     requireLogin,
+    guard("permits"),
     permitsRoutes
+);
+
+
+// Training records, annual plan and compliance (the requirements page above stays at /training/gap-analysis)
+app.use(
+    "/training",
+    requireLogin,
+    guard("training"),
+    trainingRoutes
+);
+
+
+// Management of Change
+app.use(
+    "/moc",
+    requireLogin,
+    guard("moc"),
+    mocRoutes
+);
+
+
+// Emergency Response Planning (drills)
+app.use(
+    "/erp",
+    requireLogin,
+    guard("drills"),
+    erpRoutes
+);
+
+
+// Meeting Manager
+app.use(
+    "/meetings",
+    requireLogin,
+    guard("meetings"),
+    meetingsRoutes
+);
+
+
+// Findings, root causes and actions (every module)
+app.use(
+    "/findings",
+    requireLogin,
+    findingsRoutes
+);
+
+
+// Bulk upload, reports and record summaries (every module)
+app.use(
+    "/tools",
+    requireLogin,
+    toolsRoutes
+);
+
+
+// Audit / inspection checklists (Admin only)
+app.use(
+    "/checklists",
+    requireLogin,
+    requireAdmin,
+    checklistRoutes
+);
+
+
+// User accounts (Admin only)
+app.use(
+    "/users",
+    requireLogin,
+    requireAdmin,
+    usersRoutes
 );
 
 
