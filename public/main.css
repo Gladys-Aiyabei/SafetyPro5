@@ -4174,3 +4174,42 @@
 :where(html.pg-dashboard) .page td a { color: var(--blue); text-decoration: none; font-weight: bold; }
 
 :where(html.pg-dashboard) .page .sheet-tools { display:flex; gap:8px; flex-wrap:wrap; }
+
+/* KPI targets sheet */
+:where(html.pg-dashboard) .page .kpi-head { margin-bottom: 12px; }
+
+:where(html.pg-dashboard) .page .kpi-head h2 { margin-bottom: 4px; }
+
+:where(html.pg-dashboard) .page .kpi-table td { vertical-align: top; }
+
+:where(html.pg-dashboard) .page .kpi-table .num { text-align: right; white-space: nowrap; }
+
+:where(html.pg-dashboard) .page .kpi-table .kpi-group td {
+    background: var(--green-soft);
+    color: var(--green-deep);
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
+
+:where(html.pg-dashboard) .page .kpi-table input {
+    width: 90px;
+    padding: 5px 7px;
+    display: inline-block;
+}
+
+:where(html.pg-dashboard) .page .kpi-op { color: var(--muted); font-weight: bold; margin-right: 3px; }
+
+:where(html.pg-dashboard) .page .kpi-dir,
+:where(html.pg-dashboard) .page .kpi-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+:where(html.pg-dashboard) .page .kpi-source { font-size: 12px; color: var(--muted); max-width: 280px; }
+
+:where(html.pg-dashboard) .page .kpi-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+:where(html.pg-dashboard) .page .st-on-target { background: var(--green-soft); color: var(--green-dark); }
+
+:where(html.pg-dashboard) .page .st-at-risk { background: var(--yellow-soft); color: #7A5A00; }
+
+:where(html.pg-dashboard) .page .st-off-target { background: var(--red-soft); color: var(--red-dark); }

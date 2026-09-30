@@ -1,0 +1,101 @@
+<%#
+    KPI Targets sheet of the dashboard: every KPI with its actual value, target, margin and status.
+    Admin edits targets and margins in place; everyone else sees them read-only.
+    locals: data (kpiRows, periodLabel, defaultedYear), flash, admin, qs
+%>
+<%
+    const rows = data.kpiRows || [];
+    const groups = [...new Set(rows.map(r => r.group))];
+    const stClass = s => 'st-' + s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const plain = v => (v === null || v === undefined ? '' : Number(v));
+%>
+
+<% if (flash) { %>
+    <% if (flash.type === 'ok') { %>
+        <div class="notice ok"><%= flash.text %></div>
+    <% } else { %>
+        <div class="error"><%= flash.text %></div>
+    <% } %>
+<% } %>
+
+<div class="card kpi-card">
+
+    <div class="kpi-head">
+        <h2>KPI targets and status: <%= data.periodLabel %></h2>
+        <div class="hint">
+            <%= data.defaultedYear ? 'No period chosen, so the current year is measured. ' : '' %>
+            On target = meets the target. At risk = misses it by no more than the margin. Off target = misses it by more.
+            <%= admin ? 'Leave a target empty for "no target".' : 'Only an Admin can change targets.' %>
+        </div>
+    </div>
+
+    <% if (admin) { %><form method="POST" action="/dashboard/kpis/targets" autocomplete="off"><input type="hidden" name="back" value="<%= qs %>"><% } %>
+
+    <div class="table-wrap">
+    <table class="kpi-table">
+        <thead>
+            <tr>
+                <th>KPI</th>
+                <th class="num">Actual</th>
+                <th>Target</th>
+                <th>Margin</th>
+                <th>Status</th>
+                <th>Measured from</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% groups.forEach(g => { %>
+                <tr class="kpi-group"><td colspan="7"><%= g %></td></tr>
+                <% rows.filter(r => r.group === g).forEach(r => { %>
+                    <tr>
+                        <td>
+                            <b><%= r.label %></b>
+                            <div class="kpi-dir"><%= r.better === 'higher' ? 'Higher is better' : 'Lower is better' %><%= r.unit === 'rate' ? ' · per 1,000,000 hours worked' : '' %></div>
+                        </td>
+                        <td class="num">
+                            <b><%= r.shown.value %></b>
+                            <% if (r.detail) { %><div class="kpi-detail"><%= r.detail %></div><% } %>
+                        </td>
+                        <td>
+                            <% if (admin) { %>
+                                <span class="kpi-op"><%= r.better === 'higher' ? '≥' : '≤' %></span>
+                                <input type="number" step="any" <%= r.unit === '%' ? 'min=0 max=100' : '' %>
+                                       name="target_<%= r.key %>" value="<%= plain(r.target) %>"
+                                       placeholder="none" aria-label="Target for <%= r.label %>">
+                                <% if (r.custom && r.target !== r.defaultTarget) { %>
+                                    <div class="kpi-detail">Default: <%= r.defaultTarget === null ? 'none' : r.defaultTarget %></div>
+                                <% } %>
+                            <% } else { %>
+                                <%= r.shown.target %>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (admin) { %>
+                                <span class="kpi-op">±</span>
+                                <input type="number" step="any" min="0" name="margin_<%= r.key %>" value="<%= plain(r.margin) %>"
+                                       aria-label="Amber margin for <%= r.label %>">
+                            <% } else { %>
+                                <%= r.target === null ? '-' : r.margin %>
+                            <% } %>
+                        </td>
+                        <td><span class="badge <%= stClass(r.status) %>"><%= r.status %></span></td>
+                        <td class="kpi-source"><%= r.source %></td>
+                        <td><% if (r.link) { %><a href="<%= r.link %>">Open</a><% } %></td>
+                    </tr>
+                <% }); %>
+            <% }); %>
+        </tbody>
+    </table>
+    </div>
+
+    <% if (admin) { %>
+        <div class="kpi-buttons">
+            <button class="btn btn-primary">Save targets</button>
+            <button class="btn btn-back" formaction="/dashboard/kpis/reset" formnovalidate
+                    onclick="return confirm('Put every KPI target and margin back to its default?')">Reset to defaults</button>
+        </div>
+    </form>
+    <% } %>
+
+</div>

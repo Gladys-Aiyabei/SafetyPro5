@@ -3,7 +3,7 @@
 //
 // One page, several sheets:
 //   overview  incidents  audits  inspections  risks  findings  actions
-//   drills    training   employees  ptw
+//   drills    training   employees  ptw  kpis
 //
 // Filters (all optional, kept when switching sheet):
 //   module, from, to, year, month, user, department, activity, location
@@ -25,9 +25,11 @@ const {
 } = require("../lib/users");
 const { computeCompliance, planProgress } = require("../lib/compliance");
 const { fmtDate } = require("../lib/format");
+const { STATUSES: KPI_STATUSES, evaluateKpis, saveTargets, resetTargets } = require("../lib/kpis");
 
 const SHEETS = [
     { key: "overview", label: "Overview" },
+    { key: "kpis", label: "KPI Targets" },
     { key: "incidents", label: "Incidents" },
     { key: "audits", label: "Audits" },
     { key: "inspections", label: "Inspections" },
@@ -42,6 +44,7 @@ const SHEETS = [
 ];
 
 const USERS_URL = "/dashboard?sheet=users";
+const KPIS_URL = "/dashboard?sheet=kpis";
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -777,6 +780,64 @@ async function ptwSheet(f) {
 }
 
 
+// ---------- KPI targets ----------
+// Targets per KPI (lib/kpis.js); status is worked out from the module records every time.
+// With no date filter the sheet measures the current year, so count targets stay meaningful.
+async function kpisSheet(f) {
+
+    const period = f.year || f.from || f.to ? f : { ...f, year: new Date().getFullYear() };
+
+    // Each KPI names its own module. Monthly HSSEQ data has no department or owner,
+    // so KPIs built on it only take the period and location filters.
+    const scope = (module, opts = {}) => recordFilter({
+        ...period, module,
+        ...(opts.siteOnly ? { user: null, department: null, activity: "" } : {})
+    });
+
+    const rows = await evaluateKpis(scope, period);
+
+    const count = st => rows.filter(r => r.status === st).length;
+    const withTarget = rows.filter(r => r.status === "On target" || r.status === "At risk" || r.status === "Off target");
+
+    const byGroup = {};
+    rows.forEach(r => {
+        byGroup[r.group] = byGroup[r.group] || { on: 0, risk: 0, off: 0 };
+        if (r.status === "On target") byGroup[r.group].on++;
+        if (r.status === "At risk") byGroup[r.group].risk++;
+        if (r.status === "Off target") byGroup[r.group].off++;
+    });
+    const groups = Object.keys(byGroup);
+
+    const periodLabel = period.from || period.to
+        ? `${period.from ? fmtDate(period.from) : "start"} to ${period.to ? fmtDate(period.to) : "today"}`
+        : `${period.month ? MONTH_NAMES[period.month - 1] + " " : ""}${period.year}`;
+
+    return {
+        kpis: [
+            kpi("KPIs on target", `${count("On target")}/${withTarget.length}`, "green"),
+            kpi("At risk", count("At risk"), "yellow"),
+            kpi("Off target", count("Off target"), "red"),
+            kpi("No target / no data", count("No target") + count("No data"), "blue")
+        ],
+        charts: [
+            chart("KPI status", "doughnut", series(KPI_STATUSES.map(st => ({ label: st, n: count(st) })).filter(x => x.n > 0))),
+            chart("Status by area", "bar", {
+                labels: groups,
+                datasets: [
+                    { label: "On target", values: groups.map(g => byGroup[g].on), color: "#29AB87" },
+                    { label: "At risk", values: groups.map(g => byGroup[g].risk), color: "#F7B801" },
+                    { label: "Off target", values: groups.map(g => byGroup[g].off), color: "#D62839" }
+                ]
+            }, { empty: "Set targets to see the status by area" })
+        ],
+        tables: [],
+        kpiRows: rows,
+        periodLabel,
+        defaultedYear: period !== f
+    };
+}
+
+
 // =====================================================
 // USERS SHEET (Admin only): list, add, edit, delete
 // The rules live in lib/users.js (shared with the Users module at /users).
@@ -825,6 +886,33 @@ router.post("/users/:id/delete", requireAdmin, async (req, res) => {
 });
 
 
+// KPI targets: Admin saves or resets them; everyone sees the result.
+function kpisFlash(req, res, result) {
+    req.session.flash = { type: result.ok ? "ok" : "error", text: result.message };
+    // Go back with the same filters (a plain query string, never another site).
+    const back = String(req.body.back || "");
+    req.session.save(() => res.redirect(/^[\w=&%.+-]*$/.test(back) && back ? `${KPIS_URL}&${back}` : KPIS_URL));
+}
+
+router.post("/kpis/targets", requireAdmin, async (req, res) => {
+    try {
+        kpisFlash(req, res, await saveTargets(req.body, req.session.user));
+    } catch (error) {
+        console.error("Saving KPI targets failed:", error);
+        kpisFlash(req, res, { ok: false, message: `Could not save targets: ${error.sqlMessage || error.message}` });
+    }
+});
+
+router.post("/kpis/reset", requireAdmin, async (req, res) => {
+    try {
+        kpisFlash(req, res, await resetTargets());
+    } catch (error) {
+        console.error("Resetting KPI targets failed:", error);
+        kpisFlash(req, res, { ok: false, message: `Could not reset targets: ${error.sqlMessage || error.message}` });
+    }
+});
+
+
 // =====================================================
 // ROUTE
 // =====================================================
@@ -845,13 +933,14 @@ router.get("/", async (req, res, next) => {
         const editId = /^\d+$/.test(String(req.query.edit || "")) ? Number(req.query.edit) : null;
 
         let flash = null;
-        if (sheet === "users") {
+        if (sheet === "users" || sheet === "kpis") {
             flash = req.session.flash || null;
             delete req.session.flash;
         }
 
         const builders = {
             overview: () => overviewSheet(f),
+            kpis: () => kpisSheet(f),
             incidents: () => incidentsSheet(f),
             audits: () => auditLikeSheet(f, "audits", "audit_type", "Audits"),
             inspections: () => auditLikeSheet(f, "inspections", "inspection_type", "Inspections"),

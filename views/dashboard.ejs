@@ -37,6 +37,8 @@
             <div class="hint">
                 <%= sheet === 'users'
                     ? 'Add, edit and delete the accounts that can log in. Only an Admin can see this sheet.'
+                    : sheet === 'kpis'
+                    ? 'Each KPI is measured from the module records and compared with its target. Filters narrow the period, department, owner and location.'
                     : "Filter once and switch between sheets. Filters apply to each record's own date, department and owner." %>
             </div>
         </div>
@@ -180,6 +182,10 @@
                 </div>
             <% }); %>
         </div>
+    <% } %>
+
+    <% if (sheet === 'kpis') { %>
+        <%- include('partials/kpi_panel', { data, flash, admin, qs }) %>
     <% } %>
 
     <% (data.tables || []).forEach(t => { %>

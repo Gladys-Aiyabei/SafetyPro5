@@ -18,7 +18,8 @@
         "in progress": "#F7B801", "pending approval": "#1F5FBF", "pending": "#F7B801",
         "medium": "#F7B801", "approved": "#1F5FBF", "planned": "#1F5FBF", "scheduled": "#1F5FBF",
         "closed": "#29AB87", "completed": "#29AB87", "valid": "#29AB87", "low": "#29AB87",
-        "compliant": "#29AB87", "held": "#29AB87", "fully trained": "#29AB87", "active": "#29AB87"
+        "compliant": "#29AB87", "held": "#29AB87", "fully trained": "#29AB87", "active": "#29AB87",
+        "on target": "#29AB87", "at risk": "#F7B801", "off target": "#D62839", "no target": "#9AA8A4", "no data": "#C9D2CF"
     };
 
     function colours(labels) {
