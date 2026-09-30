@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Users</h1>
+            <div class="hint">The accounts that can log in. Only an Admin can see and manage them. Passwords are stored as hashes and are never shown.</div>
+        </div>
+        <a href="/users/add" class="btn btn-add">+ New User</a>
+    </div>
+
+    <% if (flash) { %>
+        <% if (flash.type === 'ok') { %>
+            <div class="notice ok"><%= flash.text %></div>
+        <% } else { %>
+            <div class="error"><%= flash.text %></div>
+        <% } %>
+    <% } %>
+
+    <form method="GET" class="filters">
+        <div class="f">
+            <label>Search</label>
+            <input type="text" name="q" value="<%= filters.q %>" placeholder="Name, email, employee">
+        </div>
+        <div class="f">
+            <label>Role</label>
+            <select name="role">
+                <option value="">All</option>
+                <% roles.forEach(r => { %><option <%= filters.role === r ? 'selected' : '' %>><%= r %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Status</label>
+            <select name="status">
+                <option value="">All</option>
+                <% statuses.forEach(s => { %><option <%= filters.status === s ? 'selected' : '' %>><%= s %></option><% }); %>
+            </select>
+        </div>
+        <button class="btn btn-primary">Filter</button>
+        <a href="/users" class="btn btn-back">Reset</a>
+    </form>
+
+    <div class="card">
+        <% if (users.length === 0) { %>
+            <div class="empty">No users found.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Username</th><th>Email</th><th>Role</th>
+                        <th>Linked employee</th><th>Status</th><th>Created</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(u => { %>
+                        <tr>
+                            <td><%= u.user_id %></td>
+                            <td>
+                                <strong><%= u.username %></strong>
+                                <% if (u.user_id === meId) { %><span class="hint">(you)</span><% } %>
+                            </td>
+                            <td><%= u.email %></td>
+                            <td><%= u.role || '-' %></td>
+                            <td><%= u.employee_name || '-' %></td>
+                            <td><span class="badge <%= isActive(u) ? 'st-valid' : 'st-cancelled' %>"><%= u.status || 'Inactive' %></span></td>
+                            <td><%= fmtDate(u.created_at) %></td>
+                            <td style="white-space:nowrap;">
+                                <a href="/users/view/<%= u.user_id %>" class="btn btn-view btn-sm">View</a>
+                                <a href="/users/edit/<%= u.user_id %>" class="btn btn-edit btn-sm">Edit</a>
+                                <% if (u.user_id !== meId) { %>
+                                    <form method="POST" action="/users/delete/<%= u.user_id %>" class="inline"
+                                          onsubmit="return confirm('Delete user <%= String(u.username).replace(/[^A-Za-z0-9._@ -]/g, '') %>? This cannot be undone.');">
+                                        <button class="btn btn-delete btn-sm">Delete</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+            <div class="hint" style="margin-top:10px;"><%= users.length %> user<%= users.length === 1 ? '' : 's' %></div>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

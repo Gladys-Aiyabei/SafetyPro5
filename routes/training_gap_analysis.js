@@ -3,7 +3,7 @@ const router = express.Router();
 
 const db = require("../db");
 
-const TABLE = "training_requirements";
+const TABLE = "role_training_requirements";
 
 // ==========================================
 // GET ROLES
@@ -162,7 +162,7 @@ router.post("/", async (req, res) => {
         );
 
         res.redirect(
-            "/training_gap_analysis"
+            "/training/gap-analysis"
         );
 
     } catch (err) {
@@ -241,7 +241,7 @@ router.post("/:id/update", async (req, res) => {
         );
 
         res.redirect(
-            "/training_gap_analysis"
+            "/training/gap-analysis"
         );
 
     } catch (err) {
@@ -287,7 +287,7 @@ router.post("/:id/delete", async (req, res) => {
         );
 
         res.redirect(
-            "/training_gap_analysis"
+            "/training/gap-analysis"
         );
 
     } catch (err) {

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/meetings">Meeting Manager</a> &rsaquo; <%= mode === 'add' ? 'New' : 'Edit' %></div>
+            <h1><%= title %></h1>
+            <% if (mode === 'add') { %><div class="hint">After saving you can add attendance, minutes and actions.</div><% } %>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+        <form method="POST" action="<%= mode === 'add' ? '/meetings/add' : '/meetings/edit/' + recordId %>">
+
+            <div class="form-row">
+                <div class="form-group" style="flex:2;">
+                    <label>Meeting title</label>
+                    <input type="text" name="title" value="<%= values.title || '' %>" maxlength="200" required>
+                </div>
+                <div class="form-group">
+                    <label>Meeting type</label>
+                    <select name="meeting_type" required>
+                        <option value="">-- select --</option>
+                        <% meetingTypes.forEach(t => { %><option <%= values.meeting_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="meeting_date" value="<%= fmtDate(values.meeting_date) %>" required>
+                </div>
+                <div class="form-group">
+                    <label>Start time</label>
+                    <input type="time" name="start_time" value="<%= values.start_time || '' %>">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" list="loc-list" value="<%= values.location || '' %>" maxlength="100">
+                    <datalist id="loc-list"><% locations.forEach(l => { %><option value="<%= l %>"><% }); %></datalist>
+                </div>
+                <div class="form-group">
+                    <label>Chairperson</label>
+                    <select name="chairperson_id">
+                        <option value="">-- select --</option>
+                        <% employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>" <%= Number(values.chairperson_id) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <% if (mode === 'edit') { %>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <% statuses.forEach(t => { %><option <%= values.status === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                        </select>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="form-group">
+                <label>Agenda</label>
+                <textarea name="agenda"><%= values.agenda || '' %></textarea>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-add"><%= mode === 'add' ? 'Save Meeting' : 'Save Changes' %></button>
+                <a href="/meetings" class="btn btn-back">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

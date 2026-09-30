@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     try {
         // 1. Concurrent query gathering from operational database tables 
         const [incidentsResult] = await db.query('SELECT COUNT(*) AS total FROM incidents WHERE status = "Open"');
-        const [lowStockResult] = await db.query('SELECT COUNT(*) AS total FROM ppe_inventory WHERE quantity_available <= 10');
+        const [lowStockResult] = await db.query('SELECT COUNT(*) AS total FROM ppe_inventory WHERE quantity <= 10');
         const [permitsResult] = await db.query('SELECT COUNT(*) AS total FROM permits WHERE status = "Active" OR status = "Approved"');
         const [employeesResult] = await db.query('SELECT COUNT(*) AS total FROM employees');
 

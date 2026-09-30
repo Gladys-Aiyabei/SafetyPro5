@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/meetings">Meeting Manager</a></div>
+            <h1><%= meeting.title %></h1>
+            <span class="badge st-<%= slug(meeting.status) %>"><%= meeting.status %></span>
+            <span class="hint">
+                &nbsp;<%= meeting.meeting_type %> &middot; <%= fmtDate(meeting.meeting_date) %>
+                <%= meeting.start_time ? String(meeting.start_time).slice(0, 5) : '' %>
+                &middot; <%= meeting.location || 'no location' %>
+                &middot; Chair: <%= meeting.chairperson_name || '-' %>
+            </span>
+        </div>
+        <div class="btn-row">
+            <% if (can.edit) { %><a href="/meetings/edit/<%= meeting.meeting_id %>" class="btn btn-edit">Edit</a><% } %>
+            <a href="/meetings" class="btn btn-back">Back to meetings</a>
+        </div>
+    </div>
+
+    <% if (meeting.agenda) { %>
+        <section class="card">
+            <h2>Agenda</h2>
+            <div style="white-space:pre-wrap;"><%= meeting.agenda %></div>
+        </section>
+    <% } %>
+
+    <!-- ATTENDANCE -->
+    <section class="card" id="attendance">
+        <h2>Attendance (<%= attendees.filter(a => a.attendance === 'Present').length %> present of <%= attendees.length %> listed)</h2>
+
+        <% if (attendees.length === 0) { %>
+            <div class="empty">No attendance recorded yet.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead><tr><th>Name</th><th>Type</th><th>Attendance</th><th></th></tr></thead>
+                <tbody>
+                    <% attendees.forEach(a => { %>
+                        <tr>
+                            <td><%= a.attendee_name %></td>
+                            <td><%= a.employee_id ? 'Employee' : 'External' %></td>
+                            <td><span class="badge st-<%= a.attendance === 'Present' ? 'closed' : a.attendance === 'Absent' ? 'rejected' : 'in-progress' %>"><%= a.attendance %></span></td>
+                            <td>
+                                <% if (can.delete) { %>
+                                    <form method="POST" action="/meetings/attendees/<%= a.attendee_id %>/delete" class="inline"
+                                          onsubmit="return confirm('Remove this attendee?');">
+                                        <button class="btn btn-delete btn-sm">Remove</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+
+        <% if (can.add) { %>
+            <details>
+                <summary class="btn btn-add btn-sm">+ Record attendance</summary>
+                <form method="POST" action="/meetings/<%= meeting.meeting_id %>/attendees" class="mini-form wide">
+                    <div class="form-row">
+                        <div class="form-group" style="flex:2;">
+                            <label>Employees (Ctrl/Cmd-click to pick several)</label>
+                            <select name="employee_ids" multiple size="8">
+                                <% employees.forEach(e => { %>
+                                    <option value="<%= e.employee_id %>"><%= e.employee_name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Attendance</label>
+                            <select name="attendance">
+                                <% attendanceOptions.forEach(o => { %><option><%= o %></option><% }); %>
+                            </select>
+                            <label>Outside attendee (name)</label>
+                            <input type="text" name="external_name" maxlength="120" placeholder="e.g. contractor, visitor">
+                        </div>
+                    </div>
+                    <button class="btn btn-add btn-sm">Save attendance</button>
+                </form>
+            </details>
+        <% } %>
+    </section>
+
+    <!-- MINUTES -->
+    <section class="card" id="minutes">
+        <h2>Minutes</h2>
+
+        <% if (minutes.length === 0) { %>
+            <div class="empty">No minutes recorded yet.</div>
+        <% } %>
+
+        <% minutes.forEach(m => { %>
+            <div style="border-left:4px solid var(--blue);padding:8px 14px;margin-bottom:12px;background:#fafcfb;">
+                <div style="display:flex;justify-content:space-between;gap:8px;">
+                    <strong><%= m.item_no %>. <%= m.topic %></strong>
+                    <% if (can.delete) { %>
+                        <form method="POST" action="/meetings/minutes/<%= m.minute_id %>/delete" class="inline"
+                              onsubmit="return confirm('Delete this minute item?');">
+                            <button class="btn btn-delete btn-sm">Delete</button>
+                        </form>
+                    <% } %>
+                </div>
+                <% if (m.discussion) { %><div style="white-space:pre-wrap;margin-top:6px;"><strong>Discussion:</strong> <%= m.discussion %></div><% } %>
+                <% if (m.decision) { %><div style="white-space:pre-wrap;margin-top:6px;"><strong>Decision:</strong> <%= m.decision %></div><% } %>
+            </div>
+        <% }); %>
+
+        <% if (can.add) { %>
+            <details>
+                <summary class="btn btn-add btn-sm">+ Add minute item</summary>
+                <form method="POST" action="/meetings/<%= meeting.meeting_id %>/minutes" class="mini-form wide">
+                    <label>Topic</label>
+                    <input type="text" name="topic" maxlength="200" required>
+                    <label>Discussion</label>
+                    <textarea name="discussion"></textarea>
+                    <label>Decision / outcome</label>
+                    <textarea name="decision"></textarea>
+                    <button class="btn btn-add btn-sm">Save minute</button>
+                </form>
+            </details>
+        <% } %>
+    </section>
+
+    <!-- ACTIONS + FINDINGS -->
+    <section class="card" id="actions">
+        <h2>Actions, findings &amp; root causes</h2>
+        <%- include('../partials/findings_panel', { P: panel }) %>
+    </section>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

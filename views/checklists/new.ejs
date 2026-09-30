@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/checklists">Checklists</a> &rsaquo; New</div>
+            <h1>New checklist</h1>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+        <form method="POST" action="/checklists/new">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>For</label>
+                    <select name="module">
+                        <% Object.keys(modules).forEach(k => { %>
+                            <option value="<%= k %>" <%= values.module === k ? 'selected' : '' %>><%= modules[k] %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:2;">
+                    <label>Checklist name</label>
+                    <input type="text" name="name" value="<%= values.name || '' %>" maxlength="150" required placeholder="e.g. Fire safety inspection checklist">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description (optional)</label>
+                <input type="text" name="description" value="<%= values.description || '' %>" maxlength="500">
+            </div>
+
+            <div class="form-group">
+                <label>Questions &mdash; one per line</label>
+                <textarea name="questions" style="min-height:220px;" required placeholder="Are fire extinguishers in place and serviced?&#10;Are emergency exits unobstructed?&#10;Is the assembly point clearly signed?"><%= values.questions || '' %></textarea>
+                <div class="hint">Numbering or bullets at the start of a line are removed automatically.</div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-add">Create checklist</button>
+                <a href="/checklists" class="btn btn-back">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

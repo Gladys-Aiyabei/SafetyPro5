@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/users">Users</a> &rsaquo; <%= record.username %></div>
+            <h1><%= record.username %></h1>
+            <span class="badge <%= isActive(record) ? 'st-valid' : 'st-cancelled' %>"><%= record.status || 'Inactive' %></span>
+            <span class="hint">&nbsp;<%= record.role || 'No role' %><% if (record.user_id === meId) { %> &middot; this is you<% } %></span>
+        </div>
+        <div class="btn-row">
+            <a href="/users/edit/<%= record.user_id %>" class="btn btn-edit">Edit</a>
+            <% if (record.user_id !== meId) { %>
+                <form method="POST" action="/users/delete/<%= record.user_id %>" class="inline"
+                      onsubmit="return confirm('Delete user <%= String(record.username).replace(/[^A-Za-z0-9._@ -]/g, '') %>? This cannot be undone.');">
+                    <button class="btn btn-delete">Delete</button>
+                </form>
+            <% } %>
+            <a href="/users" class="btn btn-back">Back to users</a>
+        </div>
+    </div>
+
+    <% if (flash) { %>
+        <% if (flash.type === 'ok') { %>
+            <div class="notice ok"><%= flash.text %></div>
+        <% } else { %>
+            <div class="error"><%= flash.text %></div>
+        <% } %>
+    <% } %>
+
+    <section class="card">
+        <h2>Account</h2>
+        <div class="form-row">
+            <div class="form-group"><label>User ID</label><%= record.user_id %></div>
+            <div class="form-group"><label>Username</label><%= record.username %></div>
+            <div class="form-group"><label>Email</label><%= record.email %></div>
+            <div class="form-group"><label>Password</label>&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull; <span class="hint">(stored as a hash)</span></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Role</label><%= record.role || '-' %></div>
+            <div class="form-group"><label>Status</label><%= record.status || '-' %></div>
+            <div class="form-group"><label>Created</label><%= fmtDateTime(record.created_at) || '-' %></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Linked employee</h2>
+        <% if (record.employee_id) { %>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Employee</label>
+                    <a href="/employees/view/<%= record.employee_id %>"><%= record.employee_name || ('Employee #' + record.employee_id) %></a>
+                </div>
+                <div class="form-group"><label>Department</label><%= record.department_name || '-' %></div>
+            </div>
+        <% } else { %>
+            <div class="hint">This account is not linked to an employee record, so it has no "my actions" and no training checks.</div>
+        <% } %>
+    </section>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

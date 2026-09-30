@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/checklists">Checklists</a> &rsaquo; <%= modules[template.module] || template.module %></div>
+            <h1><%= template.name %></h1>
+        </div>
+        <a href="/checklists" class="btn btn-back">Back</a>
+    </div>
+
+    <div class="card">
+        <h2>Details</h2>
+        <form method="POST" action="/checklists/<%= template.template_id %>">
+            <div class="form-row">
+                <div class="form-group" style="flex:2;">
+                    <label>Name</label>
+                    <input type="text" name="name" value="<%= template.name %>" maxlength="150" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" name="description" value="<%= template.description || '' %>" maxlength="500">
+                </div>
+            </div>
+            <label class="radio"><input type="checkbox" name="active" value="1" <%= template.active ? 'checked' : '' %>> Active (can be used on new records)</label>
+
+            <div class="form-group" style="margin-top:12px;">
+                <label>Add more questions &mdash; one per line</label>
+                <textarea name="new_questions"></textarea>
+            </div>
+
+            <div class="btn-row"><button class="btn btn-add">Save</button></div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Questions (<%= items.length %>)</h2>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th style="width:50px;">#</th><th>Question</th><th>Answers recorded</th><th></th></tr></thead>
+            <tbody>
+                <% items.forEach((i, n) => { %>
+                    <tr>
+                        <td><%= n + 1 %></td>
+                        <td><%= i.question %></td>
+                        <td><%= i.answers %></td>
+                        <td>
+                            <form method="POST" action="/checklists/<%= template.template_id %>/items/<%= i.item_id %>/delete" class="inline"
+                                  onsubmit="return confirm('Remove this question?');">
+                                <button class="btn btn-delete btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

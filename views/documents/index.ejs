@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" class="pg-documents">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+
+<div class="container">
+
+    <div class="top-bar">
+        <h1>Document Management</h1>
+        <div class="buttons" style="margin-top:0;">
+            <a href="/" class="btn btn-back">Home</a>
+            <% if (canAuthor) { %>
+                <a href="/documents/add" class="btn btn-add">+ New Document</a>
+            <% } %>
+        </div>
+    </div>
+
+    <% if (queue.length > 0) { %>
+
+        <div class="queue">
+            <h2>Waiting for you</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Version</th>
+                        <th>Status</th>
+                        <th>Your task</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% queue.forEach(item => { %>
+                        <tr>
+                            <td>
+                                <a href="/documents/<%= item.document_id %>?v=<%= item.version_no %>">
+                                    <%= item.doc_number %> &mdash; <%= item.title %>
+                                </a>
+                            </td>
+                            <td>v<%= item.version_no %></td>
+                            <td><span class="badge badge-<%= item.status.toLowerCase().replace(' ', '-') %>"><%= item.status %></span></td>
+                            <td><%= item.task %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+    <% } %>
+
+    <form method="GET" action="/documents" class="filters">
+        <input type="text" name="q" value="<%= filters.q %>" placeholder="Search number or title" style="width:260px;">
+        <select name="type">
+            <option value="">All types</option>
+            <% docTypes.forEach(t => { %>
+                <option value="<%= t %>" <%= filters.type === t ? 'selected' : '' %>><%= t %></option>
+            <% }); %>
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/documents" class="btn btn-back">Reset</a>
+    </form>
+
+    <% if (documents.length === 0) { %>
+
+        <div class="empty">
+            <%= working ? 'No documents found.' : 'No published documents found.' %>
+        </div>
+
+    <% } else { %>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Department</th>
+                    <th>Published</th>
+                    <th>Review Due</th>
+                    <% if (working) { %>
+                        <th>Latest Version</th>
+                    <% } %>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <% documents.forEach(d => { %>
+
+                    <tr>
+                        <td><%= d.doc_number %></td>
+                        <td><%= d.title %></td>
+                        <td><%= d.doc_type %></td>
+                        <td><%= d.department_name || '-' %></td>
+                        <td>
+                            <% if (d.published_version_no) { %>
+                                v<%= d.published_version_no %> &middot; <%= fmtDate(d.published_at) %>
+                            <% } else { %>
+                                <span class="badge badge-draft">Not published</span>
+                            <% } %>
+                        </td>
+                        <td><%= fmtDate(d.review_due_date) || '-' %></td>
+                        <% if (working) { %>
+                            <td>
+                                v<%= d.latest_version_no %>
+                                <span class="badge badge-<%= d.latest_status.toLowerCase().replace(' ', '-') %>"><%= d.latest_status %></span>
+                            </td>
+                        <% } %>
+                        <td>
+                            <a href="/documents/<%= d.document_id %>" class="btn btn-view">Open</a>
+                        </td>
+                    </tr>
+
+                <% }); %>
+
+            </tbody>
+        </table>
+        </div>
+
+    <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

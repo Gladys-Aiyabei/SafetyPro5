@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" class="pg-documents">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+
+<%
+    const badge = s => `badge badge-${s.toLowerCase().replace(' ', '-')}`;
+    const anyAction = perms.canEdit || perms.canApprove || perms.canReturn || perms.canPublish;
+%>
+
+<div class="container">
+
+    <div class="top-bar">
+        <div>
+            <h1><%= doc.doc_number %> &mdash; <%= doc.title %></h1>
+            <div class="subtitle">
+                <%= doc.doc_type %> &middot; <%= doc.department_name || 'All departments' %>
+            </div>
+        </div>
+        <a href="/documents" class="btn btn-back">Back to List</a>
+    </div>
+
+    <!-- Version selector -->
+    <% if (versions.length > 1) { %>
+        <div class="versions">
+            <% versions.forEach(v => { %>
+                <a href="/documents/<%= doc.document_id %>?v=<%= v.version_no %>"
+                   class="<%= v.version_id === version.version_id ? 'current' : '' %>">
+                    v<%= v.version_no %>
+                    <% if (working) { %>&middot; <%= v.status %><% } %>
+                </a>
+            <% }); %>
+        </div>
+    <% } %>
+
+    <!-- Version details -->
+    <div class="meta-grid">
+        <div>
+            <label>Version</label>
+            v<%= version.version_no %>
+        </div>
+        <div>
+            <label>Status</label>
+            <span class="<%= badge(version.status) %>"><%= version.status %></span>
+        </div>
+        <div>
+            <label>Author</label>
+            <%= version.author_name || '-' %>
+        </div>
+        <div>
+            <label>Reviewed by</label>
+            <%= version.reviewer_name || '-' %>
+            <% if (version.reviewed_at) { %><div class="hint"><%= fmtDateTime(version.reviewed_at) %></div><% } %>
+        </div>
+        <div>
+            <label>Published by</label>
+            <%= version.publisher_name || '-' %>
+            <% if (version.published_at) { %><div class="hint"><%= fmtDateTime(version.published_at) %></div><% } %>
+        </div>
+        <div>
+            <label>Effective</label>
+            <%= fmtDate(version.effective_date) || '-' %>
+        </div>
+        <div>
+            <label>Review due</label>
+            <%= fmtDate(version.review_due_date) || '-' %>
+        </div>
+        <div>
+            <label>Changes</label>
+            <%= version.change_summary || '-' %>
+        </div>
+    </div>
+
+    <!-- Workflow actions (only for roles that can do something) -->
+    <% if (anyAction || canStartNewVersion) { %>
+
+        <h2>Actions</h2>
+
+        <div class="actions-panel">
+
+            <% if (perms.canEdit) { %>
+
+                <div class="buttons" style="margin-top:0; margin-bottom:16px;">
+                    <a href="/documents/versions/<%= version.version_id %>/edit" class="btn btn-edit">Edit</a>
+                </div>
+
+                <form action="/documents/versions/<%= version.version_id %>/submit" method="POST"
+                      onsubmit="return confirm('Submit v<%= version.version_no %> for review? You will not be able to edit it while it is under review.');">
+                    <div class="form-group">
+                        <label for="submit_comments">Note to reviewer (optional)</label>
+                        <textarea id="submit_comments" name="comments"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit for Review</button>
+                </form>
+
+            <% } %>
+
+            <% if (perms.canApprove) { %>
+
+                <form action="/documents/versions/<%= version.version_id %>/approve" method="POST">
+                    <div class="form-group">
+                        <label for="approve_comments">Review comments (optional)</label>
+                        <textarea id="approve_comments" name="comments"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-approve">Approve</button>
+                </form>
+
+            <% } %>
+
+            <% if (perms.canPublish) { %>
+
+                <form action="/documents/versions/<%= version.version_id %>/publish" method="POST"
+                      onsubmit="return confirm('Publish v<%= version.version_no %>? It becomes the live version for all users.');">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="effective_date">Effective date</label>
+                            <input type="date" id="effective_date" name="effective_date" value="<%= publishDefaults.effective %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="review_due_date">Next review due</label>
+                            <input type="date" id="review_due_date" name="review_due_date" value="<%= publishDefaults.reviewDue %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="publish_comments">Publishing note (optional)</label>
+                        <textarea id="publish_comments" name="comments"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-publish">Publish</button>
+                </form>
+
+            <% } %>
+
+            <% if (perms.canReturn) { %>
+
+                <form action="/documents/versions/<%= version.version_id %>/return" method="POST">
+                    <div class="form-group">
+                        <label for="return_comments">Return to author &mdash; what needs to change?</label>
+                        <textarea id="return_comments" name="comments" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-return">Return for Changes</button>
+                </form>
+
+            <% } %>
+
+            <% if (canStartNewVersion) { %>
+
+                <form action="/documents/<%= doc.document_id %>/new-version" method="POST"
+                      onsubmit="return confirm('Start a new draft version of this document?');">
+                    <button type="submit" class="btn btn-edit">Start New Version</button>
+                    <span class="hint">Copies the latest content into a new draft. The published version stays live until the new one is published.</span>
+                </form>
+
+            <% } %>
+
+        </div>
+
+    <% } %>
+
+    <!-- Content -->
+    <h2>Content</h2>
+    <div class="doc-content"><%= version.content %></div>
+
+    <!-- Audit trail -->
+    <% if (working) { %>
+
+        <h2>History</h2>
+
+        <% if (history.length === 0) { %>
+            <div class="empty">No history yet.</div>
+        <% } else { %>
+
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>When</th>
+                        <th>Version</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                        <th>By</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% history.forEach(h => { %>
+                        <tr>
+                            <td style="white-space:nowrap;"><%= fmtDateTime(h.performed_at) %></td>
+                            <td>v<%= h.version_no %></td>
+                            <td><%= h.action %></td>
+                            <td>
+                                <% if (h.from_status && h.from_status !== h.to_status) { %>
+                                    <%= h.from_status %> &rarr; <%= h.to_status %>
+                                <% } else { %>
+                                    <%= h.to_status || '-' %>
+                                <% } %>
+                            </td>
+                            <td><%= h.performed_by_name || '-' %></td>
+                            <td style="white-space:pre-wrap;"><%= h.comments || '' %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+
+        <% } %>
+
+    <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

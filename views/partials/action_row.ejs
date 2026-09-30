@@ -1,0 +1,136 @@
+<%# One row of the actions table. locals: a (action), P (panel) %>
+<tr class="action-row <%= a.overdue ? 'is-overdue' : '' %>">
+
+    <td>
+        <div><%= a.description %></div>
+        <div class="hint">
+            <span class="badge prio-<%= slug(a.priority) %>"><%= a.priority %></span>
+            <% if (a.root_cause_text) { %> &nbsp;Root cause: <%= a.root_cause_text %><% } %>
+        </div>
+    </td>
+
+    <td style="white-space:nowrap;">
+        <%= fmtDate(a.due_date) || '-' %>
+        <% if (a.overdue) { %><div class="hint" style="color:#b02a37;font-weight:bold;">Overdue</div><% } %>
+    </td>
+
+    <td>
+        <div><strong><%= a.role_name || 'Named person' %></strong></div>
+        <div class="hint">
+            <% if (a.owner_names) { %>
+                Now: <%= a.owner_names %>
+            <% } else { %>
+                <span style="color:#b02a37;">No active holder &mdash; assign someone to this role</span>
+            <% } %>
+            <% if (a.action_party) { %><br>Party: <%= a.action_party %><% } %>
+            <% if (a.approver_names) { %><br>Approver: <%= a.approver_names %><% } %>
+        </div>
+    </td>
+
+    <td>
+        <span class="badge st-<%= slug(a.status) %>"><%= a.status %></span>
+
+        <% if (a.completion_notes) { %>
+            <div class="hint"><strong>Done:</strong> <%= a.completion_notes %></div>
+        <% } %>
+        <% if (a.evidence_path) { %>
+            <div class="hint"><a href="/findings/evidence/<%= encodeURIComponent(a.evidence_path) %>" target="_blank">Evidence file</a></div>
+        <% } %>
+        <% if (a.status === 'Closed' && a.approved_at) { %>
+            <div class="hint">Approved <%= fmtDate(a.approved_at) %><% if (a.approval_comments) { %>: <%= a.approval_comments %><% } %></div>
+        <% } else if (a.approval_comments && a.status !== 'Closed') { %>
+            <div class="hint" style="color:#b02a37;"><strong>Sent back:</strong> <%= a.approval_comments %></div>
+        <% } %>
+    </td>
+
+    <td class="a-actions">
+
+        <% if (a.canWork) { %>
+
+            <% if (a.status === 'Open') { %>
+                <form method="POST" action="/findings/a/<%= a.action_id %>/start" class="inline">
+                    <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                    <button class="btn btn-view btn-sm">Start</button>
+                </form>
+            <% } %>
+
+            <details>
+                <summary class="btn btn-add btn-sm">Submit as done</summary>
+                <form method="POST" action="/findings/a/<%= a.action_id %>/submit" enctype="multipart/form-data" class="mini-form">
+                    <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                    <label>What was done</label>
+                    <textarea name="completion_notes" required></textarea>
+                    <label>Evidence (optional)</label>
+                    <input type="file" name="evidence">
+                    <button class="btn btn-add btn-sm">Send to line manager</button>
+                </form>
+            </details>
+
+        <% } %>
+
+        <% if (a.canApprove) { %>
+
+            <form method="POST" action="/findings/a/<%= a.action_id %>/approve" class="mini-form">
+                <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                <input type="text" name="comments" placeholder="Comment (optional)">
+                <button class="btn btn-add btn-sm">Approve &amp; close</button>
+            </form>
+
+            <details>
+                <summary class="btn btn-return btn-sm">Send back</summary>
+                <form method="POST" action="/findings/a/<%= a.action_id %>/reject" class="mini-form">
+                    <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                    <label>What is missing?</label>
+                    <textarea name="comments" required></textarea>
+                    <button class="btn btn-return btn-sm">Send back</button>
+                </form>
+            </details>
+
+        <% } %>
+
+        <% if (P.admin) { %>
+
+            <details>
+                <summary class="btn btn-edit btn-sm">Edit</summary>
+                <form method="POST" action="/findings/a/<%= a.action_id %>/edit" class="mini-form">
+                    <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                    <label>Action</label>
+                    <textarea name="description" required><%= a.description %></textarea>
+                    <label>Due date</label>
+                    <input type="date" name="due_date" value="<%= fmtDate(a.due_date) %>" required>
+                    <label>Responsible role</label>
+                    <select name="responsible_role_id">
+                        <option value="">-- none --</option>
+                        <% P.roles.forEach(r => { %>
+                            <option value="<%= r.role_id %>" <%= a.responsible_role_id === r.role_id ? 'selected' : '' %>><%= r.role_name %></option>
+                        <% }); %>
+                    </select>
+                    <label>Named person (optional)</label>
+                    <select name="assigned_employee_id">
+                        <option value="">-- role holder --</option>
+                        <% P.employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>" <%= a.assigned_employee_id === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                    <label>Action party</label>
+                    <input type="text" name="action_party" value="<%= a.action_party || '' %>">
+                    <label>Priority</label>
+                    <select name="priority">
+                        <% P.priorities.forEach(p => { %>
+                            <option <%= a.priority === p ? 'selected' : '' %>><%= p %></option>
+                        <% }); %>
+                    </select>
+                    <button class="btn btn-edit btn-sm">Save</button>
+                </form>
+            </details>
+
+            <form method="POST" action="/findings/a/<%= a.action_id %>/delete" class="inline"
+                  onsubmit="return confirm('Delete this action?');">
+                <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                <button class="btn btn-delete btn-sm">Delete</button>
+            </form>
+
+        <% } %>
+
+    </td>
+</tr>

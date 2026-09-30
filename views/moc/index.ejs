@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Management of Change</h1>
+            <div class="hint">Register of all changes by location, change type and approver.</div>
+        </div>
+        <% if (can.add) { %>
+            <a href="/moc/add" class="btn btn-add">+ New Change Request</a>
+        <% } %>
+    </div>
+
+    <%- include('../partials/toolbar') %>
+
+    <form method="GET" class="filters">
+        <% if (location) { %><input type="hidden" name="location" value="<%= location %>"><% } %>
+        <div class="f">
+            <label>Status</label>
+            <select name="status">
+                <option value="">All</option>
+                <% statuses.forEach(s => { %><option <%= filters.status === s ? 'selected' : '' %>><%= s %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Change type</label>
+            <select name="change_type">
+                <option value="">All</option>
+                <% changeTypes.forEach(s => { %><option <%= filters.change_type === s ? 'selected' : '' %>><%= s %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Duration</label>
+            <select name="duration">
+                <option value="">All</option>
+                <% durations.forEach(s => { %><option <%= filters.duration === s ? 'selected' : '' %>><%= s %></option><% }); %>
+            </select>
+        </div>
+        <button class="btn btn-primary">Filter</button>
+    </form>
+
+    <div class="card">
+        <% if (records.length === 0) { %>
+            <div class="empty">No change requests found.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>MOC No.</th><th>Title</th><th>Location</th><th>Change type</th><th>Duration</th>
+                        <th>Risk</th><th>Approver</th><th>Requested</th><th>Status</th>
+                        <th>Findings</th><th>Open actions</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% records.forEach(r => { %>
+                        <tr>
+                            <td><strong><%= r.moc_number %></strong></td>
+                            <td><%= r.title %></td>
+                            <td><%= r.location || '-' %></td>
+                            <td><%= r.change_type %></td>
+                            <td><%= r.duration_type %><% if (r.expiry_date) { %><div class="hint">until <%= fmtDate(r.expiry_date) %></div><% } %></td>
+                            <td><%= r.risk_level || '-' %></td>
+                            <td><%= r.approver_name || '-' %></td>
+                            <td><%= fmtDate(r.request_date) %></td>
+                            <td><span class="badge st-<%= slug(r.status) %>"><%= r.status %></span></td>
+                            <td><%= r.findings %></td>
+                            <td><%= r.open_actions %></td>
+                            <td style="white-space:nowrap;">
+                                <a href="/moc/view/<%= r.moc_id %>" class="btn btn-view btn-sm">View</a>
+                                <a href="/findings/moc/<%= r.moc_id %>" class="btn btn-return btn-sm">Findings</a>
+                                <% if (can.edit) { %><a href="/moc/edit/<%= r.moc_id %>" class="btn btn-edit btn-sm">Edit</a><% } %>
+                                <% if (can.delete) { %>
+                                    <form method="POST" action="/moc/delete/<%= r.moc_id %>" class="inline"
+                                          onsubmit="return confirm('Delete this change request?');">
+                                        <button class="btn btn-delete btn-sm">Delete</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

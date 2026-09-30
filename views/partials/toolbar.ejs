@@ -1,0 +1,50 @@
+<%#
+    Toolbar above a module's list: location filter, summary, upload, reports, findings.
+    Uses res.locals: moduleKey, locations, location, can, trainingNotice.
+    Optional locals: findingsLink (false to hide).
+%>
+<%
+    const mk = (typeof moduleKey !== 'undefined') ? moduleKey : '';
+    const locs = (typeof locations !== 'undefined') ? locations : [];
+    const loc = (typeof location !== 'undefined') ? location : '';
+    const c = (typeof can !== 'undefined') ? can : { add: false };
+    const q = loc ? '?location=' + encodeURIComponent(loc) : '';
+%>
+
+<% if (typeof trainingNotice !== 'undefined' && trainingNotice) { %>
+    <div class="notice"><strong>Training check:</strong> <%= trainingNotice %></div>
+<% } %>
+
+<div class="tb">
+
+    <form method="GET" style="display:flex;gap:8px;align-items:center;margin:0;">
+        <label for="tb-location">Location</label>
+        <select id="tb-location" name="location" onchange="this.form.submit()">
+            <option value="">All locations</option>
+            <% locs.forEach(l => { %>
+                <option value="<%= l %>" <%= l === loc ? 'selected' : '' %>><%= l %></option>
+            <% }); %>
+        </select>
+        <% if (loc) { %><a href="?" style="background:#52656A;">Clear</a><% } %>
+    </form>
+
+    <div class="tb-spacer"></div>
+
+    <a class="tb-sum" href="/tools/<%= mk %>/summary<%= q %>">Summary</a>
+
+    <% if (c.add) { %>
+        <a class="tb-up" href="/tools/<%= mk %>/upload">Bulk upload</a>
+    <% } %>
+
+    <details>
+        <summary class="tb-rep">Report &#9662;</summary>
+        <div class="tb-menu">
+            <a href="/tools/<%= mk %>/report.xlsx<%= q %>">Excel (.xlsx)</a>
+            <a href="/tools/<%= mk %>/report.docx<%= q %>">Word (.docx)</a>
+            <a href="/tools/<%= mk %>/report.pdf<%= q %>">PDF</a>
+        </div>
+    </details>
+
+    <a class="tb-find" href="/dashboard?sheet=findings&amp;module=<%= mk %>">Findings</a>
+
+</div>

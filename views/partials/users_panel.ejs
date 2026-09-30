@@ -1,0 +1,138 @@
+<%#
+    Users sheet of the dashboard (Admin only): add form / edit form, then the user table.
+    locals: data (users, editUser, roles, statuses, meId), employees, flash
+%>
+<%
+    const editing = data.editUser;
+    const typed = (flash && flash.form) ? flash.form : null;
+
+    // What the form shows: what was just typed (after a rejected save), else the saved user, else blank.
+    const val = {
+        username: typed ? typed.username : (editing ? editing.username : ''),
+        email: typed ? typed.email : (editing ? editing.email : ''),
+        role: typed ? typed.role : (editing ? editing.role : 'User'),
+        status: typed ? typed.status : (editing ? editing.status : 'Active'),
+        employee_id: typed ? typed.employee_id : (editing ? editing.employee_id : '')
+    };
+
+    const editingSelf = editing && editing.user_id === data.meId;
+    const isActive = u => String(u.status || '').trim().toLowerCase() === 'active';
+%>
+
+<% if (flash) { %>
+    <% if (flash.type === 'ok') { %>
+        <div class="notice ok"><%= flash.text %></div>
+    <% } else { %>
+        <div class="error"><%= flash.text %></div>
+    <% } %>
+<% } %>
+
+<div class="card">
+
+    <h2><%= editing ? 'Edit user: ' + editing.username : 'Add user' %></h2>
+
+    <form method="POST"
+          action="<%= editing ? '/dashboard/users/' + editing.user_id + '/edit' : '/dashboard/users/add' %>"
+          autocomplete="off">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="u-username">Username</label>
+                <input type="text" id="u-username" name="username" value="<%= val.username %>" required minlength="3" maxlength="50">
+            </div>
+            <div class="form-group">
+                <label for="u-email">Email (used to log in)</label>
+                <input type="email" id="u-email" name="email" value="<%= val.email %>" required maxlength="100">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="u-role">Role</label>
+                <select id="u-role" name="role" <%= editingSelf ? 'disabled' : '' %>>
+                    <% data.roles.forEach(r => { %>
+                        <option <%= String(val.role).toLowerCase() === r.toLowerCase() ? 'selected' : '' %>><%= r %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="u-status">Status</label>
+                <select id="u-status" name="status" <%= editingSelf ? 'disabled' : '' %>>
+                    <% data.statuses.forEach(s => { %>
+                        <option <%= String(val.status).toLowerCase() === s.toLowerCase() ? 'selected' : '' %>><%= s %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="u-employee">Linked employee</label>
+                <select id="u-employee" name="employee_id">
+                    <option value="">-- none --</option>
+                    <% employees.forEach(e => { %>
+                        <option value="<%= e.employee_id %>" <%= Number(val.employee_id) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+                    <% }); %>
+                </select>
+            </div>
+        </div>
+
+        <% if (editingSelf) { %>
+            <div class="hint">This is your own account: your role and status cannot be changed here.</div>
+        <% } %>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="u-password"><%= editing ? 'New password' : 'Password' %></label>
+                <input type="password" id="u-password" name="password" autocomplete="new-password"
+                       <%= editing ? '' : 'required' %> minlength="8" maxlength="72"
+                       placeholder="<%= editing ? 'Leave blank to keep the current password' : 'At least 8 characters' %>">
+            </div>
+            <div class="form-group"></div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn <%= editing ? 'btn-edit' : 'btn-add' %>"><%= editing ? 'Save changes' : 'Add user' %></button>
+            <% if (editing) { %><a href="/dashboard?sheet=users" class="btn btn-back">Cancel</a><% } %>
+        </div>
+
+    </form>
+</div>
+
+<div class="card">
+
+    <h2>All users</h2>
+
+    <% if (data.users.length === 0) { %>
+        <div class="empty">No users yet.</div>
+    <% } else { %>
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Username</th><th>Email</th><th>Role</th><th>Employee</th><th>Status</th><th>Created</th><th></th></tr>
+            </thead>
+            <tbody>
+                <% data.users.forEach(u => { %>
+                    <tr>
+                        <td>
+                            <%= u.username %>
+                            <% if (u.user_id === data.meId) { %><span class="hint">(you)</span><% } %>
+                        </td>
+                        <td><%= u.email %></td>
+                        <td><%= u.role || '-' %></td>
+                        <td><%= u.employee_name || '-' %></td>
+                        <td><span class="badge <%= isActive(u) ? 'st-valid' : 'st-cancelled' %>"><%= u.status || 'Inactive' %></span></td>
+                        <td><%= fmtDate(u.created_at) %></td>
+                        <td style="white-space:nowrap;">
+                            <a href="/dashboard?sheet=users&edit=<%= u.user_id %>" class="btn btn-edit btn-sm">Edit</a>
+                            <% if (u.user_id !== data.meId) { %>
+                                <form method="POST" action="/dashboard/users/<%= u.user_id %>/delete" class="inline"
+                                      onsubmit="return confirm('Delete user <%= String(u.username).replace(/[^A-Za-z0-9._@ -]/g, '') %>? This cannot be undone.');">
+                                    <button class="btn btn-delete btn-sm">Delete</button>
+                                </form>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        </div>
+    <% } %>
+</div>

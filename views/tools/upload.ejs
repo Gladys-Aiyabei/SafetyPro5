@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="<%= mod.path %>"><%= mod.label %></a> &rsaquo; Bulk upload</div>
+            <h1>Bulk upload &mdash; <%= mod.label %></h1>
+            <div class="hint">Add many records at once from an Excel, CSV or Word file.</div>
+        </div>
+        <a href="<%= mod.path %>" class="btn btn-back">Back to <%= mod.label %></a>
+    </div>
+
+    <% if (!allowed.ok) { %>
+
+        <div class="card">
+            <div class="error"><%= allowed.message %></div>
+        </div>
+
+    <% } else { %>
+
+        <% if (result && result.fatal) { %>
+            <div class="error"><%= result.fatal %></div>
+        <% } %>
+
+        <% if (result && !result.fatal) { %>
+            <div class="card">
+                <h2>Upload result</h2>
+                <div class="kpis">
+                    <div class="kpi green"><b><%= result.inserted %></b><span>Records added</span></div>
+                    <div class="kpi red"><b><%= result.errors.length %></b><span>Rows skipped</span></div>
+                </div>
+                <% if (result.unknown && result.unknown.length) { %>
+                    <div class="notice">These columns were not recognised and were ignored: <strong><%= result.unknown.join(', ') %></strong></div>
+                <% } %>
+                <% if (result.errors.length) { %>
+                    <h4>Rows that were not added</h4>
+                    <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Row</th><th>Problem</th></tr></thead>
+                        <tbody>
+                            <% result.errors.forEach(e => { %><tr><td><%= e.row %></td><td><%= e.message %></td></tr><% }); %>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="hint">Fix these rows in your file and upload again. Rows already added are not repeated by the fix, so upload only the corrected rows.</div>
+                <% } %>
+            </div>
+        <% } %>
+
+        <div class="card">
+            <h2>1. Get the template</h2>
+            <p>Download the Excel template, fill one record per row, then upload it. You can also upload your own Excel/CSV file, or a Word document that contains a table (first row = column headings).</p>
+            <a class="btn btn-view" href="/tools/<%= key %>/template.xlsx">Download Excel template</a>
+
+            <h4>Columns</h4>
+            <div class="table-wrap">
+            <table>
+                <thead><tr><th>Column</th><th>Type</th><th>Required</th></tr></thead>
+                <tbody>
+                    <% mod.columns.forEach(c => { %>
+                        <tr><td><%= c.label %></td><td><%= c.type %></td><td><%= c.required ? 'Yes' : '' %></td></tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+            <div class="hint" style="margin-top:8px;">
+                Employees, departments and roles must be written exactly as they appear in the system.
+                Dates: YYYY-MM-DD or DD/MM/YYYY.
+                <% if (key === 'risks') { %> Risk score and level are calculated automatically.<% } %>
+                <% if (key === 'moc') { %> The MOC number is generated if you leave it blank.<% } %>
+                <% if (key === 'training') { %> Uploaded trainings start as "Pending Endorsement".<% } %>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>2. Upload your file</h2>
+            <form method="POST" action="/tools/<%= key %>/upload" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".xlsx,.xls,.csv,.docx" required>
+                <div class="btn-row" style="margin-top:12px;">
+                    <button class="btn btn-add">Upload &amp; add records</button>
+                </div>
+                <div class="hint" style="margin-top:6px;">Maximum 10 MB. Each valid row is added; rows with problems are listed so you can fix them.</div>
+            </form>
+        </div>
+
+    <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

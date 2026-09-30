@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Training &amp; Compliance</h1>
+            <div class="hint">A training is only "Valid" once the employee's line manager has endorsed it with evidence.</div>
+        </div>
+        <% if (can.add) { %>
+            <a href="/training/add" class="btn btn-add">+ Record Training</a>
+        <% } %>
+    </div>
+
+    <%- include('_tabs', { tab }) %>
+
+    <%- include('../partials/toolbar') %>
+
+    <form method="GET" class="filters">
+        <% if (location) { %><input type="hidden" name="location" value="<%= location %>"><% } %>
+        <div class="f">
+            <label>Employee</label>
+            <select name="employee_id">
+                <option value="">All</option>
+                <% employees.forEach(e => { %>
+                    <option value="<%= e.employee_id %>" <%= String(filters.employee_id) === String(e.employee_id) ? 'selected' : '' %>><%= e.employee_name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Status</label>
+            <select name="status">
+                <option value="">All</option>
+                <% ['Pending Endorsement', 'Valid', 'Expired'].forEach(s => { %>
+                    <option <%= filters.status === s ? 'selected' : '' %>><%= s %></option>
+                <% }); %>
+            </select>
+        </div>
+        <button class="btn btn-primary">Filter</button>
+    </form>
+
+    <div class="card">
+        <% if (records.length === 0) { %>
+            <div class="empty">No training records found.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th><th>Role</th><th>Training</th><th>Trained</th><th>Expires</th>
+                        <th>Status</th><th>Endorsement</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% records.forEach(r => { %>
+                        <tr>
+                            <td><%= r.employee_name || '-' %></td>
+                            <td><%= r.role_name || '-' %></td>
+                            <td>
+                                <%= r.training_name %>
+                                <% if (r.certificate_number) { %><div class="hint">Cert: <%= r.certificate_number %></div><% } %>
+                                <% if (r.trainer) { %><div class="hint">Trainer: <%= r.trainer %></div><% } %>
+                            </td>
+                            <td><%= fmtDate(r.training_date) %></td>
+                            <td><%= fmtDate(r.expiry_date) || '-' %></td>
+                            <td><span class="badge st-<%= slug(r.shownStatus) %>"><%= r.shownStatus %></span></td>
+                            <td>
+                                <% if (r.endorsed_at) { %>
+                                    <div class="hint">Endorsed <%= fmtDate(r.endorsed_at) %> by <%= r.endorsed_by_name || 'system' %></div>
+                                    <% if (r.evidence_path) { %><a href="/findings/evidence/<%= encodeURIComponent(r.evidence_path) %>" target="_blank">Evidence</a><% } %>
+                                    <% if (r.endorsement_comments) { %><div class="hint"><%= r.endorsement_comments %></div><% } %>
+                                <% } else { %>
+                                    <div class="hint">Line manager: <%= r.line_manager_name || 'not set' %></div>
+                                    <% if (r.canEndorse) { %>
+                                        <details>
+                                            <summary class="btn btn-add btn-sm">Endorse</summary>
+                                            <form method="POST" action="/training/endorse/<%= r.training_id %>" enctype="multipart/form-data" class="mini-form">
+                                                <label>Evidence (certificate / attendance) *</label>
+                                                <input type="file" name="evidence" required>
+                                                <label>Comments</label>
+                                                <input type="text" name="comments">
+                                                <button class="btn btn-add btn-sm">Endorse &amp; close</button>
+                                            </form>
+                                        </details>
+                                    <% } %>
+                                <% } %>
+                            </td>
+                            <td style="white-space:nowrap;">
+                                <a href="/findings/training/<%= r.training_id %>" class="btn btn-return btn-sm">Findings</a>
+                                <% if (can.edit) { %><a href="/training/edit/<%= r.training_id %>" class="btn btn-edit btn-sm">Edit</a><% } %>
+                                <% if (can.delete) { %>
+                                    <form method="POST" action="/training/delete/<%= r.training_id %>" class="inline"
+                                          onsubmit="return confirm('Delete this training record?');">
+                                        <button class="btn btn-delete btn-sm">Delete</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+<%# Findings -> Root causes -> Actions for one record. locals: P (from engine.buildPanel) %>
+<%
+    const allActions = P.findings.flatMap(f => f.actions).concat(P.generalActions);
+    const kpi = {
+        findingsOpen: P.findings.filter(f => f.status === 'Open').length,
+        findingsClosed: P.findings.filter(f => f.status === 'Closed').length,
+        actionsOpen: allActions.filter(a => a.status !== 'Closed').length,
+        overdue: allActions.filter(a => a.overdue).length,
+        pending: allActions.filter(a => a.status === 'Pending Approval').length
+    };
+%>
+
+<div class="fp">
+
+    <div class="kpis">
+        <div class="kpi"><b><%= P.findings.length %></b><span>Findings</span></div>
+        <div class="kpi red"><b><%= kpi.findingsOpen %></b><span>Open findings</span></div>
+        <div class="kpi green"><b><%= kpi.findingsClosed %></b><span>Closed findings</span></div>
+        <div class="kpi yellow"><b><%= kpi.actionsOpen %></b><span>Open actions</span></div>
+        <div class="kpi blue"><b><%= kpi.pending %></b><span>Awaiting approval</span></div>
+        <div class="kpi red"><b><%= kpi.overdue %></b><span>Overdue</span></div>
+    </div>
+
+    <% if (P.findings.length === 0) { %>
+        <div class="empty">No findings recorded for this record yet.</div>
+    <% } %>
+
+    <% P.findings.forEach(f => { %>
+
+        <div class="finding-card">
+
+            <div class="finding-head">
+                <div>
+                    <span class="badge sev-<%= slug(f.severity) %>"><%= f.severity %></span>
+                    <span class="badge st-<%= slug(f.status) %>"><%= f.status %></span>
+                    <span class="hint">Finding #<%= f.finding_id %> &middot; raised <%= fmtDate(f.raised_at) %></span>
+                </div>
+                <% if (P.admin) { %>
+                    <div class="finding-tools">
+                        <details>
+                            <summary class="btn btn-edit btn-sm">Edit</summary>
+                            <form method="POST" action="/findings/f/<%= f.finding_id %>/edit" class="mini-form">
+                                <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                                <label>Finding</label>
+                                <textarea name="description" required><%= f.description %></textarea>
+                                <label>Severity</label>
+                                <select name="severity">
+                                    <% P.severities.forEach(s => { %>
+                                        <option <%= f.severity === s ? 'selected' : '' %>><%= s %></option>
+                                    <% }); %>
+                                </select>
+                                <button class="btn btn-edit btn-sm">Save</button>
+                            </form>
+                        </details>
+                        <form method="POST" action="/findings/f/<%= f.finding_id %>/delete" class="inline"
+                              onsubmit="return confirm('Delete this finding with its root causes and actions?');">
+                            <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                            <button class="btn btn-delete btn-sm">Delete</button>
+                        </form>
+                    </div>
+                <% } %>
+            </div>
+
+            <p class="finding-text"><%= f.description %></p>
+
+            <!-- Root causes -->
+            <h4>Root causes</h4>
+            <% if (f.rootCauses.length === 0) { %>
+                <div class="hint">None recorded yet.</div>
+            <% } %>
+            <ul class="rc-list">
+                <% f.rootCauses.forEach(rc => { %>
+                    <li>
+                        <span class="badge cat"><%= rc.category %></span>
+                        <%= rc.description %>
+                        <% if (P.admin) { %>
+                            <form method="POST" action="/findings/rc/<%= rc.root_cause_id %>/delete" class="inline"
+                                  onsubmit="return confirm('Delete this root cause?');">
+                                <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                                <button class="link-danger" title="Delete">&times;</button>
+                            </form>
+                        <% } %>
+                    </li>
+                <% }); %>
+            </ul>
+
+            <% if (P.canAdd) { %>
+                <details>
+                    <summary class="btn btn-view btn-sm">+ Add root cause</summary>
+                    <form method="POST" action="/findings/f/<%= f.finding_id %>/root-causes" class="mini-form wide">
+                        <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select name="category">
+                                    <% P.categories.forEach(c => { %><option><%= c %></option><% }); %>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex:2;">
+                                <label>Root cause</label>
+                                <input type="text" name="description" required>
+                            </div>
+                        </div>
+                        <button class="btn btn-add btn-sm">Add root cause</button>
+                    </form>
+                </details>
+            <% } %>
+
+            <!-- Actions -->
+            <h4>Actions</h4>
+            <% if (f.actions.length === 0) { %>
+                <div class="hint">No actions yet. A finding closes only when all of its actions are closed.</div>
+            <% } else { %>
+                <div class="table-wrap">
+                <table class="actions-table">
+                    <thead>
+                        <tr><th>Action</th><th>Due</th><th>Responsible</th><th>Status</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        <% f.actions.forEach(a => { %>
+                            <%- include('action_row', { a, P }) %>
+                        <% }); %>
+                    </tbody>
+                </table>
+                </div>
+            <% } %>
+
+            <% if (P.canAdd) { %>
+                <details>
+                    <summary class="btn btn-add btn-sm">+ Add action</summary>
+                    <%- include('add_action_form', { P, url: '/findings/f/' + f.finding_id + '/actions', rootCauses: f.rootCauses }) %>
+                </details>
+            <% } %>
+
+        </div>
+
+    <% }); %>
+
+    <!-- Add finding -->
+    <% if (P.canAdd) { %>
+        <details class="add-finding" <%= P.findings.length === 0 ? 'open' : '' %>>
+            <summary class="btn btn-add">+ Add finding</summary>
+            <form method="POST" action="/findings/<%= P.moduleKey %>/<%= P.recordId %>/findings" class="mini-form wide">
+                <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+                <label>Finding</label>
+                <textarea name="description" required placeholder="What was found?"></textarea>
+                <label>Severity</label>
+                <select name="severity">
+                    <% P.severities.forEach(s => { %><option <%= s === 'Minor' ? 'selected' : '' %>><%= s %></option><% }); %>
+                </select>
+                <button class="btn btn-add btn-sm">Add finding</button>
+            </form>
+        </details>
+    <% } else { %>
+        <div class="hint">You can view findings for this module but not add them.</div>
+    <% } %>
+
+    <!-- Actions not tied to a finding (e.g. from meeting minutes) -->
+    <% if (P.generalActions.length > 0 || P.moduleKey === 'meetings') { %>
+        <h3 style="margin-top:26px;">Actions not linked to a finding</h3>
+        <% if (P.generalActions.length > 0) { %>
+            <div class="table-wrap">
+            <table class="actions-table">
+                <thead>
+                    <tr><th>Action</th><th>Due</th><th>Responsible</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody>
+                    <% P.generalActions.forEach(a => { %>
+                        <%- include('action_row', { a, P }) %>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } else { %>
+            <div class="hint">None yet.</div>
+        <% } %>
+    <% } %>
+
+    <% if (P.canAdd && (P.moduleKey === 'meetings' || P.generalActions.length > 0)) { %>
+        <details>
+            <summary class="btn btn-add btn-sm">+ Add action</summary>
+            <%- include('add_action_form', { P, url: '/findings/' + P.moduleKey + '/' + P.recordId + '/actions', rootCauses: [] }) %>
+        </details>
+    <% } %>
+
+</div>

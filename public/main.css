@@ -1,21 +1,4176 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= pageTitle %> — HSSEQ Management System</title>
-  <link rel="stylesheet" href="/css/main.css">
-</head>
-<body>
-<div class="app-shell">
-  <%- include('sidebar', { active: active }) %>
+/* =====================================================
+   SAFETYPRO - main.css
+   The one stylesheet for every page.
 
-  <div class="main-area">
-    <%- include('topbar', {
-      pageIcon: pageIcon || '📊',
-      pageTitle: pageTitle,
-      pageSubtitle: pageSubtitle || '',
-      userInitials: userInitials
-    }) %>
+   1. Page styles     scoped to a class on the page's <html> element
+                      (e.g. <html class="pg-audits-index">). They use
+                      :where(), which adds no specificity, so they
+                      cascade exactly as when they lived inline.
+   2. Theme           colour tokens, top nav, list toolbar and the
+                      shared components. Global, except on pages whose
+                      <html> also has the class "no-theme" (login).
+   3. Late page styles  page rules that must come after the theme.
+   ===================================================== */
 
-    <div class="page-content">
+/* =====================================================
+   1. PAGE STYLES
+   ===================================================== */
+
+/* ---- Document management (documents/*) --------------- */
+/* =====================================================
+   Document Management module styles
+   ===================================================== */
+
+:where(html.pg-documents) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+    color: #222;
+}
+
+:where(html.pg-documents) .container {
+    max-width: 1100px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-documents) .container.narrow {
+    max-width: 800px;
+}
+
+:where(html.pg-documents) h1 {
+    margin: 0 0 6px 0;
+}
+
+:where(html.pg-documents) h2 {
+    font-size: 15px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 28px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+:where(html.pg-documents) .subtitle {
+    color: #777;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-documents) .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+
+:where(html.pg-documents) .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+}
+
+:where(html.pg-documents) .btn-add,
+:where(html.pg-documents) .btn-primary { background: #0d6efd; }
+
+:where(html.pg-documents) .btn-view { background: #0dcaf0; color: #000; }
+
+:where(html.pg-documents) .btn-edit { background: #ffc107; color: #000; }
+
+:where(html.pg-documents) .btn-approve { background: #198754; }
+
+:where(html.pg-documents) .btn-publish { background: #6f42c1; }
+
+:where(html.pg-documents) .btn-return { background: #dc3545; }
+
+:where(html.pg-documents) .btn-back { background: #6c757d; }
+
+/* Tables */
+
+:where(html.pg-documents) .table-wrap {
+    overflow-x: auto;
+}
+
+:where(html.pg-documents) table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:where(html.pg-documents) th,
+:where(html.pg-documents) td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+    vertical-align: top;
+}
+
+:where(html.pg-documents) th {
+    background: #f8f9fa;
+    white-space: nowrap;
+}
+
+:where(html.pg-documents) .empty {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+/* Status badges */
+
+:where(html.pg-documents) .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+:where(html.pg-documents) .badge-draft { background: #e9ecef; color: #495057; }
+
+:where(html.pg-documents) .badge-in-review { background: #cff4fc; color: #055160; }
+
+:where(html.pg-documents) .badge-returned { background: #f8d7da; color: #842029; }
+
+:where(html.pg-documents) .badge-approved { background: #fff3cd; color: #664d03; }
+
+:where(html.pg-documents) .badge-published { background: #d1e7dd; color: #0f5132; }
+
+:where(html.pg-documents) .badge-superseded { background: #e2e3e5; color: #41464b; }
+
+/* Filters */
+
+:where(html.pg-documents) .filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-documents) .filters input,
+:where(html.pg-documents) .filters select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Work queue */
+
+:where(html.pg-documents) .queue {
+    background: #fffbea;
+    border: 1px solid #ffe69c;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+}
+
+:where(html.pg-documents) .queue h2 {
+    margin-top: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Forms */
+
+:where(html.pg-documents) .form-row {
+    display: flex;
+    gap: 16px;
+}
+
+:where(html.pg-documents) .form-row .form-group {
+    flex: 1;
+}
+
+:where(html.pg-documents) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-documents) label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+:where(html.pg-documents) input,
+:where(html.pg-documents) select,
+:where(html.pg-documents) textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+:where(html.pg-documents) input[readonly] {
+    background: #f1f3f5;
+}
+
+:where(html.pg-documents) textarea.content {
+    min-height: 380px;
+    line-height: 1.5;
+}
+
+:where(html.pg-documents) .hint {
+    font-size: 12px;
+    color: #777;
+    margin-top: 4px;
+}
+
+:where(html.pg-documents) .error {
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+    border-radius: 5px;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+}
+
+:where(html.pg-documents) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Document view */
+
+:where(html.pg-documents) .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px 24px;
+    margin-top: 16px;
+}
+
+:where(html.pg-documents) .meta-grid label {
+    font-size: 12px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+}
+
+:where(html.pg-documents) .versions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+:where(html.pg-documents) .versions a {
+    padding: 5px 12px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 13px;
+}
+
+:where(html.pg-documents) .versions a.current {
+    background: #172b4d;
+    border-color: #172b4d;
+    color: white;
+}
+
+:where(html.pg-documents) .doc-content {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 20px;
+    background: #fcfcfc;
+}
+
+:where(html.pg-documents) .actions-panel {
+    background: #f8f9fa;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-top: 12px;
+}
+
+:where(html.pg-documents) .actions-panel form {
+    margin-bottom: 16px;
+}
+
+:where(html.pg-documents) .actions-panel form:last-child {
+    margin-bottom: 0;
+}
+
+:where(html.pg-documents) .actions-panel textarea {
+    min-height: 60px;
+}
+
+@media (max-width: 700px) {
+    :where(html.pg-documents) body { padding: 12px; }
+
+    :where(html.pg-documents) .container { padding: 16px; }
+
+    :where(html.pg-documents) .form-row { flex-direction: column; gap: 0; }
+}
+
+/* ---- audits/add.ejs -------------------------------------- */
+:where(html.pg-audits-add) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-audits-add) .container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-audits-add) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-audits-add) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-audits-add) label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+:where(html.pg-audits-add) input,
+:where(html.pg-audits-add) select,
+:where(html.pg-audits-add) textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+:where(html.pg-audits-add) textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+:where(html.pg-audits-add) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-audits-add) .btn-save {
+    background: #198754;
+}
+
+:where(html.pg-audits-add) .btn-cancel {
+    background: #6c757d;
+}
+
+:where(html.pg-audits-add) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- audits/edit.ejs ------------------------------------- */
+:where(html.pg-audits-edit) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-audits-edit) .container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-audits-edit) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-audits-edit) label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+:where(html.pg-audits-edit) input,
+:where(html.pg-audits-edit) select,
+:where(html.pg-audits-edit) textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+:where(html.pg-audits-edit) textarea {
+    height: 120px;
+}
+
+:where(html.pg-audits-edit) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+:where(html.pg-audits-edit) .btn-update {
+    background: #0d6efd;
+}
+
+:where(html.pg-audits-edit) .btn-cancel {
+    background: #6c757d;
+}
+
+:where(html.pg-audits-edit) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- audits/index.ejs ------------------------------------ */
+:where(html.pg-audits-index) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+}
+
+:where(html.pg-audits-index) .container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+:where(html.pg-audits-index) h1 {
+    color: #333;
+}
+
+:where(html.pg-audits-index) .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-audits-index) .btn {
+    text-decoration: none;
+    padding: 9px 15px;
+    border-radius: 5px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+:where(html.pg-audits-index) .btn-add {
+    background: #198754;
+}
+
+:where(html.pg-audits-index) .btn-view {
+    background: #0d6efd;
+}
+
+:where(html.pg-audits-index) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-audits-index) .btn-delete {
+    background: #dc3545;
+}
+
+:where(html.pg-audits-index) table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+:where(html.pg-audits-index) th,
+:where(html.pg-audits-index) td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+:where(html.pg-audits-index) th {
+    background: #343a40;
+    color: white;
+}
+
+:where(html.pg-audits-index) tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+:where(html.pg-audits-index) .actions {
+    display: flex;
+    gap: 5px;
+}
+
+:where(html.pg-audits-index) .actions form {
+    display: inline;
+}
+
+:where(html.pg-audits-index) .status {
+    font-weight: bold;
+}
+
+/* ---- audits/view.ejs ------------------------------------- */
+:where(html.pg-audits-view) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-audits-view) .container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-audits-view) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-audits-view) .detail {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    padding: 12px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+:where(html.pg-audits-view) .label {
+    font-weight: bold;
+    color: #555;
+}
+
+:where(html.pg-audits-view) .value {
+    color: #222;
+}
+
+:where(html.pg-audits-view) .findings {
+    white-space: pre-wrap;
+}
+
+:where(html.pg-audits-view) .btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 10px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+}
+
+:where(html.pg-audits-view) .btn-back {
+    background: #6c757d;
+}
+
+:where(html.pg-audits-view) .btn-edit {
+    background: #ffc107;
+    color: #000;
+    margin-left: 10px;
+}
+
+/* ---- departments/add.ejs, departments/edit.ejs ----------- */
+:where(html.pg-departments-form) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-departments-form) .container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-departments-form) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-departments-form) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-departments-form) label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+:where(html.pg-departments-form) input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+:where(html.pg-departments-form) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-departments-form) .btn-save {
+    background: #198754;
+}
+
+:where(html.pg-departments-form) .btn-cancel {
+    background: #6c757d;
+}
+
+:where(html.pg-departments-form) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- departments/index.ejs ------------------------------- */
+:where(html.pg-departments-index) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-departments-index) .container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-departments-index) h1 {
+    margin-bottom: 20px;
+}
+
+:where(html.pg-departments-index) .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-departments-index) table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:where(html.pg-departments-index) th,
+:where(html.pg-departments-index) td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+:where(html.pg-departments-index) th {
+    background: #f8f9fa;
+}
+
+:where(html.pg-departments-index) .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+:where(html.pg-departments-index) .btn-add {
+    background: #0d6efd;
+}
+
+:where(html.pg-departments-index) .btn-view {
+    background: #0dcaf0;
+}
+
+:where(html.pg-departments-index) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-departments-index) .btn-delete {
+    background: #dc3545;
+}
+
+:where(html.pg-departments-index) .actions {
+    display: flex;
+    gap: 8px;
+}
+
+:where(html.pg-departments-index) form.inline {
+    display: inline;
+}
+
+:where(html.pg-departments-index) .empty {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+/* ---- departments/view.ejs -------------------------------- */
+:where(html.pg-departments-view) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-departments-view) .container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-departments-view) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-departments-view) .field {
+    margin-bottom: 16px;
+}
+
+:where(html.pg-departments-view) .field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #555;
+}
+
+:where(html.pg-departments-view) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-departments-view) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-departments-view) .btn-back {
+    background: #6c757d;
+}
+
+:where(html.pg-departments-view) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- Employees/add.ejs, Employees/edit.ejs --------------- */
+:where(html.pg-employees-form) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-employees-form) .container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-employees-form) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-employees-form) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-employees-form) label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+:where(html.pg-employees-form) input,
+:where(html.pg-employees-form) select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+:where(html.pg-employees-form) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-employees-form) .btn-save {
+    background: #198754;
+}
+
+:where(html.pg-employees-form) .btn-cancel {
+    background: #6c757d;
+}
+
+:where(html.pg-employees-form) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- Employees/index.ejs --------------------------------- */
+:where(html.pg-employees-index) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-employees-index) .container {
+    max-width: 1100px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-employees-index) h1 {
+    margin-bottom: 20px;
+}
+
+:where(html.pg-employees-index) .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-employees-index) table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:where(html.pg-employees-index) th,
+:where(html.pg-employees-index) td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+:where(html.pg-employees-index) th {
+    background: #f8f9fa;
+}
+
+:where(html.pg-employees-index) .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+:where(html.pg-employees-index) .btn-add {
+    background: #0d6efd;
+}
+
+:where(html.pg-employees-index) .btn-view {
+    background: #0dcaf0;
+}
+
+:where(html.pg-employees-index) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-employees-index) .btn-delete {
+    background: #dc3545;
+}
+
+:where(html.pg-employees-index) .actions {
+    display: flex;
+    gap: 8px;
+}
+
+:where(html.pg-employees-index) form.inline {
+    display: inline;
+}
+
+:where(html.pg-employees-index) .empty {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+:where(html.pg-employees-index) .badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+:where(html.pg-employees-index) .badge-active {
+    background: #198754;
+}
+
+:where(html.pg-employees-index) .badge-inactive {
+    background: #6c757d;
+}
+
+/* ---- Employees/view.ejs ---------------------------------- */
+:where(html.pg-employees-view) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-employees-view) .container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-employees-view) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-employees-view) .field {
+    margin-bottom: 16px;
+}
+
+:where(html.pg-employees-view) .field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #555;
+}
+
+:where(html.pg-employees-view) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-employees-view) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-employees-view) .btn-back {
+    background: #6c757d;
+}
+
+:where(html.pg-employees-view) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+:where(html.pg-employees-view) .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+:where(html.pg-employees-view) .badge-active {
+    background: #198754;
+}
+
+:where(html.pg-employees-view) .badge-inactive {
+    background: #6c757d;
+}
+
+/* ---- hsseqdata/add.ejs, hsseqdata/edit.ejs --------------- */
+:where(html.pg-hsseqdata-form) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-hsseqdata-form) .container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-hsseqdata-form) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-hsseqdata-form) .form-row {
+    display: flex;
+    gap: 16px;
+}
+
+:where(html.pg-hsseqdata-form) .form-row .form-group {
+    flex: 1;
+}
+
+:where(html.pg-hsseqdata-form) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-hsseqdata-form) label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+:where(html.pg-hsseqdata-form) input,
+:where(html.pg-hsseqdata-form) select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+:where(html.pg-hsseqdata-form) .section-title {
+    margin-top: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #f0f0f0;
+    font-size: 15px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+:where(html.pg-hsseqdata-form) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-hsseqdata-form) .btn-save {
+    background: #198754;
+}
+
+:where(html.pg-hsseqdata-form) .btn-cancel {
+    background: #6c757d;
+}
+
+:where(html.pg-hsseqdata-form) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- hsseqdata/index.ejs --------------------------------- */
+:where(html.pg-hsseqdata-index) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-hsseqdata-index) .container {
+    max-width: 1300px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-hsseqdata-index) h1 {
+    margin-bottom: 20px;
+}
+
+:where(html.pg-hsseqdata-index) .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-hsseqdata-index) table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:where(html.pg-hsseqdata-index) th,
+:where(html.pg-hsseqdata-index) td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+:where(html.pg-hsseqdata-index) th {
+    background: #f8f9fa;
+}
+
+:where(html.pg-hsseqdata-index) .table-wrap {
+    overflow-x: auto;
+}
+
+:where(html.pg-hsseqdata-index) .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+:where(html.pg-hsseqdata-index) .btn-add {
+    background: #0d6efd;
+}
+
+:where(html.pg-hsseqdata-index) .btn-view {
+    background: #0dcaf0;
+}
+
+:where(html.pg-hsseqdata-index) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-hsseqdata-index) .btn-delete {
+    background: #dc3545;
+}
+
+:where(html.pg-hsseqdata-index) .actions {
+    display: flex;
+    gap: 8px;
+}
+
+:where(html.pg-hsseqdata-index) form.inline {
+    display: inline;
+}
+
+:where(html.pg-hsseqdata-index) .empty {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+/* ---- hsseqdata/view.ejs ---------------------------------- */
+:where(html.pg-hsseqdata-view) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-hsseqdata-view) .container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-hsseqdata-view) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-hsseqdata-view) .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 30px;
+}
+
+:where(html.pg-hsseqdata-view) .field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #555;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+:where(html.pg-hsseqdata-view) .section-title {
+    margin-top: 20px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #f0f0f0;
+    font-size: 15px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    grid-column: 1 / -1;
+}
+
+:where(html.pg-hsseqdata-view) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-hsseqdata-view) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-hsseqdata-view) .btn-back {
+    background: #6c757d;
+}
+
+:where(html.pg-hsseqdata-view) .buttons {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- incidents/add.ejs, incidents/edit.ejs --------------- */
+:where(html.pg-incidents-form) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-incidents-form) .container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-incidents-form) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-incidents-form) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-incidents-form) label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+:where(html.pg-incidents-form) input,
+:where(html.pg-incidents-form) select,
+:where(html.pg-incidents-form) textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+:where(html.pg-incidents-form) textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+:where(html.pg-incidents-form) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-incidents-form) .btn-save {
+    background: #198754;
+}
+
+:where(html.pg-incidents-form) .btn-cancel {
+    background: #6c757d;
+}
+
+:where(html.pg-incidents-form) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ---- incidents/index.ejs --------------------------------- */
+:where(html.pg-incidents-index) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-incidents-index) .container {
+    max-width: 1200px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-incidents-index) h1 {
+    margin-bottom: 20px;
+}
+
+:where(html.pg-incidents-index) .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-incidents-index) table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:where(html.pg-incidents-index) th,
+:where(html.pg-incidents-index) td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+}
+
+:where(html.pg-incidents-index) th {
+    background: #f8f9fa;
+}
+
+:where(html.pg-incidents-index) .table-wrap {
+    overflow-x: auto;
+}
+
+:where(html.pg-incidents-index) .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+:where(html.pg-incidents-index) .btn-add {
+    background: #0d6efd;
+}
+
+:where(html.pg-incidents-index) .btn-view {
+    background: #0dcaf0;
+}
+
+:where(html.pg-incidents-index) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-incidents-index) .btn-delete {
+    background: #dc3545;
+}
+
+:where(html.pg-incidents-index) .actions {
+    display: flex;
+    gap: 8px;
+}
+
+:where(html.pg-incidents-index) form.inline {
+    display: inline;
+}
+
+:where(html.pg-incidents-index) .empty {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+:where(html.pg-incidents-index) .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+:where(html.pg-incidents-index) .severity-low {
+    background: #198754;
+}
+
+:where(html.pg-incidents-index) .severity-medium {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-incidents-index) .severity-high {
+    background: #fd7e14;
+}
+
+:where(html.pg-incidents-index) .severity-critical {
+    background: #dc3545;
+}
+
+:where(html.pg-incidents-index) .severity-default {
+    background: #6c757d;
+}
+
+:where(html.pg-incidents-index) .status-open {
+    background: #dc3545;
+}
+
+:where(html.pg-incidents-index) .status-closed {
+    background: #198754;
+}
+
+:where(html.pg-incidents-index) .status-default {
+    background: #6c757d;
+}
+
+/* ---- incidents/view.ejs ---------------------------------- */
+:where(html.pg-incidents-view) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+:where(html.pg-incidents-view) .container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+:where(html.pg-incidents-view) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-incidents-view) .field {
+    margin-bottom: 16px;
+}
+
+:where(html.pg-incidents-view) .field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #555;
+}
+
+:where(html.pg-incidents-view) .field .text-block {
+    white-space: pre-wrap;
+}
+
+:where(html.pg-incidents-view) .btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+:where(html.pg-incidents-view) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-incidents-view) .btn-back {
+    background: #6c757d;
+}
+
+:where(html.pg-incidents-view) .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+:where(html.pg-incidents-view) .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+:where(html.pg-incidents-view) .severity-low {
+    background: #198754;
+}
+
+:where(html.pg-incidents-view) .severity-medium {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-incidents-view) .severity-high {
+    background: #fd7e14;
+}
+
+:where(html.pg-incidents-view) .severity-critical {
+    background: #dc3545;
+}
+
+:where(html.pg-incidents-view) .severity-default {
+    background: #6c757d;
+}
+
+:where(html.pg-incidents-view) .status-open {
+    background: #dc3545;
+}
+
+:where(html.pg-incidents-view) .status-closed {
+    background: #198754;
+}
+
+:where(html.pg-incidents-view) .status-default {
+    background: #6c757d;
+}
+
+/* ---- inspections/add.ejs --------------------------------- */
+:where(html.pg-inspections-add) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+}
+
+:where(html.pg-inspections-add) .container {
+    width: 700px;
+    max-width: 90%;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+:where(html.pg-inspections-add) h1 {
+    margin-bottom: 25px;
+    color: #333;
+}
+
+:where(html.pg-inspections-add) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-inspections-add) label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+:where(html.pg-inspections-add) input,
+:where(html.pg-inspections-add) select,
+:where(html.pg-inspections-add) textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+:where(html.pg-inspections-add) textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+:where(html.pg-inspections-add) .buttons {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+}
+
+:where(html.pg-inspections-add) button,
+:where(html.pg-inspections-add) .back-btn {
+    padding: 10px 18px;
+    border-radius: 5px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+:where(html.pg-inspections-add) button {
+    background: #198754;
+    color: white;
+}
+
+:where(html.pg-inspections-add) .back-btn {
+    background: #6c757d;
+    color: white;
+}
+
+/* ---- inspections/edit.ejs -------------------------------- */
+:where(html.pg-inspections-edit) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+}
+
+:where(html.pg-inspections-edit) .container {
+    width: 700px;
+    max-width: 90%;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+:where(html.pg-inspections-edit) h1 {
+    margin-bottom: 25px;
+    color: #333;
+}
+
+:where(html.pg-inspections-edit) .form-group {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-inspections-edit) label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+:where(html.pg-inspections-edit) input,
+:where(html.pg-inspections-edit) select,
+:where(html.pg-inspections-edit) textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+:where(html.pg-inspections-edit) textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+:where(html.pg-inspections-edit) .buttons {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+}
+
+:where(html.pg-inspections-edit) button,
+:where(html.pg-inspections-edit) .cancel {
+    padding: 10px 18px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+:where(html.pg-inspections-edit) button {
+    background: #0d6efd;
+    color: white;
+}
+
+:where(html.pg-inspections-edit) .cancel {
+    background: #6c757d;
+    color: white;
+}
+
+/* ---- inspections/index.ejs ------------------------------- */
+:where(html.pg-inspections-index) body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+}
+
+:where(html.pg-inspections-index) .container {
+    width: 95%;
+    margin: 30px auto;
+}
+
+:where(html.pg-inspections-index) .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+:where(html.pg-inspections-index) h1 {
+    color: #333;
+}
+
+:where(html.pg-inspections-index) .btn {
+    padding: 9px 14px;
+    text-decoration: none;
+    border-radius: 5px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+}
+
+:where(html.pg-inspections-index) .btn-add {
+    background: #198754;
+}
+
+:where(html.pg-inspections-index) .btn-view {
+    background: #0d6efd;
+}
+
+:where(html.pg-inspections-index) .btn-edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-inspections-index) .btn-delete {
+    background: #dc3545;
+}
+
+:where(html.pg-inspections-index) table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+:where(html.pg-inspections-index) th {
+    background: #212529;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+:where(html.pg-inspections-index) td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+:where(html.pg-inspections-index) tr:hover {
+    background: #f1f1f1;
+}
+
+:where(html.pg-inspections-index) .actions {
+    display: flex;
+    gap: 5px;
+}
+
+:where(html.pg-inspections-index) .status {
+    padding: 5px 9px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+:where(html.pg-inspections-index) .status-completed {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+:where(html.pg-inspections-index) .status-pending {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+:where(html.pg-inspections-index) .status-failed {
+    background: #f8d7da;
+    color: #842029;
+}
+
+/* ---- inspections/view.ejs -------------------------------- */
+:where(html.pg-inspections-view) body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+}
+
+:where(html.pg-inspections-view) .container {
+    width: 750px;
+    max-width: 90%;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+:where(html.pg-inspections-view) h1 {
+    margin-bottom: 25px;
+}
+
+:where(html.pg-inspections-view) .details {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-top: 1px solid #ddd;
+}
+
+:where(html.pg-inspections-view) .label,
+:where(html.pg-inspections-view) .value {
+    padding: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+:where(html.pg-inspections-view) .label {
+    font-weight: bold;
+    background: #f8f9fa;
+}
+
+:where(html.pg-inspections-view) .findings {
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+:where(html.pg-inspections-view) .buttons {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+}
+
+:where(html.pg-inspections-view) .btn {
+    padding: 10px 18px;
+    text-decoration: none;
+    border-radius: 5px;
+    color: white;
+}
+
+:where(html.pg-inspections-view) .back {
+    background: #6c757d;
+}
+
+:where(html.pg-inspections-view) .edit {
+    background: #ffc107;
+    color: #000;
+}
+
+:where(html.pg-inspections-view) .delete {
+    background: #dc3545;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+/* ---- login.ejs ------------------------------------------- */
+:where(html.pg-login) {
+    --charcoal: #14181C;
+    --panel: #1B2126;
+    --panel-raised: #232B31;
+    --hazard: #F2B705;
+    --rust: #C6512F;
+    --steel-line: #333D45;
+    --ink: #E9EDEF;
+    --ink-muted: #8B96A1;
+}
+
+:where(html.pg-login),
+:where(html.pg-login) * {
+    box-sizing: border-box;
+}
+
+:where(html.pg-login) body {
+    margin: 0;
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(242, 183, 5, 0.08),
+            transparent 35%
+        ),
+        var(--charcoal);
+
+    color: var(--ink);
+
+    font-family: 'Inter', Arial, sans-serif;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+}
+
+:where(html.pg-login) .login-card {
+    width: 100%;
+    max-width: 410px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--steel-line);
+    border-radius: 8px;
+
+    padding: 36px 34px 30px;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* ================================
+   BRAND
+================================= */
+
+:where(html.pg-login) .brand {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 30px;
+
+    font-family: 'Archivo Expanded', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+:where(html.pg-login) .brand-mark {
+    width: 32px;
+    height: 32px;
+
+    background: var(--hazard);
+
+    clip-path: polygon(
+        50% 0%,
+        100% 50%,
+        50% 100%,
+        0% 50%
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--charcoal);
+
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* ================================
+   HEADER
+================================= */
+
+:where(html.pg-login) h1 {
+    margin: 0 0 7px;
+
+    font-family: 'Archivo Expanded', sans-serif;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+:where(html.pg-login) .subtitle {
+    margin: 0 0 28px;
+
+    color: var(--ink-muted);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ================================
+   ERROR MESSAGE
+================================= */
+
+:where(html.pg-login) .error {
+    background: rgba(198, 81, 47, 0.14);
+
+    border: 1px solid rgba(198, 81, 47, 0.45);
+
+    color: #E38562;
+
+    padding: 11px 13px;
+
+    border-radius: 5px;
+
+    margin-bottom: 20px;
+
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+/* ================================
+   FORM
+================================= */
+
+:where(html.pg-login) .field {
+    margin-bottom: 18px;
+}
+
+:where(html.pg-login) label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--ink-muted);
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+:where(html.pg-login) input {
+    width: 100%;
+
+    background: var(--panel-raised);
+
+    border: 1px solid var(--steel-line);
+
+    border-radius: 5px;
+
+    color: var(--ink);
+
+    font-family: 'Inter', sans-serif;
+
+    font-size: 14px;
+
+    padding: 12px 13px;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+:where(html.pg-login) input::placeholder {
+    color: #66717B;
+}
+
+:where(html.pg-login) input:focus {
+    outline: none;
+
+    border-color: var(--hazard);
+
+    box-shadow:
+        0 0 0 2px rgba(242, 183, 5, 0.12);
+}
+
+/* ================================
+   BUTTON
+================================= */
+
+:where(html.pg-login) .login-button {
+    width: 100%;
+
+    margin-top: 4px;
+
+    padding: 13px;
+
+    background: var(--hazard);
+
+    color: #1A1503;
+
+    border: none;
+
+    border-radius: 5px;
+
+    font-family: 'Inter', sans-serif;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        transform 0.1s;
+}
+
+:where(html.pg-login) .login-button:hover {
+    background: #ffcb1f;
+}
+
+:where(html.pg-login) .login-button:active {
+    transform: translateY(1px);
+}
+
+/* ================================
+   FOOTER
+================================= */
+
+:where(html.pg-login) .footer {
+    margin: 22px 0 0;
+
+    text-align: center;
+
+    color: var(--ink-muted);
+
+    font-size: 12.5px;
+
+    line-height: 1.5;
+}
+
+/* ================================
+   MOBILE
+================================= */
+
+@media (max-width: 480px) {
+    :where(html.pg-login) body {
+            padding: 16px;
+        }
+
+    :where(html.pg-login) .login-card {
+            padding: 30px 24px 26px;
+        }
+
+    :where(html.pg-login) h1 {
+            font-size: 21px;
+        }
+}
+
+/* ---- permits.ejs ----------------------------------------- */
+:where(html.pg-permits) {
+  --charcoal: #14181C;
+  --panel: #1B2126;
+  --panel-raised: #232B31;
+  --hazard: #F2B705;
+  --rust: #C6512F;
+  --steel-line: #333D45;
+  --ink: #E9EDEF;
+  --ink-muted: #8B96A1;
+  --safe-green: #4C9A6A;
+}
+
+:where(html.pg-permits),
+:where(html.pg-permits) * { box-sizing: border-box; }
+
+:where(html.pg-permits) body {
+  margin: 0;
+  background: var(--charcoal);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+:where(html.pg-permits) a { color: inherit; text-decoration: none; }
+
+:where(html.pg-permits) header { border-bottom: 1px solid var(--steel-line); padding: 0 32px; }
+
+:where(html.pg-permits) .nav {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+:where(html.pg-permits) .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Archivo Expanded', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+:where(html.pg-permits) .brand-mark {
+  width: 26px;
+  height: 26px;
+  background: var(--hazard);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--charcoal);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+:where(html.pg-permits) .navlinks { display: flex; gap: 22px; font-size: 14px; color: var(--ink-muted); }
+
+:where(html.pg-permits) .navlinks a.active,
+:where(html.pg-permits) .navlinks a:hover { color: var(--ink); }
+
+:where(html.pg-permits) main { max-width: 1180px; margin: 0 auto; padding: 40px 32px 80px; }
+
+:where(html.pg-permits) .page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 26px;
+}
+
+:where(html.pg-permits) .page-head h1 { font-family: 'Archivo Expanded', sans-serif; font-size: 26px; margin: 0; }
+
+:where(html.pg-permits) .page-head p { color: var(--ink-muted); font-size: 14px; margin: 6px 0 0; }
+
+:where(html.pg-permits) .btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13.5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+:where(html.pg-permits) .btn-primary { background: var(--hazard); color: #1A1503; }
+
+:where(html.pg-permits) .btn-primary:hover { background: #ffcb1f; }
+
+:where(html.pg-permits) .btn-ghost { color: var(--ink); border-color: var(--steel-line); background: transparent; }
+
+:where(html.pg-permits) .btn-ghost:hover { border-color: var(--ink-muted); }
+
+:where(html.pg-permits) .btn-danger { color: #E38562; border-color: rgba(198,81,47,0.4); background: rgba(198,81,47,0.1); }
+
+:where(html.pg-permits) .btn-danger:hover { background: rgba(198,81,47,0.2); }
+
+:where(html.pg-permits) .btn-small { padding: 6px 11px; font-size: 12.5px; }
+
+:where(html.pg-permits) .flash {
+  background: rgba(76,154,106,0.14);
+  border: 1px solid rgba(76,154,106,0.4);
+  color: #7BC898;
+  font-size: 13.5px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+:where(html.pg-permits) .flash.error {
+  background: rgba(198,81,47,0.14);
+  border-color: rgba(198,81,47,0.4);
+  color: #E38562;
+}
+
+:where(html.pg-permits) table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  border: 1px solid var(--steel-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+:where(html.pg-permits) thead th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--steel-line);
+  background: var(--panel-raised);
+}
+
+:where(html.pg-permits) tbody td {
+  padding: 13px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--steel-line);
+  vertical-align: top;
+}
+
+:where(html.pg-permits) tbody tr:last-child td { border-bottom: none; }
+
+:where(html.pg-permits) tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+:where(html.pg-permits) td.name { font-weight: 500; }
+
+:where(html.pg-permits) td.sub { color: var(--ink-muted); font-size: 12.5px; }
+
+:where(html.pg-permits) .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+:where(html.pg-permits) .status-pill {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  padding: 4px 9px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+:where(html.pg-permits) .status-pill.approved { background: rgba(76,154,106,0.18); color: #7BC898; }
+
+:where(html.pg-permits) .status-pill.pending { background: rgba(242,183,5,0.16); color: var(--hazard); }
+
+:where(html.pg-permits) .status-pill.expired,
+:where(html.pg-permits) .status-pill.rejected { background: rgba(198,81,47,0.18); color: #E38562; }
+
+:where(html.pg-permits) .status-pill.closed { background: rgba(139,150,161,0.16); color: var(--ink-muted); }
+
+:where(html.pg-permits) .empty { padding: 48px 20px; text-align: center; color: var(--ink-muted); font-size: 14px; }
+
+/* Modal-style form */
+
+:where(html.pg-permits) .overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+:where(html.pg-permits) .overlay.open { display: flex; }
+
+:where(html.pg-permits) .modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--steel-line);
+  border-radius: 6px;
+  padding: 26px 26px 22px;
+}
+
+:where(html.pg-permits) .modal h2 { font-family: 'Archivo Expanded', sans-serif; font-size: 19px; margin: 0 0 20px; }
+
+:where(html.pg-permits) .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+:where(html.pg-permits) .form-grid .span-2 { grid-column: 1 / -1; }
+
+:where(html.pg-permits) .field { margin-bottom: 14px; }
+
+:where(html.pg-permits) label { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 6px; }
+
+:where(html.pg-permits) input[type="text"],
+:where(html.pg-permits) input[type="number"],
+:where(html.pg-permits) input[type="date"],
+:where(html.pg-permits) select,
+:where(html.pg-permits) textarea {
+  width: 100%;
+  background: var(--panel-raised);
+  border: 1px solid var(--steel-line);
+  border-radius: 4px;
+  color: var(--ink);
+  font-size: 14px;
+  padding: 10px 11px;
+  font-family: 'Inter', sans-serif;
+}
+
+:where(html.pg-permits) textarea { resize: vertical; min-height: 64px; }
+
+:where(html.pg-permits) input:focus,
+:where(html.pg-permits) select:focus,
+:where(html.pg-permits) textarea:focus { outline: none; border-color: var(--hazard); }
+
+:where(html.pg-permits) .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+/* ---- ppe.ejs --------------------------------------------- */
+:where(html.pg-ppe) {
+  --charcoal: #14181C;
+  --panel: #1B2126;
+  --panel-raised: #232B31;
+  --hazard: #F2B705;
+  --rust: #C6512F;
+  --steel-line: #333D45;
+  --ink: #E9EDEF;
+  --ink-muted: #8B96A1;
+  --safe-green: #4C9A6A;
+}
+
+:where(html.pg-ppe),
+:where(html.pg-ppe) * { box-sizing: border-box; }
+
+:where(html.pg-ppe) body {
+  margin: 0;
+  background: var(--charcoal);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+:where(html.pg-ppe) a { color: inherit; text-decoration: none; }
+
+:where(html.pg-ppe) header { border-bottom: 1px solid var(--steel-line); padding: 0 32px; }
+
+:where(html.pg-ppe) .nav {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+:where(html.pg-ppe) .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Archivo Expanded', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+:where(html.pg-ppe) .brand-mark {
+  width: 26px;
+  height: 26px;
+  background: var(--hazard);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--charcoal);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+:where(html.pg-ppe) .navlinks { display: flex; gap: 22px; font-size: 14px; color: var(--ink-muted); }
+
+:where(html.pg-ppe) .navlinks a.active,
+:where(html.pg-ppe) .navlinks a:hover { color: var(--ink); }
+
+:where(html.pg-ppe) main { max-width: 1180px; margin: 0 auto; padding: 40px 32px 80px; }
+
+:where(html.pg-ppe) .page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 26px;
+}
+
+:where(html.pg-ppe) .page-head h1 { font-family: 'Archivo Expanded', sans-serif; font-size: 26px; margin: 0; }
+
+:where(html.pg-ppe) .page-head p { color: var(--ink-muted); font-size: 14px; margin: 6px 0 0; }
+
+:where(html.pg-ppe) .btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13.5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+:where(html.pg-ppe) .btn-primary { background: var(--hazard); color: #1A1503; }
+
+:where(html.pg-ppe) .btn-primary:hover { background: #ffcb1f; }
+
+:where(html.pg-ppe) .btn-ghost { color: var(--ink); border-color: var(--steel-line); background: transparent; }
+
+:where(html.pg-ppe) .btn-ghost:hover { border-color: var(--ink-muted); }
+
+:where(html.pg-ppe) .btn-danger { color: #E38562; border-color: rgba(198,81,47,0.4); background: rgba(198,81,47,0.1); }
+
+:where(html.pg-ppe) .btn-danger:hover { background: rgba(198,81,47,0.2); }
+
+:where(html.pg-ppe) .btn-small { padding: 6px 11px; font-size: 12.5px; }
+
+:where(html.pg-ppe) .flash {
+  background: rgba(76,154,106,0.14);
+  border: 1px solid rgba(76,154,106,0.4);
+  color: #7BC898;
+  font-size: 13.5px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+:where(html.pg-ppe) .flash.error {
+  background: rgba(198,81,47,0.14);
+  border-color: rgba(198,81,47,0.4);
+  color: #E38562;
+}
+
+:where(html.pg-ppe) table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  border: 1px solid var(--steel-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+:where(html.pg-ppe) thead th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--steel-line);
+  background: var(--panel-raised);
+}
+
+:where(html.pg-ppe) tbody td {
+  padding: 13px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--steel-line);
+  vertical-align: top;
+}
+
+:where(html.pg-ppe) tbody tr:last-child td { border-bottom: none; }
+
+:where(html.pg-ppe) tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+:where(html.pg-ppe) td.name { font-weight: 500; }
+
+:where(html.pg-ppe) td.sub { color: var(--ink-muted); font-size: 12.5px; }
+
+:where(html.pg-ppe) .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+:where(html.pg-ppe) .status-pill {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  padding: 4px 9px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+:where(html.pg-ppe) .status-pill.available { background: rgba(76,154,106,0.18); color: #7BC898; }
+
+:where(html.pg-ppe) .status-pill.in-use { background: rgba(242,183,5,0.16); color: var(--hazard); }
+
+:where(html.pg-ppe) .status-pill.damaged,
+:where(html.pg-ppe) .status-pill.expired { background: rgba(198,81,47,0.18); color: #E38562; }
+
+:where(html.pg-ppe) .status-pill.retired { background: rgba(139,150,161,0.16); color: var(--ink-muted); }
+
+:where(html.pg-ppe) .qty-low { color: #E38562; font-weight: 600; }
+
+:where(html.pg-ppe) .empty { padding: 48px 20px; text-align: center; color: var(--ink-muted); font-size: 14px; }
+
+/* Modal-style form */
+
+:where(html.pg-ppe) .overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+:where(html.pg-ppe) .overlay.open { display: flex; }
+
+:where(html.pg-ppe) .modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--steel-line);
+  border-radius: 6px;
+  padding: 26px 26px 22px;
+}
+
+:where(html.pg-ppe) .modal h2 { font-family: 'Archivo Expanded', sans-serif; font-size: 19px; margin: 0 0 20px; }
+
+:where(html.pg-ppe) .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+:where(html.pg-ppe) .form-grid .span-2 { grid-column: 1 / -1; }
+
+:where(html.pg-ppe) .field { margin-bottom: 14px; }
+
+:where(html.pg-ppe) label { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 6px; }
+
+:where(html.pg-ppe) input[type="text"],
+:where(html.pg-ppe) input[type="number"],
+:where(html.pg-ppe) input[type="date"],
+:where(html.pg-ppe) select {
+  width: 100%;
+  background: var(--panel-raised);
+  border: 1px solid var(--steel-line);
+  border-radius: 4px;
+  color: var(--ink);
+  font-size: 14px;
+  padding: 10px 11px;
+  font-family: 'Inter', sans-serif;
+}
+
+:where(html.pg-ppe) input:focus,
+:where(html.pg-ppe) select:focus { outline: none; border-color: var(--hazard); }
+
+:where(html.pg-ppe) .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+/* ---- risk_assesments.ejs --------------------------------- */
+:where(html.pg-risk-assesments) {
+  --charcoal: #14181C;
+  --panel: #1B2126;
+  --panel-raised: #232B31;
+  --hazard: #F2B705;
+  --rust: #C6512F;
+  --steel-line: #333D45;
+  --ink: #E9EDEF;
+  --ink-muted: #8B96A1;
+  --safe-green: #4C9A6A;
+}
+
+:where(html.pg-risk-assesments),
+:where(html.pg-risk-assesments) * { box-sizing: border-box; }
+
+:where(html.pg-risk-assesments) body {
+  margin: 0;
+  background: var(--charcoal);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+:where(html.pg-risk-assesments) a { color: inherit; text-decoration: none; }
+
+:where(html.pg-risk-assesments) header { border-bottom: 1px solid var(--steel-line); padding: 0 32px; }
+
+:where(html.pg-risk-assesments) .nav {
+  max-width: 1220px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+:where(html.pg-risk-assesments) .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Archivo Expanded', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+:where(html.pg-risk-assesments) .brand-mark {
+  width: 26px;
+  height: 26px;
+  background: var(--hazard);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--charcoal);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+:where(html.pg-risk-assesments) .navlinks { display: flex; gap: 22px; font-size: 14px; color: var(--ink-muted); }
+
+:where(html.pg-risk-assesments) .navlinks a.active,
+:where(html.pg-risk-assesments) .navlinks a:hover { color: var(--ink); }
+
+:where(html.pg-risk-assesments) main { max-width: 1220px; margin: 0 auto; padding: 40px 32px 80px; }
+
+:where(html.pg-risk-assesments) .page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 26px;
+}
+
+:where(html.pg-risk-assesments) .page-head h1 { font-family: 'Archivo Expanded', sans-serif; font-size: 26px; margin: 0; }
+
+:where(html.pg-risk-assesments) .page-head p { color: var(--ink-muted); font-size: 14px; margin: 6px 0 0; }
+
+:where(html.pg-risk-assesments) .btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13.5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+:where(html.pg-risk-assesments) .btn-primary { background: var(--hazard); color: #1A1503; }
+
+:where(html.pg-risk-assesments) .btn-primary:hover { background: #ffcb1f; }
+
+:where(html.pg-risk-assesments) .btn-ghost { color: var(--ink); border-color: var(--steel-line); background: transparent; }
+
+:where(html.pg-risk-assesments) .btn-ghost:hover { border-color: var(--ink-muted); }
+
+:where(html.pg-risk-assesments) .btn-danger { color: #E38562; border-color: rgba(198,81,47,0.4); background: rgba(198,81,47,0.1); }
+
+:where(html.pg-risk-assesments) .btn-danger:hover { background: rgba(198,81,47,0.2); }
+
+:where(html.pg-risk-assesments) .btn-small { padding: 6px 11px; font-size: 12.5px; }
+
+:where(html.pg-risk-assesments) .flash {
+  background: rgba(76,154,106,0.14);
+  border: 1px solid rgba(76,154,106,0.4);
+  color: #7BC898;
+  font-size: 13.5px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+:where(html.pg-risk-assesments) .flash.error {
+  background: rgba(198,81,47,0.14);
+  border-color: rgba(198,81,47,0.4);
+  color: #E38562;
+}
+
+:where(html.pg-risk-assesments) table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  border: 1px solid var(--steel-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+:where(html.pg-risk-assesments) thead th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--steel-line);
+  background: var(--panel-raised);
+}
+
+:where(html.pg-risk-assesments) tbody td {
+  padding: 13px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--steel-line);
+  vertical-align: top;
+}
+
+:where(html.pg-risk-assesments) tbody tr:last-child td { border-bottom: none; }
+
+:where(html.pg-risk-assesments) tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+:where(html.pg-risk-assesments) td.name { font-weight: 500; }
+
+:where(html.pg-risk-assesments) td.sub { color: var(--ink-muted); font-size: 12.5px; }
+
+:where(html.pg-risk-assesments) .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+:where(html.pg-risk-assesments) .risk-pill {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  padding: 4px 9px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+:where(html.pg-risk-assesments) .risk-pill.low { background: rgba(76,154,106,0.18); color: #7BC898; }
+
+:where(html.pg-risk-assesments) .risk-pill.medium { background: rgba(242,183,5,0.16); color: var(--hazard); }
+
+:where(html.pg-risk-assesments) .risk-pill.high { background: rgba(198,81,47,0.18); color: #E38562; }
+
+:where(html.pg-risk-assesments) .risk-pill.critical { background: rgba(198,81,47,0.32); color: #FF8B6A; font-weight: 700; }
+
+:where(html.pg-risk-assesments) .empty { padding: 48px 20px; text-align: center; color: var(--ink-muted); font-size: 14px; }
+
+/* Modal-style form */
+
+:where(html.pg-risk-assesments) .overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+:where(html.pg-risk-assesments) .overlay.open { display: flex; }
+
+:where(html.pg-risk-assesments) .modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--steel-line);
+  border-radius: 6px;
+  padding: 26px 26px 22px;
+}
+
+:where(html.pg-risk-assesments) .modal h2 { font-family: 'Archivo Expanded', sans-serif; font-size: 19px; margin: 0 0 20px; }
+
+:where(html.pg-risk-assesments) .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+:where(html.pg-risk-assesments) .form-grid .span-2 { grid-column: 1 / -1; }
+
+:where(html.pg-risk-assesments) .field { margin-bottom: 14px; }
+
+:where(html.pg-risk-assesments) label { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 6px; }
+
+:where(html.pg-risk-assesments) input[type="text"],
+:where(html.pg-risk-assesments) input[type="number"],
+:where(html.pg-risk-assesments) input[type="date"],
+:where(html.pg-risk-assesments) select,
+:where(html.pg-risk-assesments) textarea {
+  width: 100%;
+  background: var(--panel-raised);
+  border: 1px solid var(--steel-line);
+  border-radius: 4px;
+  color: var(--ink);
+  font-size: 14px;
+  padding: 10px 11px;
+  font-family: 'Inter', sans-serif;
+}
+
+:where(html.pg-risk-assesments) textarea { resize: vertical; min-height: 64px; }
+
+:where(html.pg-risk-assesments) input:focus,
+:where(html.pg-risk-assesments) select:focus,
+:where(html.pg-risk-assesments) textarea:focus { outline: none; border-color: var(--hazard); }
+
+:where(html.pg-risk-assesments) input[readonly] { color: var(--ink-muted); cursor: not-allowed; }
+
+:where(html.pg-risk-assesments) .computed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--panel-raised);
+  border: 1px solid var(--steel-line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+:where(html.pg-risk-assesments) .computed-row strong { color: var(--ink); font-family: 'IBM Plex Mono', monospace; }
+
+:where(html.pg-risk-assesments) .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+/* ---- training_gap_analysis.ejs --------------------------- */
+:where(html.pg-training-gap-analysis) {
+    --charcoal: #14181C;
+    --panel: #1B2126;
+    --panel-raised: #232B31;
+    --hazard: #F2B705;
+    --rust: #C6512F;
+    --steel-line: #333D45;
+    --ink: #E9EDEF;
+    --ink-muted: #8B96A1;
+    --safe-green: #4C9A6A;
+}
+
+:where(html.pg-training-gap-analysis),
+:where(html.pg-training-gap-analysis) * {
+    box-sizing: border-box;
+}
+
+:where(html.pg-training-gap-analysis) body {
+    margin: 0;
+    background: var(--charcoal);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+:where(html.pg-training-gap-analysis) a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+:where(html.pg-training-gap-analysis) header {
+    border-bottom: 1px solid var(--steel-line);
+    padding: 0 32px;
+}
+
+:where(html.pg-training-gap-analysis) .nav {
+    max-width: 1220px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 64px;
+}
+
+:where(html.pg-training-gap-analysis) .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-family: 'Archivo Expanded', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+
+    white-space: nowrap;
+}
+
+:where(html.pg-training-gap-analysis) .brand-mark {
+    width: 28px;
+    height: 28px;
+
+    background: var(--hazard);
+
+    clip-path: polygon(
+        50% 0%,
+        100% 50%,
+        50% 100%,
+        0% 50%
+    );
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--charcoal);
+
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 10px;
+}
+
+:where(html.pg-training-gap-analysis) .navlinks {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+
+    font-size: 14px;
+    color: var(--ink-muted);
+}
+
+:where(html.pg-training-gap-analysis) .navlinks a {
+    transition: color 0.15s ease;
+}
+
+:where(html.pg-training-gap-analysis) .navlinks a:hover,
+:where(html.pg-training-gap-analysis) .navlinks a.active {
+    color: var(--ink);
+}
+
+/* ==========================================
+   MAIN
+========================================== */
+
+:where(html.pg-training-gap-analysis) main {
+    max-width: 1220px;
+    margin: 0 auto;
+
+    padding: 40px 32px 80px;
+}
+
+:where(html.pg-training-gap-analysis) .page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 26px;
+}
+
+:where(html.pg-training-gap-analysis) .page-head h1 {
+    font-family: 'Archivo Expanded', sans-serif;
+
+    font-size: 26px;
+    line-height: 1.2;
+
+    margin: 0;
+}
+
+:where(html.pg-training-gap-analysis) .page-head p {
+    color: var(--ink-muted);
+
+    font-size: 14px;
+
+    margin: 7px 0 0;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+:where(html.pg-training-gap-analysis) .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 16px;
+
+    border-radius: 4px;
+
+    font-weight: 600;
+    font-size: 13.5px;
+
+    border: 1px solid transparent;
+
+    cursor: pointer;
+
+    font-family: 'Inter', sans-serif;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+:where(html.pg-training-gap-analysis) .btn-primary {
+    background: var(--hazard);
+    color: #1A1503;
+}
+
+:where(html.pg-training-gap-analysis) .btn-primary:hover {
+    background: #ffcb1f;
+}
+
+:where(html.pg-training-gap-analysis) .btn-ghost {
+    color: var(--ink);
+    border-color: var(--steel-line);
+    background: transparent;
+}
+
+:where(html.pg-training-gap-analysis) .btn-ghost:hover {
+    border-color: var(--ink-muted);
+    background: rgba(255,255,255,0.03);
+}
+
+:where(html.pg-training-gap-analysis) .btn-danger {
+    color: #E38562;
+
+    border-color: rgba(198,81,47,0.4);
+
+    background: rgba(198,81,47,0.1);
+}
+
+:where(html.pg-training-gap-analysis) .btn-danger:hover {
+    background: rgba(198,81,47,0.2);
+}
+
+:where(html.pg-training-gap-analysis) .btn-small {
+    padding: 6px 11px;
+    font-size: 12.5px;
+}
+
+/* ==========================================
+   FLASH MESSAGES
+========================================== */
+
+:where(html.pg-training-gap-analysis) .flash {
+    background: rgba(76,154,106,0.14);
+
+    border: 1px solid rgba(76,154,106,0.4);
+
+    color: #7BC898;
+
+    font-size: 13.5px;
+
+    padding: 10px 14px;
+
+    border-radius: 4px;
+
+    margin-bottom: 20px;
+}
+
+:where(html.pg-training-gap-analysis) .flash.error {
+    background: rgba(198,81,47,0.14);
+
+    border-color: rgba(198,81,47,0.4);
+
+    color: #E38562;
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+:where(html.pg-training-gap-analysis) .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+
+    border: 1px solid var(--steel-line);
+
+    border-radius: 6px;
+}
+
+:where(html.pg-training-gap-analysis) table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: var(--panel);
+
+    min-width: 700px;
+}
+
+:where(html.pg-training-gap-analysis) thead th {
+    text-align: left;
+
+    font-size: 12px;
+
+    color: var(--ink-muted);
+
+    font-weight: 600;
+
+    padding: 12px 16px;
+
+    border-bottom: 1px solid var(--steel-line);
+
+    background: var(--panel-raised);
+}
+
+:where(html.pg-training-gap-analysis) tbody td {
+    padding: 13px 16px;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid var(--steel-line);
+
+    vertical-align: middle;
+}
+
+:where(html.pg-training-gap-analysis) tbody tr:last-child td {
+    border-bottom: none;
+}
+
+:where(html.pg-training-gap-analysis) tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+}
+
+:where(html.pg-training-gap-analysis) td.name {
+    font-weight: 500;
+}
+
+:where(html.pg-training-gap-analysis) .row-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* ==========================================
+   VALIDITY PILL
+========================================== */
+
+:where(html.pg-training-gap-analysis) .pill {
+    display: inline-block;
+
+    font-family: 'IBM Plex Mono', monospace;
+
+    font-size: 11.5px;
+
+    padding: 4px 9px;
+
+    border-radius: 3px;
+
+    white-space: nowrap;
+
+    background: rgba(242,183,5,0.16);
+
+    color: var(--hazard);
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+:where(html.pg-training-gap-analysis) .empty {
+    padding: 48px 20px;
+
+    text-align: center;
+
+    color: var(--ink-muted);
+
+    font-size: 14px;
+}
+
+/* ==========================================
+   MODAL
+========================================== */
+
+:where(html.pg-training-gap-analysis) .overlay {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.65);
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 50;
+
+    padding: 20px;
+}
+
+:where(html.pg-training-gap-analysis) .overlay.open {
+    display: flex;
+}
+
+:where(html.pg-training-gap-analysis) .modal {
+    width: 100%;
+
+    max-width: 460px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: var(--panel);
+
+    border: 1px solid var(--steel-line);
+
+    border-radius: 6px;
+
+    padding: 26px;
+}
+
+:where(html.pg-training-gap-analysis) .modal h2 {
+    font-family: 'Archivo Expanded', sans-serif;
+
+    font-size: 19px;
+
+    margin: 0 0 20px;
+}
+
+:where(html.pg-training-gap-analysis) .field {
+    margin-bottom: 16px;
+}
+
+:where(html.pg-training-gap-analysis) label {
+    display: block;
+
+    font-size: 12.5px;
+
+    color: var(--ink-muted);
+
+    margin-bottom: 6px;
+}
+
+:where(html.pg-training-gap-analysis) input[type="text"],
+:where(html.pg-training-gap-analysis) input[type="number"],
+:where(html.pg-training-gap-analysis) select {
+    width: 100%;
+
+    background: var(--panel-raised);
+
+    border: 1px solid var(--steel-line);
+
+    border-radius: 4px;
+
+    color: var(--ink);
+
+    font-size: 14px;
+
+    padding: 10px 11px;
+
+    font-family: 'Inter', sans-serif;
+}
+
+:where(html.pg-training-gap-analysis) select {
+    cursor: pointer;
+}
+
+:where(html.pg-training-gap-analysis) input:focus,
+:where(html.pg-training-gap-analysis) select:focus {
+    outline: none;
+
+    border-color: var(--hazard);
+}
+
+:where(html.pg-training-gap-analysis) .hint {
+    font-size: 12px;
+
+    color: var(--ink-muted);
+
+    margin-top: 7px;
+
+    line-height: 1.5;
+}
+
+:where(html.pg-training-gap-analysis) .modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 900px) {
+    :where(html.pg-training-gap-analysis) header {
+            padding: 0 18px;
+        }
+
+    :where(html.pg-training-gap-analysis) .nav {
+            flex-direction: column;
+
+            align-items: flex-start;
+
+            padding: 16px 0;
+
+            gap: 14px;
+        }
+
+    :where(html.pg-training-gap-analysis) .navlinks {
+            width: 100%;
+
+            overflow-x: auto;
+
+            padding-bottom: 4px;
+
+            gap: 18px;
+
+            white-space: nowrap;
+        }
+
+    :where(html.pg-training-gap-analysis) main {
+            padding: 28px 18px 60px;
+        }
+
+    :where(html.pg-training-gap-analysis) .page-head {
+            align-items: flex-start;
+
+            flex-direction: column;
+        }
+
+    :where(html.pg-training-gap-analysis) .page-head .btn {
+            width: 100%;
+        }
+}
+
+@media (max-width: 500px) {
+    :where(html.pg-training-gap-analysis) .page-head h1 {
+            font-size: 22px;
+        }
+
+    :where(html.pg-training-gap-analysis) .modal {
+            padding: 22px;
+        }
+
+    :where(html.pg-training-gap-analysis) .modal-actions {
+            flex-direction: column-reverse;
+        }
+
+    :where(html.pg-training-gap-analysis) .modal-actions .btn {
+            width: 100%;
+        }
+}
+
+
+/* =====================================================
+   2. THEME
+   ===================================================== */
+
+/* =====================================================
+   SAFETYPRO THEME
+   Jungle green (primary), red, blue and yellow.
+   - Section 1: colour tokens
+   - Section 2: overrides for the older standalone pages (global, uses !important)
+   - Section 3: top navigation + list toolbar (global)
+   - Section 4: components for the newer pages (scoped under .page)
+   ===================================================== */
+
+:where(html:not(.no-theme)) {
+    --green: #29AB87;          /* jungle green */
+    --green-dark: #1B7A5E;
+    --green-deep: #0E4D3A;
+    --green-soft: #E4F5EE;
+    --red: #D62839;
+    --red-dark: #A81E2C;
+    --red-soft: #FDECEE;
+    --blue: #1F5FBF;
+    --blue-dark: #174A96;
+    --blue-soft: #E7F0FD;
+    --yellow: #F7B801;
+    --yellow-dark: #C99400;
+    --yellow-soft: #FFF5D1;
+    --ink: #1E2A2A;
+    --muted: #64747A;
+    --line: #DCE6E2;
+    --page-bg: #F1F7F4;
+}
+
+/* =====================================================
+   2. OLDER STANDALONE PAGES
+   ===================================================== */
+
+:where(html:not(.no-theme)) body {
+    background: var(--page-bg) !important;
+    color: var(--ink);
+}
+
+:where(html:not(.no-theme)) .container,
+:where(html:not(.no-theme)) main {
+    border-top: 4px solid var(--green);
+}
+
+:where(html:not(.no-theme)) h1 {
+    color: var(--green-deep);
+}
+
+:where(html:not(.no-theme)) th {
+    background: var(--green-soft) !important;
+    color: var(--green-deep);
+}
+
+:where(html:not(.no-theme)) .btn-add,
+:where(html:not(.no-theme)) .btn-save,
+:where(html:not(.no-theme)) .btn-primary {
+    background: var(--green) !important;
+    color: #fff !important;
+}
+
+:where(html:not(.no-theme)) .btn-add:hover,
+:where(html:not(.no-theme)) .btn-save:hover,
+:where(html:not(.no-theme)) .btn-primary:hover {
+    background: var(--green-dark) !important;
+}
+
+:where(html:not(.no-theme)) .btn-view {
+    background: var(--blue) !important;
+    color: #fff !important;
+}
+
+:where(html:not(.no-theme)) .btn-edit {
+    background: var(--yellow) !important;
+    color: #1E1E1E !important;
+}
+
+:where(html:not(.no-theme)) .btn-delete,
+:where(html:not(.no-theme)) .btn-danger {
+    background: var(--red) !important;
+    color: #fff !important;
+}
+
+:where(html:not(.no-theme)) .btn-back,
+:where(html:not(.no-theme)) .btn-cancel {
+    background: #52656A !important;
+    color: #fff !important;
+}
+
+:where(html:not(.no-theme)) .status-open { background: var(--red) !important; }
+
+:where(html:not(.no-theme)) .status-closed { background: var(--green) !important; }
+
+:where(html:not(.no-theme)) .severity-low { background: var(--green) !important; }
+
+:where(html:not(.no-theme)) .severity-medium { background: var(--yellow) !important; color: #1E1E1E !important; }
+
+:where(html:not(.no-theme)) .severity-high { background: #E8590C !important; }
+
+:where(html:not(.no-theme)) .severity-critical { background: var(--red) !important; }
+
+/* Permits, PPE, risk assessment and requirements pages were built as dark pages.
+   Their own variables are re-mapped here onto the light jungle-green palette. */
+
+:where(html:not(.no-theme)) {
+    --charcoal: var(--page-bg);
+    --panel: #ffffff;
+    --panel-raised: var(--green-soft);
+    --steel-line: var(--line);
+    --ink-muted: var(--muted);
+    --hazard: var(--yellow);
+    --rust: var(--red);
+    --safe-green: var(--green);
+}
+
+:where(html:not(.no-theme)) .btn-ghost {
+    color: var(--green-deep) !important;
+    background: #ffffff !important;
+    border-color: #b9cfc7 !important;
+}
+
+:where(html:not(.no-theme)) .btn-ghost:hover {
+    border-color: var(--green) !important;
+    background: var(--green-soft) !important;
+}
+
+:where(html:not(.no-theme)) .flash {
+    background: var(--green-soft) !important;
+    border-color: var(--green) !important;
+    color: var(--green-dark) !important;
+}
+
+:where(html:not(.no-theme)) .flash.error {
+    background: var(--red-soft) !important;
+    border-color: #f3b6bd !important;
+    color: var(--red-dark) !important;
+}
+
+:where(html:not(.no-theme)) tbody tr:hover { background: rgba(41, 171, 135, 0.07) !important; }
+
+:where(html:not(.no-theme)) .status-pill.approved,
+:where(html:not(.no-theme)) .status-pill.active,
+:where(html:not(.no-theme)) .status-pill.available,
+:where(html:not(.no-theme)) .status-pill.valid,
+:where(html:not(.no-theme)) .status-pill.completed { background: var(--green-soft) !important; color: var(--green-dark) !important; }
+
+:where(html:not(.no-theme)) .status-pill.pending,
+:where(html:not(.no-theme)) .status-pill.in-use,
+:where(html:not(.no-theme)) .status-pill.planned { background: var(--yellow-soft) !important; color: #7A5A00 !important; }
+
+:where(html:not(.no-theme)) .status-pill.rejected,
+:where(html:not(.no-theme)) .status-pill.expired,
+:where(html:not(.no-theme)) .status-pill.cancelled { background: var(--red-soft) !important; color: var(--red-dark) !important; }
+
+:where(html:not(.no-theme)) .status-pill.closed,
+:where(html:not(.no-theme)) .status-pill.retired { background: #e7ecea !important; color: #52656A !important; }
+
+:where(html:not(.no-theme)) .risk-pill.low { background: var(--green-soft) !important; color: var(--green-dark) !important; }
+
+:where(html:not(.no-theme)) .risk-pill.medium { background: var(--yellow-soft) !important; color: #7A5A00 !important; }
+
+:where(html:not(.no-theme)) .risk-pill.high { background: #FFE0CC !important; color: #A34400 !important; }
+
+:where(html:not(.no-theme)) .risk-pill.critical { background: var(--red) !important; color: #ffffff !important; }
+
+:where(html:not(.no-theme)) .qty-low { color: var(--red-dark) !important; }
+
+:where(html:not(.no-theme)) .pill { background: var(--yellow-soft) !important; color: #7A5A00 !important; }
+
+/* =====================================================
+   3. TOP NAVIGATION + LIST TOOLBAR
+   ===================================================== */
+
+:where(html:not(.no-theme)) .topnav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    background: var(--green-deep);
+    color: #fff;
+    padding: 0 18px;
+    margin: 0 0 22px 0;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border-bottom: 4px solid var(--yellow);
+}
+
+:where(html:not(.no-theme)) .topnav .brand {
+    font-weight: bold;
+    font-size: 17px;
+    padding: 12px 14px 12px 0;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+:where(html:not(.no-theme)) .topnav .brand i {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--yellow);
+    color: var(--green-deep);
+    font-style: normal;
+    font-size: 13px;
+    line-height: 26px;
+    text-align: center;
+}
+
+:where(html:not(.no-theme)) .topnav a,
+:where(html:not(.no-theme)) .topnav .grp > span {
+    color: #E1F3EC;
+    text-decoration: none;
+    padding: 14px 11px;
+    display: block;
+    cursor: pointer;
+}
+
+:where(html:not(.no-theme)) .topnav a:hover,
+:where(html:not(.no-theme)) .topnav .grp:hover > span,
+:where(html:not(.no-theme)) .topnav .grp:focus-within > span {
+    background: var(--green-dark);
+    color: #fff;
+}
+
+:where(html:not(.no-theme)) .topnav a.on,
+:where(html:not(.no-theme)) .topnav .grp.on > span {
+    color: #fff;
+    box-shadow: inset 0 -3px 0 var(--yellow);
+}
+
+:where(html:not(.no-theme)) .topnav .grp {
+    position: relative;
+}
+
+:where(html:not(.no-theme)) .topnav .grp > span::after {
+    content: " \25BE";
+    font-size: 10px;
+}
+
+:where(html:not(.no-theme)) .topnav .menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 190px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--green);
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
+    z-index: 50;
+}
+
+:where(html:not(.no-theme)) .topnav .grp:hover .menu,
+:where(html:not(.no-theme)) .topnav .grp:focus-within .menu {
+    display: block;
+}
+
+:where(html:not(.no-theme)) .topnav .menu a {
+    color: var(--ink);
+    padding: 10px 14px;
+}
+
+:where(html:not(.no-theme)) .topnav .menu a:hover {
+    background: var(--green-soft);
+    color: var(--green-deep);
+}
+
+:where(html:not(.no-theme)) .topnav .spacer {
+    flex: 1;
+}
+
+:where(html:not(.no-theme)) .topnav .who {
+    font-size: 12px;
+    color: #BFE3D5;
+    padding: 0 8px;
+    text-align: right;
+    line-height: 1.3;
+}
+
+:where(html:not(.no-theme)) .topnav .who b {
+    color: #fff;
+    display: block;
+}
+
+:where(html:not(.no-theme)) .topnav a.logout {
+    background: var(--red);
+    color: #fff;
+    border-radius: 5px;
+    padding: 7px 12px;
+}
+
+:where(html:not(.no-theme)) .topnav a.logout:hover {
+    background: var(--red-dark);
+}
+
+/* Toolbar shown above module lists */
+
+:where(html:not(.no-theme)) .tb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: var(--green-soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 18px 0;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+:where(html:not(.no-theme)) .tb label {
+    font-weight: bold;
+    color: var(--green-deep);
+}
+
+:where(html:not(.no-theme)) .tb select {
+    padding: 7px 10px;
+    border: 1px solid #b9cfc7;
+    border-radius: 5px;
+    background: #fff;
+}
+
+:where(html:not(.no-theme)) .tb .tb-spacer {
+    flex: 1;
+}
+
+:where(html:not(.no-theme)) .tb a,
+:where(html:not(.no-theme)) .tb summary {
+    display: inline-block;
+    padding: 7px 13px;
+    border-radius: 5px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    cursor: pointer;
+    list-style: none;
+}
+
+:where(html:not(.no-theme)) .tb summary::-webkit-details-marker { display: none; }
+
+:where(html:not(.no-theme)) .tb .tb-sum { background: var(--blue); }
+
+:where(html:not(.no-theme)) .tb .tb-up { background: var(--yellow); color: #1E1E1E; }
+
+:where(html:not(.no-theme)) .tb .tb-rep { background: var(--green); }
+
+:where(html:not(.no-theme)) .tb .tb-find { background: var(--red); }
+
+:where(html:not(.no-theme)) .tb details {
+    position: relative;
+}
+
+:where(html:not(.no-theme)) .tb details .tb-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .15);
+    z-index: 40;
+    min-width: 130px;
+}
+
+:where(html:not(.no-theme)) .tb details .tb-menu a {
+    display: block;
+    color: var(--ink);
+    border-radius: 0;
+}
+
+:where(html:not(.no-theme)) .tb details .tb-menu a:hover {
+    background: var(--green-soft);
+}
+
+:where(html:not(.no-theme)) .notice {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background: var(--yellow-soft);
+    border: 1px solid var(--yellow);
+    border-left: 5px solid var(--yellow-dark);
+    border-radius: 6px;
+    padding: 11px 15px;
+    margin: 0 0 18px 0;
+}
+
+:where(html:not(.no-theme)) .notice.ok {
+    background: var(--green-soft);
+    border-color: var(--green);
+    border-left-color: var(--green-dark);
+}
+
+/* =====================================================
+   4. COMPONENTS FOR THE NEWER PAGES (scoped under .page)
+   ===================================================== */
+
+:where(html:not(.no-theme)) .page {
+    font-family: Arial, sans-serif;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 0 40px 0;
+    color: var(--ink);
+}
+
+:where(html:not(.no-theme)) .page h1 { margin: 4px 0 6px; font-size: 24px; }
+
+:where(html:not(.no-theme)) .page h2 { font-size: 17px; color: var(--green-deep); margin: 0 0 14px; }
+
+:where(html:not(.no-theme)) .page h3 { font-size: 15px; color: var(--green-deep); }
+
+:where(html:not(.no-theme)) .page h4 { margin: 18px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+
+:where(html:not(.no-theme)) .page .crumb { font-size: 12px; color: var(--muted); }
+
+:where(html:not(.no-theme)) .page .crumb a { color: var(--blue); text-decoration: none; }
+
+:where(html:not(.no-theme)) .page .page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+:where(html:not(.no-theme)) .page .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--green);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+}
+
+:where(html:not(.no-theme)) .page .hint { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+:where(html:not(.no-theme)) .page .empty { text-align: center; padding: 26px; color: var(--muted); }
+
+:where(html:not(.no-theme)) .page .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+:where(html:not(.no-theme)) .page .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+    font-family: inherit;
+}
+
+:where(html:not(.no-theme)) .page .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+:where(html:not(.no-theme)) .page summary.btn { list-style: none; }
+
+:where(html:not(.no-theme)) .page summary.btn::-webkit-details-marker { display: none; }
+
+:where(html:not(.no-theme)) .page details { margin: 6px 0; }
+
+:where(html:not(.no-theme)) .page details[open] > summary { margin-bottom: 8px; }
+
+:where(html:not(.no-theme)) .page form.inline { display: inline; }
+
+:where(html:not(.no-theme)) .page .table-wrap { overflow-x: auto; }
+
+:where(html:not(.no-theme)) .page table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:where(html:not(.no-theme)) .page th,
+:where(html:not(.no-theme)) .page td {
+    padding: 9px 10px;
+    text-align: left;
+    border-bottom: 1px solid #ebf0ee;
+    font-size: 13px;
+    vertical-align: top;
+}
+
+:where(html:not(.no-theme)) .page th {
+    background: var(--green-soft);
+    color: var(--green-deep);
+    white-space: nowrap;
+}
+
+:where(html:not(.no-theme)) .page tr.is-overdue td:first-child { border-left: 4px solid var(--red); }
+
+/* Forms */
+
+:where(html:not(.no-theme)) .page label { display: block; margin: 8px 0 4px; font-weight: bold; font-size: 13px; }
+
+:where(html:not(.no-theme)) .page input[type=text],
+:where(html:not(.no-theme)) .page input[type=number],
+:where(html:not(.no-theme)) .page input[type=date],
+:where(html:not(.no-theme)) .page input[type=time],
+:where(html:not(.no-theme)) .page input[type=email],
+:where(html:not(.no-theme)) .page input[type=password],
+:where(html:not(.no-theme)) .page input[type=file],
+:where(html:not(.no-theme)) .page select,
+:where(html:not(.no-theme)) .page textarea {
+    width: 100%;
+    padding: 9px 10px;
+    box-sizing: border-box;
+    border: 1px solid #c4d3ce;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 14px;
+    background: #fff;
+}
+
+:where(html:not(.no-theme)) .page textarea { min-height: 80px; }
+
+:where(html:not(.no-theme)) .page input:focus,
+:where(html:not(.no-theme)) .page select:focus,
+:where(html:not(.no-theme)) .page textarea:focus {
+    outline: 2px solid var(--blue);
+    outline-offset: 0;
+}
+
+:where(html:not(.no-theme)) .page .form-row { display: flex; gap: 16px; flex-wrap: wrap; }
+
+:where(html:not(.no-theme)) .page .form-row .form-group { flex: 1; min-width: 200px; }
+
+:where(html:not(.no-theme)) .page .form-group { margin-bottom: 10px; }
+
+:where(html:not(.no-theme)) .page .error {
+    background: var(--red-soft);
+    color: var(--red-dark);
+    border: 1px solid #f3b6bd;
+    border-radius: 5px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+}
+
+:where(html:not(.no-theme)) .page .radio { display: inline-block; margin: 0 10px 0 0; font-weight: normal; }
+
+:where(html:not(.no-theme)) .page .radio input { width: auto; }
+
+:where(html:not(.no-theme)) .page .inline-form { margin-bottom: 14px; max-width: 340px; }
+
+:where(html:not(.no-theme)) .page .mini-form {
+    background: #f8fbfa;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 6px;
+    min-width: 240px;
+}
+
+:where(html:not(.no-theme)) .page .mini-form.wide { max-width: 760px; }
+
+:where(html:not(.no-theme)) .page .mini-form .btn { margin-top: 8px; }
+
+/* Buttons (colour roles) */
+
+:where(html:not(.no-theme)) .page .btn-add { background: var(--green); }
+
+:where(html:not(.no-theme)) .page .btn-view { background: var(--blue); }
+
+:where(html:not(.no-theme)) .page .btn-edit { background: var(--yellow); color: #1E1E1E; }
+
+:where(html:not(.no-theme)) .page .btn-delete,
+:where(html:not(.no-theme)) .page .btn-return { background: var(--red); }
+
+:where(html:not(.no-theme)) .page .btn-back { background: #52656A; }
+
+:where(html:not(.no-theme)) .page .btn-primary { background: var(--blue); }
+
+:where(html:not(.no-theme)) .page .link-danger {
+    background: none;
+    border: none;
+    color: var(--red);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+/* Badges */
+
+:where(html:not(.no-theme)) .page .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    background: #e7ecea;
+    color: #33454a;
+    white-space: nowrap;
+}
+
+:where(html:not(.no-theme)) .page .st-open,
+:where(html:not(.no-theme)) .page .st-submitted,
+:where(html:not(.no-theme)) .page .st-planned,
+:where(html:not(.no-theme)) .page .st-scheduled,
+:where(html:not(.no-theme)) .page .st-pending,
+:where(html:not(.no-theme)) .page .st-pending-endorsement { background: var(--blue-soft); color: var(--blue-dark); }
+
+:where(html:not(.no-theme)) .page .st-in-progress,
+:where(html:not(.no-theme)) .page .st-pending-approval,
+:where(html:not(.no-theme)) .page .st-approved { background: var(--yellow-soft); color: #7A5A00; }
+
+:where(html:not(.no-theme)) .page .st-closed,
+:where(html:not(.no-theme)) .page .st-completed,
+:where(html:not(.no-theme)) .page .st-held,
+:where(html:not(.no-theme)) .page .st-valid,
+:where(html:not(.no-theme)) .page .st-implemented,
+:where(html:not(.no-theme)) .page .st-endorsed { background: var(--green-soft); color: var(--green-dark); }
+
+:where(html:not(.no-theme)) .page .st-rejected,
+:where(html:not(.no-theme)) .page .st-cancelled,
+:where(html:not(.no-theme)) .page .st-expired,
+:where(html:not(.no-theme)) .page .st-overdue,
+:where(html:not(.no-theme)) .page .st-postponed { background: var(--red-soft); color: var(--red-dark); }
+
+:where(html:not(.no-theme)) .page .sev-observation { background: var(--blue-soft); color: var(--blue-dark); }
+
+:where(html:not(.no-theme)) .page .sev-minor { background: var(--yellow-soft); color: #7A5A00; }
+
+:where(html:not(.no-theme)) .page .sev-major { background: #FFE0CC; color: #A34400; }
+
+:where(html:not(.no-theme)) .page .sev-critical { background: var(--red); color: #fff; }
+
+:where(html:not(.no-theme)) .page .prio-low { background: var(--green-soft); color: var(--green-dark); }
+
+:where(html:not(.no-theme)) .page .prio-medium { background: var(--yellow-soft); color: #7A5A00; }
+
+:where(html:not(.no-theme)) .page .prio-high { background: #FFE0CC; color: #A34400; }
+
+:where(html:not(.no-theme)) .page .prio-critical { background: var(--red); color: #fff; }
+
+:where(html:not(.no-theme)) .page .cat { background: var(--blue-soft); color: var(--blue-dark); }
+
+/* Findings panel */
+
+:where(html:not(.no-theme)) .page .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+:where(html:not(.no-theme)) .page .kpi {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 5px solid #8aa19a;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+:where(html:not(.no-theme)) .page .kpi b { display: block; font-size: 26px; line-height: 1.1; }
+
+:where(html:not(.no-theme)) .page .kpi span { font-size: 12px; color: var(--muted); }
+
+:where(html:not(.no-theme)) .page .kpi.green { border-left-color: var(--green); }
+
+:where(html:not(.no-theme)) .page .kpi.red { border-left-color: var(--red); }
+
+:where(html:not(.no-theme)) .page .kpi.blue { border-left-color: var(--blue); }
+
+:where(html:not(.no-theme)) .page .kpi.yellow { border-left-color: var(--yellow); }
+
+:where(html:not(.no-theme)) .page .finding-card {
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--red);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    background: #fff;
+}
+
+:where(html:not(.no-theme)) .page .finding-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+:where(html:not(.no-theme)) .page .finding-tools { display: flex; gap: 6px; align-items: flex-start; }
+
+:where(html:not(.no-theme)) .page .finding-text { margin: 10px 0; line-height: 1.5; white-space: pre-wrap; }
+
+:where(html:not(.no-theme)) .page .rc-list { margin: 0 0 8px; padding-left: 18px; }
+
+:where(html:not(.no-theme)) .page .rc-list li { margin-bottom: 4px; }
+
+:where(html:not(.no-theme)) .page .a-actions { min-width: 150px; }
+
+:where(html:not(.no-theme)) .page .a-actions .btn { margin-bottom: 4px; }
+
+:where(html:not(.no-theme)) .page .add-finding { margin-top: 12px; }
+
+/* Tabs (dashboard sheets) */
+
+:where(html:not(.no-theme)) .page .tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    border-bottom: 3px solid var(--green);
+}
+
+:where(html:not(.no-theme)) .page .tabs a {
+    padding: 9px 14px;
+    background: #fff;
+    color: var(--green-deep);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    font-size: 13px;
+}
+
+:where(html:not(.no-theme)) .page .tabs a:hover { background: var(--green-soft); }
+
+:where(html:not(.no-theme)) .page .tabs a.on {
+    background: var(--green);
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Filters + charts */
+
+:where(html:not(.no-theme)) .page .filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+}
+
+:where(html:not(.no-theme)) .page .filters .f { min-width: 130px; }
+
+:where(html:not(.no-theme)) .page .filters label { margin: 0 0 3px; font-size: 11px; text-transform: uppercase; color: var(--muted); }
+
+:where(html:not(.no-theme)) .page .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+:where(html:not(.no-theme)) .page .chart-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+}
+
+:where(html:not(.no-theme)) .page .chart-card h3 { margin: 0 0 8px; }
+
+:where(html:not(.no-theme)) .page .chart-box { position: relative; height: 260px; }
+
+@media (max-width: 720px) {
+    :where(html:not(.no-theme)) .page .card { padding: 16px; }
+}
+
+
+/* =====================================================
+   3. LATE PAGE STYLES
+   ===================================================== */
+
+/* ---- dashboard.ejs --------------------------------------- */
+:where(html.pg-dashboard) .page .chart-card.wide { grid-column: span 2; }
+
+@media (max-width: 800px) {
+    :where(html.pg-dashboard) .page .chart-card.wide { grid-column: span 1; }
+}
+
+:where(html.pg-dashboard) .page .cell-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:bold; background:#e7ecea; }
+
+:where(html.pg-dashboard) .page td a { color: var(--blue); text-decoration: none; font-weight: bold; }
+
+:where(html.pg-dashboard) .page .sheet-tools { display:flex; gap:8px; flex-wrap:wrap; }

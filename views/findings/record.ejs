@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="<%= mod.path %>"><%= mod.label %></a> &rsaquo; Findings &amp; Actions</div>
+            <h1><%= record.title %></h1>
+            <div class="hint">
+                <%= record.location || 'No location' %> &middot;
+                <%= fmtDate(record.record_date) || 'no date' %> &middot;
+                Status: <strong><%= record.status || '-' %></strong>
+            </div>
+        </div>
+        <div class="btn-row">
+            <a href="<%= mod.viewPath(recordId) %>" class="btn btn-back">&larr; Open record</a>
+        </div>
+    </div>
+
+    <% if (checklist && (checklist.templates.length > 0)) { %>
+
+        <section class="card" id="checklist">
+            <h2>Checklist</h2>
+
+            <form method="GET" action="/findings/<%= moduleKey %>/<%= recordId %>" class="inline-form">
+                <select name="template" onchange="this.form.submit()">
+                    <option value="">-- choose a checklist --</option>
+                    <% checklist.templates.forEach(t => { %>
+                        <option value="<%= t.template_id %>" <%= checklist.chosen === t.template_id ? 'selected' : '' %>><%= t.name %></option>
+                    <% }); %>
+                </select>
+            </form>
+
+            <% if (checklist.items.length > 0) { %>
+
+                <form method="POST" action="/findings/<%= moduleKey %>/<%= recordId %>/checklist">
+                    <input type="hidden" name="template_id" value="<%= checklist.chosen %>">
+                    <div class="table-wrap">
+                    <table>
+                        <thead><tr><th style="width:45%">Question</th><th>Result</th><th>Comment</th></tr></thead>
+                        <tbody>
+                            <% checklist.items.forEach(i => {
+                                const locked = i.result && !admin; %>
+                                <tr>
+                                    <td><%= i.question %></td>
+                                    <td style="white-space:nowrap;">
+                                        <% ['Compliant', 'Non-compliant', 'N/A'].forEach(opt => { %>
+                                            <label class="radio">
+                                                <input type="radio" name="result_<%= i.item_id %>" value="<%= opt %>"
+                                                    <%= i.result === opt ? 'checked' : '' %>
+                                                    <%= (locked || !canAdd) ? 'disabled' : '' %>>
+                                                <%= opt %>
+                                            </label>
+                                        <% }); %>
+                                        <% if (i.finding_id) { %><div class="hint">Finding #<%= i.finding_id %> raised</div><% } %>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="comment_<%= i.item_id %>" value="<%= i.comment || '' %>"
+                                            <%= (locked || !canAdd) ? 'disabled' : '' %>>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    </div>
+                    <% if (canAdd) { %>
+                        <div class="btn-row" style="margin-top:12px;">
+                            <button class="btn btn-add">Save checklist</button>
+                            <span class="hint">A "Non-compliant" answer raises a finding automatically. Saved answers can only be changed by an Admin.</span>
+                        </div>
+                    <% } %>
+                </form>
+
+            <% } %>
+        </section>
+
+    <% } %>
+
+    <section class="card">
+        <h2>Findings, root causes &amp; actions</h2>
+        <%- include('../partials/findings_panel', { P: panel }) %>
+    </section>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

@@ -37,6 +37,42 @@
                 </a>
             </li>
 
+            <!-- Document Management -->
+            <li>
+                <a href="/documents"
+                   class="<%= active === 'documents' ? 'active' : '' %>">
+                    <span class="nav-icon">🗂️</span>
+                    <span>Documents</span>
+                </a>
+            </li>
+
+            <!-- Management of Change -->
+            <li>
+                <a href="/moc"
+                   class="<%= active === 'moc' ? 'active' : '' %>">
+                    <span class="nav-icon">🔄</span>
+                    <span>Management of Change</span>
+                </a>
+            </li>
+
+            <!-- Emergency Response -->
+            <li>
+                <a href="/erp"
+                   class="<%= active === 'erp' ? 'active' : '' %>">
+                    <span class="nav-icon">🚨</span>
+                    <span>Emergency Drills</span>
+                </a>
+            </li>
+
+            <!-- Meetings -->
+            <li>
+                <a href="/meetings"
+                   class="<%= active === 'meetings' ? 'active' : '' %>">
+                    <span class="nav-icon">📝</span>
+                    <span>Meetings</span>
+                </a>
+            </li>
+
             <!-- Employees -->
             <li>
                 <a href="/employees"
@@ -102,7 +138,7 @@
 
             <!-- Training -->
             <li>
-                <a href="/training/gap-analysis"
+                <a href="/training"
                    class="<%= active === 'training' ? 'active' : '' %>">
                     <span class="nav-icon">🎓</span>
                     <span>Training & Gaps</span>
@@ -130,7 +166,7 @@
     .sidebar {
         width: 250px;
         min-height: 100vh;
-        background: #172b4d;
+        background: #0E4D3A;
         color: white;
         display: flex;
         flex-direction: column;
@@ -148,7 +184,7 @@
         padding: 0 22px;
         font-size: 21px;
         font-weight: bold;
-        background: #10213d;
+        background: #0A3A2B;
         border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
@@ -175,7 +211,7 @@
         gap: 12px;
         padding: 12px 14px;
         border-radius: 6px;
-        color: #dbe5f5;
+        color: #E1F3EC;
         text-decoration: none;
         font-size: 14px;
         transition: all 0.2s ease;
@@ -183,7 +219,7 @@
 
     .sidebar-nav a:hover,
     .logout-link:hover {
-        background: #24446f;
+        background: #1B7A5E;
         color: white;
         transform: translateX(2px);
     }
@@ -191,10 +227,10 @@
     /* Active menu item */
 
     .sidebar-nav a.active {
-        background: #2a5298;
+        background: #29AB87;
         color: white;
         font-weight: bold;
-        box-shadow: inset 4px 0 0 #4dabf7;
+        box-shadow: inset 4px 0 0 #F7B801;
     }
 
     .nav-icon {

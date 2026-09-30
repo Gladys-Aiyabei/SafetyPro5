@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/moc">Management of Change</a> &rsaquo; <%= mode === 'add' ? 'New' : 'Edit' %></div>
+            <h1><%= title %></h1>
+            <% if (mode === 'add') { %><div class="hint">The MOC number is generated automatically.</div><% } %>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+        <form method="POST" action="<%= mode === 'add' ? '/moc/add' : '/moc/edit/' + recordId %>">
+
+            <div class="form-row">
+                <div class="form-group" style="flex:2;">
+                    <label>Title of change</label>
+                    <input type="text" name="title" value="<%= values.title || '' %>" maxlength="200" required>
+                </div>
+                <div class="form-group">
+                    <label>Change type</label>
+                    <select name="change_type" required>
+                        <option value="">-- select --</option>
+                        <% changeTypes.forEach(t => { %><option <%= values.change_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Permanent / temporary</label>
+                    <select name="duration_type">
+                        <% durations.forEach(t => { %><option <%= values.duration_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" list="loc-list" value="<%= values.location || '' %>" maxlength="100">
+                    <datalist id="loc-list">
+                        <% locations.forEach(l => { %><option value="<%= l %>"><% }); %>
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label>Risk level</label>
+                    <select name="risk_level">
+                        <option value="">-- not rated --</option>
+                        <% riskLevels.forEach(t => { %><option <%= values.risk_level === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Proposed by</label>
+                    <select name="proposed_by">
+                        <option value="">-- select --</option>
+                        <% employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>" <%= Number(values.proposed_by) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Approver</label>
+                    <select name="approver_id">
+                        <option value="">-- select --</option>
+                        <% employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>" <%= Number(values.approver_id) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Request date</label>
+                    <input type="date" name="request_date" value="<%= fmtDate(values.request_date) %>">
+                </div>
+                <div class="form-group">
+                    <label>Planned implementation</label>
+                    <input type="date" name="planned_date" value="<%= fmtDate(values.planned_date) %>">
+                </div>
+                <div class="form-group">
+                    <label>Expiry (temporary changes)</label>
+                    <input type="date" name="expiry_date" value="<%= fmtDate(values.expiry_date) %>">
+                </div>
+                <% if (mode === 'edit') { %>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <% statuses.forEach(t => { %><option <%= values.status === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                        </select>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="form-group">
+                <label>Description of the change</label>
+                <textarea name="description"><%= values.description || '' %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Reason / justification</label>
+                <textarea name="reason"><%= values.reason || '' %></textarea>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-add"><%= mode === 'add' ? 'Submit Change Request' : 'Save Changes' %></button>
+                <a href="/moc" class="btn btn-back">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<%# Form that adds an action. locals: P (panel), url (form action), rootCauses (array, may be empty) %>
+<form method="POST" action="<%= url %>" class="mini-form wide">
+    <input type="hidden" name="return_to" value="<%= P.returnTo %>">
+
+    <label>Action</label>
+    <textarea name="description" required placeholder="What must be done?"></textarea>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Due date</label>
+            <input type="date" name="due_date" required>
+        </div>
+        <div class="form-group">
+            <label>Priority</label>
+            <select name="priority">
+                <% P.priorities.forEach(p => { %>
+                    <option <%= p === 'Medium' ? 'selected' : '' %>><%= p %></option>
+                <% }); %>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Responsible role</label>
+            <select name="responsible_role_id">
+                <option value="">-- choose role --</option>
+                <% P.roles.forEach(r => { %>
+                    <option value="<%= r.role_id %>"><%= r.role_name %></option>
+                <% }); %>
+            </select>
+            <div class="hint">Whoever holds this role is responsible, now and in future.</div>
+        </div>
+        <div class="form-group">
+            <label>Or a named person (optional)</label>
+            <select name="assigned_employee_id">
+                <option value="">-- role holder --</option>
+                <% P.employees.forEach(e => { %>
+                    <option value="<%= e.employee_id %>"><%= e.employee_name %></option>
+                <% }); %>
+            </select>
+            <div class="hint">If they leave, the action moves to the role holder.</div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Action party (optional)</label>
+            <input type="text" name="action_party" placeholder="e.g. contractor, department">
+        </div>
+        <% if (rootCauses && rootCauses.length) { %>
+            <div class="form-group">
+                <label>Addresses root cause (optional)</label>
+                <select name="root_cause_id">
+                    <option value="">-- any --</option>
+                    <% rootCauses.forEach(rc => { %>
+                        <option value="<%= rc.root_cause_id %>"><%= rc.description.slice(0, 60) %></option>
+                    <% }); %>
+                </select>
+            </div>
+        <% } %>
+    </div>
+
+    <button class="btn btn-add btn-sm">Add action</button>
+</form>

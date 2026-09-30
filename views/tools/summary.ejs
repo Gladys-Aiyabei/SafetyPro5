@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="/charts.js"></script>
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="<%= mod.path %>"><%= mod.label %></a> &rsaquo; Summary</div>
+            <h1><%= mod.label %> &mdash; record summary</h1>
+            <div class="hint"><%= total %> record<%= total === 1 ? '' : 's' %><%= location ? ' in ' + location : ' across all locations' %></div>
+        </div>
+        <div class="btn-row">
+            <a class="btn btn-add" href="/tools/<%= key %>/report.xlsx?location=<%= encodeURIComponent(location) %>&from=<%= filters.from %>&to=<%= filters.to %>">Excel</a>
+            <a class="btn btn-view" href="/tools/<%= key %>/report.docx?location=<%= encodeURIComponent(location) %>&from=<%= filters.from %>&to=<%= filters.to %>">Word</a>
+            <a class="btn btn-return" href="/tools/<%= key %>/report.pdf?location=<%= encodeURIComponent(location) %>&from=<%= filters.from %>&to=<%= filters.to %>">PDF</a>
+            <a class="btn btn-back" href="<%= mod.path %>">Back to list</a>
+        </div>
+    </div>
+
+    <form method="GET" class="filters">
+        <div class="f">
+            <label>Location</label>
+            <select name="location">
+                <option value="">All locations</option>
+                <% locations.forEach(l => { %><option <%= l === location ? 'selected' : '' %>><%= l %></option><% }); %>
+            </select>
+        </div>
+        <% if (mod.dateCol) { %>
+            <div class="f"><label>From</label><input type="date" name="from" value="<%= filters.from %>"></div>
+            <div class="f"><label>To</label><input type="date" name="to" value="<%= filters.to %>"></div>
+        <% } %>
+        <button class="btn btn-primary">Apply</button>
+    </form>
+
+    <div class="kpis">
+        <div class="kpi blue"><b><%= total %></b><span>Records</span></div>
+        <% if (findingStats) { %>
+            <div class="kpi red"><b><%= findingStats.findings.open_n %></b><span>Open findings</span></div>
+            <div class="kpi green"><b><%= findingStats.findings.closed_n %></b><span>Closed findings</span></div>
+            <div class="kpi yellow"><b><%= findingStats.actions.open_n %></b><span>Open actions</span></div>
+            <div class="kpi blue"><b><%= findingStats.actions.pending_n %></b><span>Awaiting approval</span></div>
+            <div class="kpi red"><b><%= findingStats.actions.overdue_n %></b><span>Overdue actions</span></div>
+        <% } %>
+    </div>
+
+    <div class="chart-grid">
+        <% charts.forEach((c, i) => { %>
+            <div class="chart-card">
+                <h3><%= c.title %></h3>
+                <% if (c.labels.length === 0) { %>
+                    <div class="empty">No data</div>
+                <% } else { %>
+                    <div class="chart-box"><canvas id="chart<%= i %>"></canvas></div>
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+
+</div>
+
+<script>
+    var charts = <%- JSON.stringify(charts).replace(/</g, '\\u003c') %>;
+    charts.forEach(function (c, i) {
+        if (c.labels.length) drawChart('chart' + i, { type: c.type, labels: c.labels, values: c.values });
+    });
+</script>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Annual Training Plan <%= year %></h1>
+            <div class="hint">Implementation is measured from endorsed training records of the staff in each role.</div>
+        </div>
+        <form method="GET" class="inline-form" style="margin:0;">
+            <input type="number" name="year" value="<%= year %>" min="2000" max="2100" style="width:100px;display:inline-block;">
+            <button class="btn btn-primary">Go</button>
+        </form>
+    </div>
+
+    <%- include('_tabs', { tab }) %>
+
+    <div class="kpis">
+        <div class="kpi blue"><b><%= kpi.total %></b><span>Planned trainings</span></div>
+        <div class="kpi green"><b><%= kpi.completed %></b><span>Completed</span></div>
+        <div class="kpi yellow"><b><%= kpi.inProgress %></b><span>In progress</span></div>
+        <div class="kpi red"><b><%= kpi.overdue %></b><span>Overdue</span></div>
+    </div>
+
+    <% if (can.add) { %>
+        <div class="card">
+            <h2>Add to the plan</h2>
+            <form method="POST" action="/training/plans/add">
+                <input type="hidden" name="plan_year" value="<%= year %>">
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>Training</label>
+                        <input type="text" name="training_name" required placeholder="e.g. Fire Safety">
+                    </div>
+                    <div class="form-group">
+                        <label>For role</label>
+                        <select name="role_id" required>
+                            <option value="">-- select --</option>
+                            <% roles.forEach(r => { %><option value="<%= r.role_id %>"><%= r.role_name %></option><% }); %>
+                        </select>
+                    </div>
+                </div>
+                <label>Target month(s) &mdash; tick several for a recurring training</label>
+                <% months.forEach((m, i) => { %>
+                    <label class="radio" style="min-width:110px;"><input type="checkbox" name="target_month" value="<%= i + 1 %>"> <%= m %></label>
+                <% }); %>
+                <div class="btn-row" style="margin-top:10px;"><button class="btn btn-add">Add to plan</button></div>
+            </form>
+        </div>
+    <% } %>
+
+    <div class="card">
+        <% if (plans.length === 0) { %>
+            <div class="empty">No trainings planned for <%= year %>.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Month</th><th>Training</th><th>Role</th><th>Staff trained</th><th>Progress</th><th>Implementation</th><th></th></tr>
+                </thead>
+                <tbody>
+                    <% plans.forEach(p => { %>
+                        <tr>
+                            <td><%= months[(p.target_month || 1) - 1] %></td>
+                            <td><%= p.training_name %></td>
+                            <td><%= p.role_name || '-' %></td>
+                            <td><%= p.trained %> / <%= p.required %></td>
+                            <td style="min-width:120px;">
+                                <div style="background:#e7ecea;border-radius:6px;height:10px;">
+                                    <div style="width:<%= p.pct %>%;background:var(--green);height:10px;border-radius:6px;"></div>
+                                </div>
+                                <div class="hint"><%= p.pct %>%</div>
+                            </td>
+                            <td><span class="badge st-<%= slug(p.implementation) %>"><%= p.implementation %></span></td>
+                            <td style="white-space:nowrap;">
+                                <a href="/training/matrix?role_id=<%= p.role_id %>" class="btn btn-view btn-sm">Gaps</a>
+                                <% if (can.edit) { %>
+                                    <details style="display:inline-block;">
+                                        <summary class="btn btn-edit btn-sm">Edit</summary>
+                                        <form method="POST" action="/training/plans/<%= p.plan_id %>/update" class="mini-form">
+                                            <label>Training</label>
+                                            <input type="text" name="training_name" value="<%= p.training_name %>" required>
+                                            <label>Role</label>
+                                            <select name="role_id">
+                                                <% roles.forEach(r => { %><option value="<%= r.role_id %>" <%= r.role_id === p.role_id ? 'selected' : '' %>><%= r.role_name %></option><% }); %>
+                                            </select>
+                                            <label>Month</label>
+                                            <select name="target_month">
+                                                <% months.forEach((m, i) => { %><option value="<%= i + 1 %>" <%= p.target_month === i + 1 ? 'selected' : '' %>><%= m %></option><% }); %>
+                                            </select>
+                                            <label>Status</label>
+                                            <select name="status">
+                                                <option <%= p.status !== 'Cancelled' ? 'selected' : '' %>>Planned</option>
+                                                <option <%= p.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                            </select>
+                                            <button class="btn btn-edit btn-sm">Save</button>
+                                        </form>
+                                    </details>
+                                <% } %>
+                                <% if (can.delete) { %>
+                                    <form method="POST" action="/training/plans/<%= p.plan_id %>/delete" class="inline"
+                                          onsubmit="return confirm('Remove this training from the plan?');">
+                                        <button class="btn btn-delete btn-sm">Delete</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

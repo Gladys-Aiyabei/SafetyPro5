@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/training">Training</a> &rsaquo; <%= mode === 'add' ? 'Record' : 'Edit' %></div>
+            <h1><%= title %></h1>
+            <% if (mode === 'add') { %><div class="hint">The record starts as "Pending Endorsement" until the employee's line manager endorses it with evidence.</div><% } %>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+        <form method="POST" action="<%= mode === 'add' ? '/training/add' : '/training/edit/' + recordId %>">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Employee</label>
+                    <select name="employee_id" required>
+                        <option value="">-- select --</option>
+                        <% employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>" <%= String(values.employee_id) === String(e.employee_id) ? 'selected' : '' %>><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:2;">
+                    <label>Training name</label>
+                    <input type="text" name="training_name" value="<%= values.training_name || '' %>" maxlength="150" required
+                           placeholder="e.g. Permit to Work, Risk Assessment, Fire Safety">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Training date</label>
+                    <input type="date" name="training_date" value="<%= fmtDate(values.training_date) %>" required>
+                </div>
+                <div class="form-group">
+                    <label>Expiry date</label>
+                    <input type="date" name="expiry_date" value="<%= fmtDate(values.expiry_date) %>">
+                    <div class="hint">Leave blank to use the role requirement's validity.</div>
+                </div>
+                <div class="form-group">
+                    <label>Trainer</label>
+                    <input type="text" name="trainer" value="<%= values.trainer || '' %>" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Certificate number</label>
+                    <input type="text" name="certificate_number" value="<%= values.certificate_number || '' %>" maxlength="100">
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-add"><%= mode === 'add' ? 'Save Training' : 'Save Changes' %></button>
+                <a href="/training" class="btn btn-back">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

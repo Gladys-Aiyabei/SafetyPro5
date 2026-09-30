@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" class="pg-documents">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+
+<div class="container narrow">
+
+    <h1>Edit <%= version.doc_number %> &mdash; v<%= version.version_no %></h1>
+    <div class="subtitle">
+        Status: <span class="badge badge-<%= version.status.toLowerCase().replace(' ', '-') %>"><%= version.status %></span>
+        &nbsp;Saving keeps the current status. Submit for review from the document page.
+    </div>
+
+    <% if (error) { %>
+        <div class="error"><%= error %></div>
+    <% } %>
+
+    <form action="/documents/versions/<%= version.version_id %>/edit" method="POST">
+
+        <%- include('_fields', {
+            values: values,
+            departments: departments,
+            docTypes: docTypes,
+            docNumberLocked: true,
+            metaLocked: version.version_no !== 1
+        }) %>
+
+        <div class="buttons">
+            <button type="submit" class="btn btn-approve">Save Changes</button>
+            <a href="/documents/<%= version.document_id %>?v=<%= version.version_no %>" class="btn btn-back">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

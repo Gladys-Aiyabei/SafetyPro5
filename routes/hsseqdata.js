@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Import MySQL database connection/pool
 const db = require("../db");
+const { applyLocation } = require("../lib/registry");
 
 
 // =====================================================
@@ -12,11 +13,14 @@ const db = require("../db");
 router.get("/", async (req, res) => {
     try {
 
+        const lf = await applyLocation("hsseq", req, res, "h");
+
         const [records] = await db.query(`
-            SELECT *
-            FROM hsseq_data
-            ORDER BY record_year DESC, record_month DESC
-        `);
+            SELECT h.*
+            FROM hsseq_data h
+            WHERE 1 = 1 ${lf.clause}
+            ORDER BY h.record_year DESC, h.record_month DESC
+        `, lf.params);
 
         res.render("hsseqdata/index", {
             records: records,
@@ -63,7 +67,8 @@ router.post("/add", async (req, res) => {
         kms_heavy_goods_vehicles,
         ghg_emissions_tonnes,
         attachment_path,
-        file_type
+        file_type,
+        location
     } = req.body;
 
     if (!record_month || !record_year) {
@@ -78,8 +83,8 @@ router.post("/add", async (req, res) => {
                  non_hazardous_waste_tonnes, water_consumption_m3,
                  exposure_hours_contractors, exposure_hours_staff,
                  kms_light_vehicles, kms_heavy_goods_vehicles,
-                 ghg_emissions_tonnes, attachment_path, file_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 ghg_emissions_tonnes, attachment_path, file_type, location)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             record_month,
             record_year,
@@ -92,7 +97,8 @@ router.post("/add", async (req, res) => {
             kms_heavy_goods_vehicles || 0,
             ghg_emissions_tonnes || 0,
             attachment_path || null,
-            file_type || null
+            file_type || null,
+            location || null
         ]);
 
         res.redirect("/hsseq");
@@ -194,7 +200,8 @@ router.post("/edit/:id", async (req, res) => {
         kms_heavy_goods_vehicles,
         ghg_emissions_tonnes,
         attachment_path,
-        file_type
+        file_type,
+        location
     } = req.body;
 
     if (!record_month || !record_year) {
@@ -217,7 +224,8 @@ router.post("/edit/:id", async (req, res) => {
                 kms_heavy_goods_vehicles = ?,
                 ghg_emissions_tonnes = ?,
                 attachment_path = ?,
-                file_type = ?
+                file_type = ?,
+                location = ?
             WHERE hsseq_id = ?
         `, [
             record_month,
@@ -232,6 +240,7 @@ router.post("/edit/:id", async (req, res) => {
             ghg_emissions_tonnes || 0,
             attachment_path || null,
             file_type || null,
+            location || null,
             id
         ]);
 

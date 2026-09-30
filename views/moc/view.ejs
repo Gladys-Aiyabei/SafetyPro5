@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/moc">Management of Change</a> &rsaquo; <%= record.moc_number %></div>
+            <h1><%= record.title %></h1>
+            <span class="badge st-<%= slug(record.status) %>"><%= record.status %></span>
+            <span class="hint">&nbsp;<%= record.change_type %> &middot; <%= record.duration_type %> &middot; <%= record.location || 'no location' %></span>
+        </div>
+        <div class="btn-row">
+            <% if (can.edit) { %><a href="/moc/edit/<%= record.moc_id %>" class="btn btn-edit">Edit</a><% } %>
+            <a href="/moc" class="btn btn-back">Back to register</a>
+        </div>
+    </div>
+
+    <section class="card">
+        <h2>Change details</h2>
+        <div class="form-row">
+            <div class="form-group"><label>Proposed by</label><%= record.proposed_by_name || '-' %></div>
+            <div class="form-group"><label>Approver</label><%= record.approver_name || '-' %></div>
+            <div class="form-group"><label>Risk level</label><%= record.risk_level || '-' %></div>
+            <div class="form-group"><label>Requested</label><%= fmtDate(record.request_date) || '-' %></div>
+            <div class="form-group"><label>Planned implementation</label><%= fmtDate(record.planned_date) || '-' %></div>
+            <div class="form-group"><label>Expires</label><%= fmtDate(record.expiry_date) || '-' %></div>
+        </div>
+        <label>Description</label>
+        <div style="white-space:pre-wrap;"><%= record.description || '-' %></div>
+        <label>Reason / justification</label>
+        <div style="white-space:pre-wrap;"><%= record.reason || '-' %></div>
+    </section>
+
+    <section class="card">
+        <h2>Approval</h2>
+
+        <% if (record.decided_at) { %>
+            <p>
+                <span class="badge st-<%= slug(record.status === 'Rejected' ? 'Rejected' : 'Approved') %>">
+                    <%= record.status === 'Rejected' ? 'Rejected' : 'Approved' %>
+                </span>
+                by <strong><%= record.decided_by_name || 'unknown' %></strong> on <%= fmtDateTime(record.decided_at) %>
+            </p>
+            <% if (record.decision_comments) { %><div style="white-space:pre-wrap;"><%= record.decision_comments %></div><% } %>
+        <% } else { %>
+            <p class="hint">Waiting for a decision from <strong><%= record.approver_name || 'an approver (none selected)' %></strong>.</p>
+        <% } %>
+
+        <% if (canDecide) { %>
+            <form method="POST" action="/moc/decision/<%= record.moc_id %>" class="mini-form wide">
+                <label>Comments (required when rejecting)</label>
+                <textarea name="comments"></textarea>
+                <div class="btn-row">
+                    <button name="decision" value="approve" class="btn btn-add">Approve change</button>
+                    <button name="decision" value="reject" class="btn btn-return">Reject change</button>
+                </div>
+            </form>
+        <% } %>
+    </section>
+
+    <section class="card">
+        <h2>Findings, root causes &amp; actions</h2>
+        <%- include('../partials/findings_panel', { P: panel }) %>
+    </section>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

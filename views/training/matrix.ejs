@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Training Compliance by Role</h1>
+            <div class="hint">Every active employee with a role is checked against the trainings that role requires.</div>
+        </div>
+    </div>
+
+    <%- include('_tabs', { tab }) %>
+
+    <%- include('../partials/toolbar') %>
+
+    <div class="kpis">
+        <div class="kpi blue"><b><%= summary.employees %></b><span>Staff assessed</span></div>
+        <div class="kpi green"><b><%= summary.fully %></b><span>Fully trained</span></div>
+        <div class="kpi red"><b><%= summary.gaps %></b><span>With a training gap</span></div>
+        <div class="kpi yellow"><b><%= summary.noRequirements %></b><span>Role has no requirements</span></div>
+    </div>
+
+    <form method="GET" class="filters">
+        <% if (location) { %><input type="hidden" name="location" value="<%= location %>"><% } %>
+        <div class="f">
+            <label>Role</label>
+            <select name="role_id">
+                <option value="">All roles</option>
+                <% roles.forEach(r => { %><option value="<%= r.role_id %>" <%= String(filters.role_id) === String(r.role_id) ? 'selected' : '' %>><%= r.role_name %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Department</label>
+            <select name="department_id">
+                <option value="">All</option>
+                <% departments.forEach(d => { %><option value="<%= d.department_id %>" <%= String(filters.department_id) === String(d.department_id) ? 'selected' : '' %>><%= d.department_name %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Result</label>
+            <select name="result">
+                <option value="">All</option>
+                <option value="gap" <%= filters.result === 'gap' ? 'selected' : '' %>>Gaps only</option>
+                <option value="full" <%= filters.result === 'full' ? 'selected' : '' %>>Fully trained</option>
+            </select>
+        </div>
+        <button class="btn btn-primary">Apply</button>
+    </form>
+
+    <div class="card">
+        <% if (rows.length === 0) { %>
+            <div class="empty">No employees match.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead><tr><th>Employee</th><th>Role</th><th>Department</th><th>Required trainings</th><th>Result</th></tr></thead>
+                <tbody>
+                    <% rows.forEach(r => { %>
+                        <tr>
+                            <td><strong><%= r.employee_name %></strong><div class="hint"><%= r.job_title || '' %></div></td>
+                            <td><%= r.role_name %></td>
+                            <td><%= r.department_name || '-' %><div class="hint"><%= r.location || '' %></div></td>
+                            <td>
+                                <% if (r.items.length === 0) { %>
+                                    <span class="hint">No requirements set for this role</span>
+                                <% } %>
+                                <% r.items.forEach(i => { %>
+                                    <div style="margin-bottom:3px;">
+                                        <span class="badge st-<%= i.status === 'Valid' ? 'valid' : i.status === 'Pending endorsement' ? 'in-progress' : i.status === 'Expired' ? 'expired' : 'rejected' %>"><%= i.status %></span>
+                                        <%= i.training %>
+                                        <% if (i.status !== 'Valid' && can.add) { %>
+                                            <a href="/training/add?employee_id=<%= r.employee_id %>&training=<%= encodeURIComponent(i.training) %>" class="hint">+ record</a>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                            </td>
+                            <td>
+                                <% if (r.overall === 'Fully trained') { %>
+                                    <span class="badge st-valid">Fully trained</span>
+                                <% } else if (r.overall === 'Gap') { %>
+                                    <span class="badge st-rejected"><%= r.gapCount %> gap<%= r.gapCount === 1 ? '' : 's' %></span>
+                                <% } else { %>
+                                    <span class="badge">No requirements</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+    </div>
+
+    <% if (unassigned.length > 0) { %>
+        <div class="card">
+            <h2>Cannot be assessed &mdash; no role assigned (<%= unassigned.length %>)</h2>
+            <div class="hint" style="margin-bottom:8px;">Set a role on the employee (Employees &rsaquo; Edit) to include them.</div>
+            <div class="table-wrap">
+            <table>
+                <thead><tr><th>Employee</th><th>Job title</th><th>Department</th></tr></thead>
+                <tbody>
+                    <% unassigned.forEach(u => { %>
+                        <tr><td><%= u.employee_name %></td><td><%= u.job_title || '-' %></td><td><%= u.department_name || '-' %></td></tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

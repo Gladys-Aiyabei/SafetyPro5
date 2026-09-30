@@ -1,87 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="pg-hsseqdata-view">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
 
-    <style>
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 30px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-        }
-
-        h1 {
-            margin-bottom: 25px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px 30px;
-        }
-
-        .field label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #555;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .section-title {
-            margin-top: 20px;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #f0f0f0;
-            font-size: 15px;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            grid-column: 1 / -1;
-        }
-
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn-edit {
-            background: #ffc107;
-            color: #000;
-        }
-
-        .btn-back {
-            background: #6c757d;
-        }
-
-        .buttons {
-            margin-top: 25px;
-            display: flex;
-            gap: 10px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/main.css">
 </head>
 
 <body>
+
+<%- include('../partials/topnav') %>
+
 
 <div class="container">
 
@@ -172,11 +103,15 @@
     </div>
 
     <div class="buttons">
-        <a href="/hsseq/edit/<%= record.hsseq_id %>" class="btn btn-edit">Edit</a>
+        <% if (can.edit) { %>
+<a href="/hsseq/edit/<%= record.hsseq_id %>" class="btn btn-edit">Edit</a>
+<% } %>
         <a href="/hsseq" class="btn btn-back">Back to List</a>
     </div>
 
 </div>
+
+<%- include('../partials/footer') %>
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="pg-audits-view">
 
 <head>
 
@@ -10,70 +10,14 @@
 
     <title><%= title %></title>
 
-    <style>
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 30px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-        }
-
-        h1 {
-            margin-bottom: 25px;
-        }
-
-        .detail {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            padding: 12px 0;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .value {
-            color: #222;
-        }
-
-        .findings {
-            white-space: pre-wrap;
-        }
-
-        .btn {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 10px 18px;
-            border-radius: 5px;
-            text-decoration: none;
-            color: white;
-        }
-
-        .btn-back {
-            background: #6c757d;
-        }
-
-        .btn-edit {
-            background: #ffc107;
-            color: #000;
-            margin-left: 10px;
-        }
-
-    </style>
-
+    <link rel="stylesheet" href="/main.css">
 </head>
 
 <body>
+
+<%- include('../partials/topnav') %>
+
 
 <div class="container">
 
@@ -195,13 +139,17 @@
     </a>
 
 
-    <a
+    <% if (can.edit) { %>
+<a
         href="/audits/edit/<%= audit.audit_id %>"
         class="btn btn-edit">
         Edit Audit
     </a>
+<% } %>
 
 </div>
+
+<%- include('../partials/footer') %>
 
 </body>
 

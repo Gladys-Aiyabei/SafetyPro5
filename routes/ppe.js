@@ -6,13 +6,16 @@ const router = express.Router();
 // If db.js uses the callback-style `mysql` package instead, swap each
 // `await db.query(...)` for the callback form.
 const db = require('../db');
+const { applyLocation } = require('../lib/registry');
 
 // GET /ppe — list all PPE inventory items
 // (mounted at "/ppe" in app.js, so this is just "/")
 router.get('/', async (req, res) => {
   try {
+    const lf = await applyLocation('ppe', req, res, 'p');
     const [items] = await db.query(
-      'SELECT * FROM ppe_inventory ORDER BY item_name ASC'
+      `SELECT p.* FROM ppe_inventory p WHERE 1 = 1 ${lf.clause} ORDER BY p.item_name ASC`,
+      lf.params
     );
     res.render('ppe', { items, flash: null, error: null });
   } catch (err) {

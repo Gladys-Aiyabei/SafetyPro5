@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Checklists</h1>
+            <div class="hint">Admin-built checklists used when auditing or inspecting. Answers are recorded on the audit / inspection's Findings page.</div>
+        </div>
+        <div class="btn-row">
+            <a href="/checklists/new?module=audits" class="btn btn-add">+ Audit checklist</a>
+            <a href="/checklists/new?module=inspections" class="btn btn-primary">+ Inspection checklist</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <% if (templates.length === 0) { %>
+            <div class="empty">No checklists yet.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead><tr><th>Module</th><th>Checklist</th><th>Questions</th><th>Used on</th><th>Active</th><th></th></tr></thead>
+                <tbody>
+                    <% templates.forEach(t => { %>
+                        <tr>
+                            <td><%= modules[t.module] || t.module %></td>
+                            <td><strong><%= t.name %></strong><div class="hint"><%= t.description || '' %></div></td>
+                            <td><%= t.items %></td>
+                            <td><%= t.uses %> record<%= t.uses === 1 ? '' : 's' %></td>
+                            <td><span class="badge st-<%= t.active ? 'closed' : 'cancelled' %>"><%= t.active ? 'Yes' : 'No' %></span></td>
+                            <td style="white-space:nowrap;">
+                                <a href="/checklists/<%= t.template_id %>" class="btn btn-edit btn-sm">Edit</a>
+                                <form method="POST" action="/checklists/<%= t.template_id %>/delete" class="inline"
+                                      onsubmit="return confirm('Delete this checklist and all answers recorded against it?');">
+                                    <button class="btn btn-delete btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

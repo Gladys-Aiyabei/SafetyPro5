@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/erp">Emergency Response Planning</a> &rsaquo; <%= mode === 'add' ? 'Plan' : 'Edit' %></div>
+            <h1><%= title %></h1>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+        <form method="POST" action="<%= mode === 'add' ? '/erp/add' : '/erp/edit/' + recordId %>">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Plan year</label>
+                    <input type="number" name="plan_year" min="2000" max="2100" value="<%= values.plan_year || new Date().getFullYear() %>" required>
+                </div>
+                <div class="form-group">
+                    <label>Drill type</label>
+                    <select name="drill_type" required>
+                        <option value="">-- select --</option>
+                        <% drillTypes.forEach(t => { %><option <%= values.drill_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:2;">
+                    <label>Drill title</label>
+                    <input type="text" name="title" value="<%= values.title || '' %>" maxlength="200" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" list="loc-list" value="<%= values.location || '' %>" maxlength="100">
+                    <datalist id="loc-list"><% locations.forEach(l => { %><option value="<%= l %>"><% }); %></datalist>
+                </div>
+                <div class="form-group">
+                    <label>Coordinator</label>
+                    <select name="coordinator_id">
+                        <option value="">-- select --</option>
+                        <% employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>" <%= Number(values.coordinator_id) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Expected participants</label>
+                    <input type="number" name="participants" min="0" value="<%= values.participants == null ? '' : values.participants %>">
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" name="duration_minutes" min="0" value="<%= values.duration_minutes == null ? '' : values.duration_minutes %>">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Planned date</label>
+                    <input type="date" name="planned_date" value="<%= fmtDate(values.planned_date) %>" <%= mode === 'edit' ? 'required' : '' %>>
+                </div>
+                <% if (mode === 'edit') { %>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <% statuses.forEach(t => { %><option <%= values.status === t ? 'selected' : '' %>><%= t %></option><% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Actual date</label>
+                        <input type="date" name="actual_date" value="<%= fmtDate(values.actual_date) %>">
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (mode === 'add') { %>
+                <div class="form-group" style="background:#f8fbfa;border:1px solid var(--line);border-radius:6px;padding:12px;">
+                    <label style="margin-top:0;">Or schedule this drill through the year (optional)</label>
+                    <div class="hint" style="margin-bottom:8px;">Tick the months and give a day of the month. One drill is created for each month ticked, and the planned date above is ignored.</div>
+                    <% months.forEach((m, i) => { %>
+                        <label class="radio" style="min-width:110px;">
+                            <input type="checkbox" name="repeat_months" value="<%= i + 1 %>"> <%= m %>
+                        </label>
+                    <% }); %>
+                    <div style="max-width:160px;margin-top:8px;">
+                        <label>Day of month</label>
+                        <input type="number" name="repeat_day" min="1" max="31" value="15">
+                    </div>
+                </div>
+            <% } %>
+
+            <div class="form-group">
+                <label>Scenario</label>
+                <textarea name="scenario"><%= values.scenario || '' %></textarea>
+            </div>
+            <div class="form-group">
+                <label>Objectives</label>
+                <textarea name="objectives"><%= values.objectives || '' %></textarea>
+            </div>
+
+            <% if (mode === 'edit') { %>
+                <div class="form-group">
+                    <label>Outcome summary</label>
+                    <textarea name="outcome_summary"><%= values.outcome_summary || '' %></textarea>
+                </div>
+            <% } %>
+
+            <div class="btn-row">
+                <button class="btn btn-add"><%= mode === 'add' ? 'Add to Plan' : 'Save Changes' %></button>
+                <a href="/erp" class="btn btn-back">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

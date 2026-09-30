@@ -10,6 +10,7 @@ const router = express.Router();
 // "risk_assessments" (the schema you shared didn't include the table
 // name itself, only its columns).
 const db = require('../db');
+const { applyLocation } = require('../lib/registry');
 
 const TABLE = 'risk_assessments';
 
@@ -26,8 +27,10 @@ function levelFor(score) {
 // (mounted at "/risk-assessments" in app.js, so this is just "/")
 router.get('/', async (req, res) => {
   try {
+    const lf = await applyLocation('risks', req, res, 'k');
     const [risks] = await db.query(
-      `SELECT * FROM ${TABLE} ORDER BY assessment_date DESC, risk_id DESC`
+      `SELECT k.* FROM ${TABLE} k WHERE 1 = 1 ${lf.clause} ORDER BY k.assessment_date DESC, k.risk_id DESC`,
+      lf.params
     );
     res.render('risk_assesments', { risks, flash: null, error: null });
   } catch (err) {
@@ -51,6 +54,7 @@ router.post('/', async (req, res) => {
     control_measures,
     responsible_person,
     assessment_date,
+    location,
   } = req.body;
 
   if (!activity) {
@@ -76,8 +80,8 @@ router.post('/', async (req, res) => {
   try {
     await db.query(
       `INSERT INTO ${TABLE}
-        (activity, hazard, consequence, likelihood, severity, risk_score, risk_level, control_measures, responsible_person, assessment_date)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (activity, hazard, consequence, likelihood, severity, risk_score, risk_level, control_measures, responsible_person, assessment_date, location)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         activity,
         hazard || null,
@@ -89,6 +93,7 @@ router.post('/', async (req, res) => {
         control_measures || null,
         responsible_person || null,
         assessment_date || null,
+        location || null,
       ]
     );
     res.redirect('/risk-assessments');
@@ -110,6 +115,7 @@ router.post('/:id/update', async (req, res) => {
     control_measures,
     responsible_person,
     assessment_date,
+    location,
   } = req.body;
 
   const l = Number(likelihood) || 1;
@@ -129,7 +135,8 @@ router.post('/:id/update', async (req, res) => {
         risk_level = ?,
         control_measures = ?,
         responsible_person = ?,
-        assessment_date = ?
+        assessment_date = ?,
+        location = ?
        WHERE risk_id = ?`,
       [
         activity,
@@ -142,6 +149,7 @@ router.post('/:id/update', async (req, res) => {
         control_measures || null,
         responsible_person || null,
         assessment_date || null,
+        location || null,
         id,
       ]
     );

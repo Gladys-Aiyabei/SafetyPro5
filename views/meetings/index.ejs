@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Meeting Manager</h1>
+            <div class="hint">Meeting records with attendance, minutes and actions.</div>
+        </div>
+        <% if (can.add) { %>
+            <a href="/meetings/add" class="btn btn-add">+ New Meeting</a>
+        <% } %>
+    </div>
+
+    <%- include('../partials/toolbar') %>
+
+    <form method="GET" class="filters">
+        <% if (location) { %><input type="hidden" name="location" value="<%= location %>"><% } %>
+        <div class="f">
+            <label>Type</label>
+            <select name="meeting_type">
+                <option value="">All</option>
+                <% meetingTypes.forEach(t => { %><option <%= filters.meeting_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Status</label>
+            <select name="status">
+                <option value="">All</option>
+                <% statuses.forEach(t => { %><option <%= filters.status === t ? 'selected' : '' %>><%= t %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Year</label>
+            <input type="number" name="year" min="2000" max="2100" value="<%= filters.year %>" placeholder="All">
+        </div>
+        <button class="btn btn-primary">Filter</button>
+    </form>
+
+    <div class="card">
+        <% if (meetings.length === 0) { %>
+            <div class="empty">No meetings found.</div>
+        <% } else { %>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th><th>Meeting</th><th>Type</th><th>Location</th><th>Chair</th>
+                        <th>Status</th><th>Present</th><th>Minutes</th><th>Open actions</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% meetings.forEach(m => { %>
+                        <tr>
+                            <td><%= fmtDate(m.meeting_date) %></td>
+                            <td><strong><%= m.title %></strong></td>
+                            <td><%= m.meeting_type %></td>
+                            <td><%= m.location || '-' %></td>
+                            <td><%= m.chairperson_name || '-' %></td>
+                            <td><span class="badge st-<%= slug(m.status) %>"><%= m.status %></span></td>
+                            <td><%= m.present %></td>
+                            <td><%= m.minutes %></td>
+                            <td><%= m.open_actions %></td>
+                            <td style="white-space:nowrap;">
+                                <a href="/meetings/view/<%= m.meeting_id %>" class="btn btn-view btn-sm">Open</a>
+                                <% if (can.edit) { %><a href="/meetings/edit/<%= m.meeting_id %>" class="btn btn-edit btn-sm">Edit</a><% } %>
+                                <% if (can.delete) { %>
+                                    <form method="POST" action="/meetings/delete/<%= m.meeting_id %>" class="inline"
+                                          onsubmit="return confirm('Delete this meeting and its minutes?');">
+                                        <button class="btn btn-delete btn-sm">Delete</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

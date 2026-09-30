@@ -1,0 +1,69 @@
+<%
+    const here = (typeof navPath !== 'undefined' && navPath) ? navPath : '';
+    const on = (...prefixes) => prefixes.some(p => here === p || here.startsWith(p + '/')) ? 'on' : '';
+    const me = (typeof user !== 'undefined' && user) ? user : null;
+    const isAdminUser = me && String(me.role || '').trim().toLowerCase() === 'admin';
+%>
+<nav class="topnav">
+
+    <a href="/" class="brand"><i>SP</i> SafetyPro</a>
+
+    <a href="/dashboard" class="<%= on('/dashboard') %>">Dashboard</a>
+
+    <div class="grp <%= on('/incidents', '/audits', '/inspections', '/risk-assessments', '/permits') %>">
+        <span tabindex="0">Operations</span>
+        <div class="menu">
+            <a href="/incidents">Incidents</a>
+            <a href="/audits">Audits</a>
+            <a href="/inspections">Inspections</a>
+            <a href="/risk-assessments">Risk Assessments</a>
+            <a href="/permits">Permits to Work</a>
+        </div>
+    </div>
+
+    <div class="grp <%= on('/moc', '/erp', '/meetings', '/training') %>">
+        <span tabindex="0">Planning</span>
+        <div class="menu">
+            <a href="/moc">Management of Change</a>
+            <a href="/erp">Emergency Drills</a>
+            <a href="/meetings">Meetings</a>
+            <a href="/training">Training &amp; Compliance</a>
+        </div>
+    </div>
+
+    <div class="grp <%= on('/ppe', '/hsseq', '/documents') %>">
+        <span tabindex="0">Records</span>
+        <div class="menu">
+            <a href="/ppe">PPE Inventory</a>
+            <a href="/hsseq">HSSEQ Data</a>
+            <a href="/documents">Documents</a>
+        </div>
+    </div>
+
+    <div class="grp">
+        <span tabindex="0">Follow-up</span>
+        <div class="menu">
+            <a href="/dashboard?sheet=findings">All Findings</a>
+            <a href="/dashboard?sheet=actions">All Actions</a>
+            <a href="/dashboard?sheet=actions&amp;mine=1">My Actions</a>
+        </div>
+    </div>
+
+    <div class="grp <%= on('/employees', '/departments', '/checklists', '/users') %>">
+        <span tabindex="0">Admin</span>
+        <div class="menu">
+            <a href="/employees">Employees</a>
+            <a href="/departments">Departments</a>
+            <% if (isAdminUser) { %><a href="/checklists">Checklists</a><% } %>
+            <% if (isAdminUser) { %><a href="/users">Users</a><% } %>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <% if (me) { %>
+        <div class="who"><b><%= me.username %></b><%= me.role || '' %></div>
+    <% } %>
+    <a href="/logout" class="logout">Log out</a>
+
+</nav>

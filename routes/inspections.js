@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Import MySQL database connection/pool
 const db = require("../db");
+const { applyLocation } = require("../lib/registry");
 
 
 // =====================================================
@@ -12,6 +13,8 @@ const db = require("../db");
 router.get("/", async (req, res) => {
     try {
 
+        const lf = await applyLocation("inspections", req, res, "i");
+
         const [inspections] = await db.query(`
             SELECT
                 i.*,
@@ -19,8 +22,9 @@ router.get("/", async (req, res) => {
             FROM inspections i
             LEFT JOIN employees e
                 ON i.inspector_id = e.employee_id
+            WHERE 1 = 1 ${lf.clause}
             ORDER BY i.inspection_date DESC
-        `);
+        `, lf.params);
 
         res.render("inspections/index", {
             inspections: inspections,

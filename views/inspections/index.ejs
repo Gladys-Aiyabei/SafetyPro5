@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" class="pg-inspections-index">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,112 +8,15 @@
 ```
 <title><%= title %></title>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background: #f4f6f8;
-    }
-
-    .container {
-        width: 95%;
-        margin: 30px auto;
-    }
-
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    h1 {
-        color: #333;
-    }
-
-    .btn {
-        padding: 9px 14px;
-        text-decoration: none;
-        border-radius: 5px;
-        color: white;
-        border: none;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 14px;
-    }
-
-    .btn-add {
-        background: #198754;
-    }
-
-    .btn-view {
-        background: #0d6efd;
-    }
-
-    .btn-edit {
-        background: #ffc107;
-        color: #000;
-    }
-
-    .btn-delete {
-        background: #dc3545;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    th {
-        background: #212529;
-        color: white;
-        padding: 12px;
-        text-align: left;
-    }
-
-    td {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-    }
-
-    tr:hover {
-        background: #f1f1f1;
-    }
-
-    .actions {
-        display: flex;
-        gap: 5px;
-    }
-
-    .status {
-        padding: 5px 9px;
-        border-radius: 15px;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    .status-completed {
-        background: #d1e7dd;
-        color: #0f5132;
-    }
-
-    .status-pending {
-        background: #fff3cd;
-        color: #664d03;
-    }
-
-    .status-failed {
-        background: #f8d7da;
-        color: #842029;
-    }
-</style>
 ```
 
+    <link rel="stylesheet" href="/main.css">
 </head>
 
 <body>
+
+<%- include('../partials/topnav') %>
+
 
 <div class="container">
 
@@ -121,10 +24,16 @@
 <div class="header">
     <h1>Inspections</h1>
 
-    <a href="/inspections/add" class="btn btn-add">
+    <% if (can.add) { %>
+<a href="/inspections/add" class="btn btn-add">
         + Add Inspection
     </a>
+<% } %>
 </div>
+
+    <%- include('../partials/toolbar') %>
+
+
 
 <% if (inspections.length === 0) { %>
 
@@ -217,13 +126,16 @@
                                 View
                             </a>
 
-                            <a
+                            <% if (can.edit) { %>
+<a
                                 href="/inspections/edit/<%= inspection.inspection_id %>"
                                 class="btn btn-edit">
                                 Edit
                             </a>
+<% } %>
 
-                            <form
+                            <% if (can.delete) { %>
+<form
                                 action="/inspections/delete/<%= inspection.inspection_id %>"
                                 method="POST"
                                 style="display:inline;"
@@ -236,6 +148,7 @@
                                 </button>
 
                             </form>
+<% } %>
 
                         </div>
 
@@ -253,6 +166,8 @@
 ```
 
 </div>
+
+<%- include('../partials/footer') %>
 
 </body>
 </html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/erp?year=<%= drill.plan_year %>">Emergency Response Planning <%= drill.plan_year %></a></div>
+            <h1><%= drill.title %></h1>
+            <span class="badge st-<%= slug(drill.status) %>"><%= drill.status %></span>
+            <span class="hint">&nbsp;<%= drill.drill_type %> &middot; <%= drill.location || 'no location' %></span>
+        </div>
+        <div class="btn-row">
+            <% if (can.edit) { %><a href="/erp/edit/<%= drill.drill_id %>" class="btn btn-edit">Edit / record outcome</a><% } %>
+            <a href="/erp?year=<%= drill.plan_year %>" class="btn btn-back">Back to plan</a>
+        </div>
+    </div>
+
+    <section class="card">
+        <h2>Drill details</h2>
+        <div class="form-row">
+            <div class="form-group"><label>Planned</label><%= fmtDate(drill.planned_date) %></div>
+            <div class="form-group"><label>Done on</label><%= fmtDate(drill.actual_date) || '-' %></div>
+            <div class="form-group"><label>Coordinator</label><%= drill.coordinator_name || '-' %></div>
+            <div class="form-group"><label>Participants</label><%= drill.participants == null ? '-' : drill.participants %></div>
+            <div class="form-group"><label>Duration</label><%= drill.duration_minutes == null ? '-' : drill.duration_minutes + ' min' %></div>
+        </div>
+        <label>Scenario</label>
+        <div style="white-space:pre-wrap;"><%= drill.scenario || '-' %></div>
+        <label>Objectives</label>
+        <div style="white-space:pre-wrap;"><%= drill.objectives || '-' %></div>
+        <label>Outcome summary</label>
+        <div style="white-space:pre-wrap;"><%= drill.outcome_summary || '-' %></div>
+    </section>
+
+    <section class="card">
+        <h2>Findings, root causes &amp; actions</h2>
+        <%- include('../partials/findings_panel', { P: panel }) %>
+    </section>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

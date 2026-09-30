@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Emergency Response Planning</h1>
+            <div class="hint">Annual drill plan for <strong><%= year %></strong>. Open a drill to record findings, root causes and actions.</div>
+        </div>
+        <% if (can.add) { %>
+            <a href="/erp/add?year=<%= year %>" class="btn btn-add">+ Plan Drill(s)</a>
+        <% } %>
+    </div>
+
+    <%- include('../partials/toolbar') %>
+
+    <form method="GET" class="filters">
+        <% if (location) { %><input type="hidden" name="location" value="<%= location %>"><% } %>
+        <div class="f">
+            <label>Plan year</label>
+            <select name="year">
+                <% yearOptions.forEach(y => { %><option <%= y === year ? 'selected' : '' %>><%= y %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Drill type</label>
+            <select name="drill_type">
+                <option value="">All</option>
+                <% drillTypes.forEach(t => { %><option <%= filters.drill_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+            </select>
+        </div>
+        <div class="f">
+            <label>Status</label>
+            <select name="status">
+                <option value="">All</option>
+                <% statuses.forEach(t => { %><option <%= filters.status === t ? 'selected' : '' %>><%= t %></option><% }); %>
+            </select>
+        </div>
+        <button class="btn btn-primary">Apply</button>
+    </form>
+
+    <div class="kpis">
+        <div class="kpi blue"><b><%= kpi.total %></b><span>Drills planned</span></div>
+        <div class="kpi green"><b><%= kpi.done %></b><span>Drills done</span></div>
+        <div class="kpi red"><b><%= kpi.overdue %></b><span>Overdue</span></div>
+        <div class="kpi yellow"><b><%= kpi.pct %>%</b><span>Plan completion</span></div>
+    </div>
+
+    <% byMonth.forEach(m => { if (m.drills.length === 0) return; %>
+
+        <div class="card">
+            <h2><%= m.name %> <%= year %></h2>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Planned</th><th>Type</th><th>Drill</th><th>Location</th><th>Coordinator</th>
+                        <th>Status</th><th>Done on</th><th>Findings</th><th>Open actions</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% m.drills.forEach(d => { %>
+                        <tr class="<%= d.overdue ? 'is-overdue' : '' %>">
+                            <td><%= fmtDate(d.planned_date) %></td>
+                            <td><%= d.drill_type %></td>
+                            <td><%= d.title %></td>
+                            <td><%= d.location || '-' %></td>
+                            <td><%= d.coordinator_name || '-' %></td>
+                            <td>
+                                <span class="badge st-<%= d.overdue ? 'overdue' : slug(d.status) %>"><%= d.overdue ? 'Overdue' : d.status %></span>
+                            </td>
+                            <td><%= fmtDate(d.actual_date) || '-' %></td>
+                            <td><%= d.findings %></td>
+                            <td><%= d.open_actions %></td>
+                            <td style="white-space:nowrap;">
+                                <a href="/erp/view/<%= d.drill_id %>" class="btn btn-view btn-sm">Open</a>
+                                <% if (can.edit) { %><a href="/erp/edit/<%= d.drill_id %>" class="btn btn-edit btn-sm">Edit</a><% } %>
+                                <% if (can.delete) { %>
+                                    <form method="POST" action="/erp/delete/<%= d.drill_id %>" class="inline"
+                                          onsubmit="return confirm('Delete this drill?');">
+                                        <button class="btn btn-delete btn-sm">Delete</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+    <% }); %>
+
+    <% if (drills.length === 0) { %>
+        <div class="card"><div class="empty">No drills planned for <%= year %>.</div></div>
+    <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

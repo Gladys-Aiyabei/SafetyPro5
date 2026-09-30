@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+
+<%- include('../partials/topnav') %>
+
+<%
+    const adding = mode === 'add';
+    const editingSelf = !adding && Number(recordId) === meId;
+%>
+
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <div class="crumb"><a href="/users">Users</a> &rsaquo; <%= adding ? 'New' : 'Edit' %></div>
+            <h1><%= title %></h1>
+            <div class="hint">
+                <%= adding
+                    ? 'The user ID and created date are set automatically.'
+                    : 'Leave the password blank to keep the current one.' %>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+        <form method="POST" action="<%= adding ? '/users/add' : '/users/edit/' + recordId %>" autocomplete="off">
+
+            <% if (!adding) { %>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>User ID</label>
+                        <input type="text" value="<%= editUser.user_id %>" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Created</label>
+                        <input type="text" value="<%= fmtDateTime(editUser.created_at) %>" disabled>
+                    </div>
+                </div>
+            <% } %>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="f-username">Username</label>
+                    <input type="text" id="f-username" name="username" value="<%= values.username || '' %>"
+                           required minlength="3" maxlength="50">
+                    <div class="hint">3 to 50 characters, must be unique.</div>
+                </div>
+                <div class="form-group">
+                    <label for="f-email">Email (used to log in)</label>
+                    <input type="email" id="f-email" name="email" value="<%= values.email || '' %>"
+                           required maxlength="100">
+                    <div class="hint">Must be unique.</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="f-password"><%= adding ? 'Password' : 'New password' %></label>
+                    <input type="password" id="f-password" name="password" autocomplete="new-password"
+                           <%= adding ? 'required' : '' %> minlength="8" maxlength="72"
+                           placeholder="<%= adding ? 'At least 8 characters' : 'Leave blank to keep the current password' %>">
+                    <div class="hint">Stored as a bcrypt hash; it cannot be read back.</div>
+                </div>
+                <div class="form-group"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="f-role">Role</label>
+                    <select id="f-role" name="role" <%= editingSelf ? 'disabled' : '' %>>
+                        <% roles.forEach(r => { %>
+                            <option <%= String(values.role || '').toLowerCase() === r.toLowerCase() ? 'selected' : '' %>><%= r %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="f-status">Status</label>
+                    <select id="f-status" name="status" <%= editingSelf ? 'disabled' : '' %>>
+                        <% statuses.forEach(s => { %>
+                            <option <%= String(values.status || '').toLowerCase() === s.toLowerCase() ? 'selected' : '' %>><%= s %></option>
+                        <% }); %>
+                    </select>
+                    <div class="hint">Inactive accounts cannot log in.</div>
+                </div>
+                <div class="form-group">
+                    <label for="f-employee">Linked employee</label>
+                    <select id="f-employee" name="employee_id">
+                        <option value="">-- none --</option>
+                        <% employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>" <%= Number(values.employee_id) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <% if (editingSelf) { %>
+                <div class="hint">This is your own account: your role and status cannot be changed here.</div>
+            <% } %>
+
+            <div class="btn-row" style="margin-top:14px;">
+                <button class="btn <%= adding ? 'btn-add' : 'btn-edit' %>"><%= adding ? 'Add user' : 'Save changes' %></button>
+                <a href="<%= adding ? '/users' : '/users/view/' + recordId %>" class="btn btn-back">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

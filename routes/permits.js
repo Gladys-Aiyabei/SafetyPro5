@@ -11,13 +11,16 @@ const router = express.Router();
 // swap every `await db.query(...)` below for the callback form:
 //   db.query(sql, params, (err, rows) => { ... });
 const db = require('../db');
+const { applyLocation } = require('../lib/registry');
 
 // GET /permits — list all permits
 // (mounted at "/permits" in app.js, so this is just "/")
 router.get('/', async (req, res) => {
   try {
+    const lf = await applyLocation('permits', req, res, 'p');
     const [permits] = await db.query(
-      'SELECT * FROM permits ORDER BY issue_date DESC'
+      `SELECT p.* FROM permits p WHERE 1 = 1 ${lf.clause} ORDER BY p.issue_date DESC`,
+      lf.params
     );
     res.render('permits', { permits, flash: null, error: null });
   } catch (err) {
