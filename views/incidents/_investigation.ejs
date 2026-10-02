@@ -1,0 +1,347 @@
+<%
+    // Investigation (line manager) + Head of Safety sign-off, included by incidents/view.ejs
+    const base = "/incidents/" + incident.incident_id;
+    const ymd = v => {
+        if (!v) return "";
+        const d = new Date(v);
+        const p = x => String(x).padStart(2, "0");
+        return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+    };
+    const lm = inv.canInvestigate;
+%>
+
+<section id="investigation" class="inv">
+
+    <h2>Investigation</h2>
+
+    <p class="inv-note">
+        <% if (inv.signedOff) { %>
+            Signed off by the Head of Safety. The investigation is locked.
+        <% } else if (lm) { %>
+            You are the line manager for this incident, so you can add, change and remove the items below.
+        <% } else if (incident.line_manager_name) { %>
+            Only the line manager (<%= incident.line_manager_name %>) can change this section.
+        <% } else { %>
+            No line manager is assigned. An Admin can set one with Edit.
+        <% } %>
+    </p>
+
+    <!-- Classification -->
+    <h3>Classification</h3>
+    <% if (lm) { %>
+        <form class="inv-row" method="POST" action="<%= base %>/inv/report">
+            <select name="classification">
+                <option value="">-- Select Classification --</option>
+                <% inv.classifications.forEach(c => { %>
+                    <option value="<%= c %>" <%= incident.classification === c ? "selected" : "" %>><%= c %></option>
+                <% }); %>
+            </select>
+            <button type="submit" class="btn btn-save">Save</button>
+        </form>
+    <% } else { %>
+        <p><%= incident.classification || "Not classified yet" %></p>
+    <% } %>
+
+    <!-- Injuries -->
+    <h3>Injuries</h3>
+    <% const injuryFields = (j) => { %>
+        <div class="inv-grid">
+            <label>Injured person
+                <input type="text" name="injured_person" value="<%= j.injured_person || "" %>" required>
+            </label>
+            <label>Type of injury
+                <input type="text" name="injury_type" value="<%= j.injury_type || "" %>" placeholder="e.g. Cut, Fracture, Burn">
+            </label>
+            <label>Body part
+                <input type="text" name="body_part" value="<%= j.body_part || "" %>" placeholder="e.g. Left hand">
+            </label>
+            <label>Treatment
+                <select name="treatment">
+                    <option value="">-- Select --</option>
+                    <% inv.treatments.forEach(t => { %>
+                        <option value="<%= t %>" <%= j.treatment === t ? "selected" : "" %>><%= t %></option>
+                    <% }); %>
+                </select>
+            </label>
+            <label>Days lost
+                <input type="number" name="days_lost" min="0" value="<%= j.days_lost == null ? "" : j.days_lost %>">
+            </label>
+        </div>
+    <% }; %>
+    <% if (inv.injuries.length === 0) { %><p class="inv-empty">No injuries recorded.</p><% } %>
+    <% inv.injuries.forEach(j => { %>
+        <% if (lm) { %>
+            <form class="inv-item" method="POST" action="<%= base %>/inv/injury/<%= j.injury_id %>/save">
+                <% injuryFields(j); %>
+                <div class="inv-buttons">
+                    <button type="submit" class="btn btn-save">Save</button>
+                    <button type="submit" class="btn btn-remove"
+                        formaction="<%= base %>/inv/injury/<%= j.injury_id %>/remove" formnovalidate
+                        onclick="return confirm('Remove this injury?');">Remove</button>
+                </div>
+            </form>
+        <% } else { %>
+            <div class="inv-item">
+                <strong><%= j.injured_person %></strong>
+                <div class="inv-meta">
+                    Injury: <%= j.injury_type || "-" %> ·
+                    Body part: <%= j.body_part || "-" %> ·
+                    Treatment: <%= j.treatment || "-" %> ·
+                    Days lost: <%= j.days_lost == null ? "-" : j.days_lost %>
+                </div>
+            </div>
+        <% } %>
+    <% }); %>
+    <% if (lm) { %>
+        <form class="inv-new" method="POST" action="<%= base %>/inv/injury">
+            <% injuryFields({}); %>
+            <button type="submit" class="btn btn-add">+ Add Injury</button>
+        </form>
+    <% } %>
+
+    <!-- Witnesses -->
+    <h3>Witnesses</h3>
+    <% if (inv.witnesses.length === 0) { %><p class="inv-empty">No witnesses recorded.</p><% } %>
+    <% inv.witnesses.forEach(w => { %>
+        <% if (lm) { %>
+            <form class="inv-item" method="POST" action="<%= base %>/inv/witness/<%= w.witness_id %>/save">
+                <div class="inv-grid">
+                    <label>Name
+                        <input type="text" name="witness_name" value="<%= w.witness_name %>" required>
+                    </label>
+                    <label>Contact
+                        <input type="text" name="contact" value="<%= w.contact || "" %>">
+                    </label>
+                </div>
+                <textarea name="statement" placeholder="Statement"><%= w.statement || "" %></textarea>
+                <div class="inv-buttons">
+                    <button type="submit" class="btn btn-save">Save</button>
+                    <button type="submit" class="btn btn-remove"
+                        formaction="<%= base %>/inv/witness/<%= w.witness_id %>/remove" formnovalidate
+                        onclick="return confirm('Remove this witness?');">Remove</button>
+                </div>
+            </form>
+        <% } else { %>
+            <div class="inv-item">
+                <strong><%= w.witness_name %></strong><% if (w.contact) { %> · <%= w.contact %><% } %>
+                <% if (w.statement) { %><div class="text-block"><%= w.statement %></div><% } %>
+            </div>
+        <% } %>
+    <% }); %>
+    <% if (lm) { %>
+        <form class="inv-new" method="POST" action="<%= base %>/inv/witness">
+            <div class="inv-grid">
+                <label>Name
+                    <input type="text" name="witness_name" required>
+                </label>
+                <label>Contact
+                    <input type="text" name="contact" placeholder="Phone or email">
+                </label>
+            </div>
+            <textarea name="statement" placeholder="Statement"></textarea>
+            <button type="submit" class="btn btn-add">+ Add Witness</button>
+        </form>
+    <% } %>
+
+    <!-- Findings -->
+    <h3>Findings</h3>
+    <% if (inv.findings.length === 0) { %><p class="inv-empty">No findings recorded.</p><% } %>
+    <% inv.findings.forEach((f, i) => { %>
+        <% if (lm) { %>
+            <form class="inv-item" method="POST" action="<%= base %>/inv/finding/<%= f.finding_id %>/save">
+                <textarea name="finding_text" required><%= f.finding_text %></textarea>
+                <div class="inv-buttons">
+                    <button type="submit" class="btn btn-save">Save</button>
+                    <button type="submit" class="btn btn-remove"
+                        formaction="<%= base %>/inv/finding/<%= f.finding_id %>/remove" formnovalidate
+                        onclick="return confirm('Remove this finding?');">Remove</button>
+                </div>
+            </form>
+        <% } else { %>
+            <div class="inv-item text-block"><%= i + 1 %>. <%= f.finding_text %></div>
+        <% } %>
+    <% }); %>
+    <% if (lm) { %>
+        <form class="inv-new" method="POST" action="<%= base %>/inv/finding">
+            <textarea name="finding_text" placeholder="New finding" required></textarea>
+            <button type="submit" class="btn btn-add">+ Add Finding</button>
+        </form>
+    <% } %>
+
+    <!-- Actions -->
+    <h3>Actions</h3>
+    <% if (inv.actions.length === 0) { %><p class="inv-empty">No actions recorded.</p><% } %>
+    <% inv.actions.forEach(a => { %>
+        <% if (lm) { %>
+            <form class="inv-item" method="POST" action="<%= base %>/inv/action/<%= a.action_id %>/save">
+                <textarea name="action_text" required><%= a.action_text %></textarea>
+                <div class="inv-grid">
+                    <label>Responsible
+                        <select name="responsible_id">
+                            <option value="">-- Select Employee --</option>
+                            <% inv.employees.forEach(e => { %>
+                                <option value="<%= e.employee_id %>" <%= a.responsible_id === e.employee_id ? "selected" : "" %>><%= e.employee_name %></option>
+                            <% }); %>
+                        </select>
+                    </label>
+                    <label>Due date
+                        <input type="date" name="due_date" value="<%= ymd(a.due_date) %>">
+                    </label>
+                    <label>Status
+                        <select name="status">
+                            <% inv.actionStatuses.forEach(st => { %>
+                                <option value="<%= st %>" <%= a.status === st ? "selected" : "" %>><%= st %></option>
+                            <% }); %>
+                        </select>
+                    </label>
+                </div>
+                <div class="inv-buttons">
+                    <button type="submit" class="btn btn-save">Save</button>
+                    <button type="submit" class="btn btn-remove"
+                        formaction="<%= base %>/inv/action/<%= a.action_id %>/remove" formnovalidate
+                        onclick="return confirm('Remove this action?');">Remove</button>
+                </div>
+            </form>
+        <% } else { %>
+            <div class="inv-item">
+                <div class="text-block"><%= a.action_text %></div>
+                <div class="inv-meta">
+                    Responsible: <%= a.responsible_name || "-" %> ·
+                    Due: <%= ymd(a.due_date) || "-" %> ·
+                    Status: <%= a.status %>
+                </div>
+            </div>
+        <% } %>
+    <% }); %>
+    <% if (lm) { %>
+        <form class="inv-new" method="POST" action="<%= base %>/inv/action">
+            <textarea name="action_text" placeholder="New action" required></textarea>
+            <div class="inv-grid">
+                <label>Responsible
+                    <select name="responsible_id">
+                        <option value="">-- Select Employee --</option>
+                        <% inv.employees.forEach(e => { %>
+                            <option value="<%= e.employee_id %>"><%= e.employee_name %></option>
+                        <% }); %>
+                    </select>
+                </label>
+                <label>Due date
+                    <input type="date" name="due_date">
+                </label>
+                <label>Status
+                    <select name="status">
+                        <% inv.actionStatuses.forEach(st => { %>
+                            <option value="<%= st %>"><%= st %></option>
+                        <% }); %>
+                    </select>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-add">+ Add Action</button>
+        </form>
+    <% } %>
+
+    <!-- Learnings + Rating -->
+    <h3>Learnings</h3>
+    <% if (!lm) { %>
+        <div class="text-block"><%= incident.learnings || "No learnings recorded." %></div>
+    <% } %>
+
+    <h3>Rating</h3>
+    <% if (inv.rating) { %>
+        <p>
+            <span class="badge rating-<%= inv.rating.band.toLowerCase() %>"><%= inv.rating.band %> (<%= inv.rating.score %>)</span>
+            <span class="inv-meta">Likelihood: <%= inv.rating.likelihood %> × Consequence: <%= inv.rating.consequence %></span>
+        </p>
+    <% } else if (!lm) { %>
+        <p class="inv-empty">Not rated yet.</p>
+    <% } %>
+
+    <% if (lm) { %>
+        <form class="inv-item" method="POST" action="<%= base %>/inv/report">
+            <label class="inv-label">Learnings
+                <textarea name="learnings" placeholder="What has been learned and should be shared"><%= incident.learnings || "" %></textarea>
+            </label>
+            <div class="inv-grid">
+                <label>Likelihood
+                    <select name="likelihood">
+                        <option value="">-- Select --</option>
+                        <% inv.likelihoodScale.forEach((name, i) => { %>
+                            <option value="<%= i + 1 %>" <%= Number(incident.likelihood) === i + 1 ? "selected" : "" %>><%= i + 1 %> - <%= name %></option>
+                        <% }); %>
+                    </select>
+                </label>
+                <label>Consequence
+                    <select name="consequence">
+                        <option value="">-- Select --</option>
+                        <% inv.consequenceScale.forEach((name, i) => { %>
+                            <option value="<%= i + 1 %>" <%= Number(incident.consequence) === i + 1 ? "selected" : "" %>><%= i + 1 %> - <%= name %></option>
+                        <% }); %>
+                    </select>
+                </label>
+            </div>
+            <p class="inv-meta">Rating = Likelihood × Consequence: 1-4 Low, 5-9 Medium, 10-16 High, 20-25 Extreme.</p>
+            <button type="submit" class="btn btn-save">Save Learnings &amp; Rating</button>
+        </form>
+    <% } %>
+
+    <!-- Pictures -->
+    <h3>Pictures</h3>
+    <% if (inv.photos.length === 0) { %><p class="inv-empty">No pictures uploaded.</p><% } %>
+    <div class="inv-photos">
+        <% inv.photos.forEach(p => { %>
+            <figure>
+                <a href="/incidents/photo/<%= p.file_path %>" target="_blank" rel="noopener">
+                    <img src="/incidents/photo/<%= p.file_path %>" alt="<%= p.caption || p.original_name || "Incident picture" %>">
+                </a>
+                <figcaption><%= p.caption || p.original_name || "" %></figcaption>
+                <% if (lm) { %>
+                    <form method="POST" action="<%= base %>/inv/photo/<%= p.image_id %>/remove"
+                          onsubmit="return confirm('Remove this picture?');">
+                        <button type="submit" class="btn btn-remove">Remove</button>
+                    </form>
+                <% } %>
+            </figure>
+        <% }); %>
+    </div>
+    <% if (lm) { %>
+        <form class="inv-new" method="POST" action="<%= base %>/inv/photo" enctype="multipart/form-data">
+            <input type="file" name="photos" accept=".jpg,.jpeg,.png,.gif,.webp" multiple required>
+            <input type="text" name="caption" placeholder="Caption (optional)">
+            <button type="submit" class="btn btn-add">+ Upload Pictures</button>
+        </form>
+    <% } %>
+
+</section>
+
+<!-- Head of Safety sign-off -->
+<section class="inv signoff">
+
+    <h2>Head of Safety Sign-off</h2>
+
+    <% if (inv.signedOff) { %>
+        <p>
+            Signed off by <strong><%= incident.signed_off_by_name || "-" %></strong>
+            on <%= new Date(incident.signed_off_at).toLocaleString() %>. The incident is closed.
+        </p>
+        <% if (incident.signoff_comments) { %>
+            <div class="text-block"><%= incident.signoff_comments %></div>
+        <% } %>
+        <p>
+            <a class="btn btn-save" href="<%= base %>/learning-alert" target="_blank" rel="noopener">Download Learning Alert (PDF)</a>
+        </p>
+        <p class="inv-note">The learning alert was emailed to all users when the incident was signed off.</p>
+    <% } else if (inv.canSignOff) { %>
+        <% if (!incident.classification) { %>
+            <p class="inv-note">The line manager must classify the incident before you can sign it off.</p>
+        <% } else { %>
+            <form method="POST" action="<%= base %>/signoff"
+                  onsubmit="return confirm('Sign off this incident? It will be closed, the investigation locked, and a learning alert emailed to all users.');">
+                <textarea name="signoff_comments" placeholder="Sign-off comments (optional)"></textarea>
+                <button type="submit" class="btn btn-signoff">Sign Off &amp; Close Incident</button>
+            </form>
+        <% } %>
+    <% } else { %>
+        <p class="inv-note">Awaiting sign-off by the Head of Safety.</p>
+    <% } %>
+
+</section>

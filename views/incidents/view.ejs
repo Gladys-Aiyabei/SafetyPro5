@@ -44,6 +44,11 @@
     </div>
 
     <div class="field">
+        <label>Classification</label>
+        <div><%= incident.classification || "Not classified yet" %></div>
+    </div>
+
+    <div class="field">
         <label>Severity</label>
         <div>
             <span class="badge <%= sevClass %>">
@@ -73,6 +78,11 @@
     </div>
 
     <div class="field">
+        <label>Line Manager</label>
+        <div><%= incident.line_manager_name || "-" %></div>
+    </div>
+
+    <div class="field">
         <label>Status</label>
         <div>
             <span class="badge <%= statClass %>">
@@ -80,6 +90,8 @@
             </span>
         </div>
     </div>
+
+    <%- include('_investigation') %>
 
     <div class="buttons">
         <% if (can.edit) { %>

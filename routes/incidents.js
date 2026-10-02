@@ -4,6 +4,14 @@ const router = express.Router();
 // Import MySQL database connection/pool
 const db = require("../db");
 const { applyLocation } = require("../lib/registry");
+const investigation = require("./incident_investigation");
+const { notifyNewIncident } = require("../lib/incidentNotify");
+
+// Line-manager investigation + Head of Safety sign-off (see routes/incident_investigation.js)
+router.use(investigation);
+
+// "Closed" is set only by the Head of Safety sign-off, never from the add / edit forms.
+const SIGN_OFF_ONLY = "Incidents are closed automatically when the Head of Safety signs them off.";
 
 
 // =====================================================
@@ -18,10 +26,13 @@ router.get("/", async (req, res) => {
         const [incidents] = await db.query(`
             SELECT
                 i.*,
-                e.employee_name AS reported_by_name
+                e.employee_name AS reported_by_name,
+                lm.employee_name AS line_manager_name
             FROM incidents i
             LEFT JOIN employees e
                 ON i.reported_by = e.employee_id
+            LEFT JOIN employees lm
+                ON i.line_manager_id = lm.employee_id
             WHERE 1 = 1 ${lf.clause}
             ORDER BY i.incident_date DESC
         `, lf.params);
@@ -51,7 +62,8 @@ router.get("/add", async (req, res) => {
         const [employees] = await db.query(`
             SELECT
                 employee_id,
-                employee_name
+                employee_name,
+                line_manager_id
             FROM employees
             ORDER BY employee_name ASC
         `);
@@ -84,6 +96,7 @@ router.post("/add", async (req, res) => {
         description,
         immediate_action,
         reported_by,
+        line_manager_id,
         status
     } = req.body;
 
@@ -91,13 +104,17 @@ router.post("/add", async (req, res) => {
         return res.status(400).send("Incident date is required.");
     }
 
+    if (status === "Closed") {
+        return res.status(400).send(SIGN_OFF_ONLY);
+    }
+
     try {
 
-        await db.query(`
+        const [created] = await db.query(`
             INSERT INTO incidents
                 (incident_date, incident_type, severity, location,
-                 description, immediate_action, reported_by, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                 description, immediate_action, reported_by, line_manager_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             incident_date,
             incident_type || null,
@@ -106,8 +123,12 @@ router.post("/add", async (req, res) => {
             description || null,
             immediate_action || null,
             reported_by || null,
+            line_manager_id || null,
             status || "Open"
         ]);
+
+        // Email line manager, reporter / user, Head of Safety and management (in the background).
+        notifyNewIncident(created.insertId, req.session.user);
 
         res.redirect("/incidents");
 
@@ -133,10 +154,16 @@ router.get("/view/:id", async (req, res) => {
         const [incidents] = await db.query(`
             SELECT
                 i.*,
-                e.employee_name AS reported_by_name
+                e.employee_name AS reported_by_name,
+                lm.employee_name AS line_manager_name,
+                so.employee_name AS signed_off_by_name
             FROM incidents i
             LEFT JOIN employees e
                 ON i.reported_by = e.employee_id
+            LEFT JOIN employees lm
+                ON i.line_manager_id = lm.employee_id
+            LEFT JOIN employees so
+                ON i.signed_off_by = so.employee_id
             WHERE i.incident_id = ?
         `, [id]);
 
@@ -146,6 +173,7 @@ router.get("/view/:id", async (req, res) => {
 
         res.render("incidents/view", {
             incident: incidents[0],
+            inv: await investigation.investigationFor(incidents[0], req.session.user),
             title: "View Incident"
         });
 
@@ -181,7 +209,8 @@ router.get("/edit/:id", async (req, res) => {
         const [employees] = await db.query(`
             SELECT
                 employee_id,
-                employee_name
+                employee_name,
+                line_manager_id
             FROM employees
             ORDER BY employee_name ASC
         `);
@@ -217,6 +246,7 @@ router.post("/edit/:id", async (req, res) => {
         description,
         immediate_action,
         reported_by,
+        line_manager_id,
         status
     } = req.body;
 
@@ -225,6 +255,22 @@ router.post("/edit/:id", async (req, res) => {
     }
 
     try {
+
+        const [current] = await db.query(
+            "SELECT status, signed_off_at FROM incidents WHERE incident_id = ?", [id]
+        );
+
+        if (current.length === 0) {
+            return res.status(404).send("Incident not found");
+        }
+
+        let newStatus = status || "Open";
+
+        if (current[0].signed_off_at) {
+            newStatus = "Closed";
+        } else if (newStatus === "Closed" && current[0].status !== "Closed") {
+            return res.status(400).send(SIGN_OFF_ONLY);
+        }
 
         const [result] = await db.query(`
             UPDATE incidents
@@ -236,6 +282,7 @@ router.post("/edit/:id", async (req, res) => {
                 description = ?,
                 immediate_action = ?,
                 reported_by = ?,
+                line_manager_id = ?,
                 status = ?
             WHERE incident_id = ?
         `, [
@@ -246,7 +293,8 @@ router.post("/edit/:id", async (req, res) => {
             description || null,
             immediate_action || null,
             reported_by || null,
-            status || "Open",
+            line_manager_id || null,
+            newStatus,
             id
         ]);
 

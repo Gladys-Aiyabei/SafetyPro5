@@ -88,7 +88,25 @@
                 <% employees.forEach(employee => { %>
                     <option
                         value="<%= employee.employee_id %>"
+                        data-line-manager="<%= employee.line_manager_id || "" %>"
                         <%= incident.reported_by === employee.employee_id ? "selected" : "" %>>
+                        <%= employee.employee_name %>
+                    </option>
+                <% }); %>
+
+            </select>
+        </div>
+
+        <!-- Line Manager -->
+        <div class="form-group">
+            <label for="line_manager_id">Line Manager</label>
+            <select id="line_manager_id" name="line_manager_id">
+                <option value="">-- Select Line Manager --</option>
+
+                <% employees.forEach(employee => { %>
+                    <option
+                        value="<%= employee.employee_id %>"
+                        <%= incident.line_manager_id === employee.employee_id ? "selected" : "" %>>
                         <%= employee.employee_name %>
                     </option>
                 <% }); %>
@@ -102,7 +120,9 @@
             <select id="status" name="status">
                 <option value="Open" <%= incident.status === "Open" ? "selected" : "" %>>Open</option>
                 <option value="Under Investigation" <%= incident.status === "Under Investigation" ? "selected" : "" %>>Under Investigation</option>
-                <option value="Closed" <%= incident.status === "Closed" ? "selected" : "" %>>Closed</option>
+                <% if (incident.status === "Closed") { %>
+                <option value="Closed" selected>Closed</option>
+                <% } %>
             </select>
         </div>
 
@@ -115,6 +135,20 @@
     </form>
 
 </div>
+
+
+<script>
+// Picking "Reported By" fills in that employee's line manager (from employee details), unless one is already chosen.
+(function () {
+    var reporter = document.getElementById("reported_by");
+    var manager = document.getElementById("line_manager_id");
+    reporter.addEventListener("change", function () {
+        var opt = reporter.options[reporter.selectedIndex];
+        var lm = opt && opt.getAttribute("data-line-manager");
+        if (lm && !manager.value) manager.value = lm;
+    });
+})();
+</script>
 
 <%- include('../partials/footer') %>
 

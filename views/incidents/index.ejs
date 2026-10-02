@@ -43,6 +43,7 @@
                     <th>Severity</th>
                     <th>Location</th>
                     <th>Reported By</th>
+                    <th>Line Manager</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -73,6 +74,7 @@
                         </td>
                         <td><%= incident.location || "-" %></td>
                         <td><%= incident.reported_by_name || "-" %></td>
+                        <td><%= incident.line_manager_name || "-" %></td>
                         <td>
                             <span class="badge <%= statClass %>">
                                 <%= incident.status || "N/A" %>

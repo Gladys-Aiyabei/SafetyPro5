@@ -33,6 +33,11 @@ function requireLogin(req, res, next) {
         `AUTHENTICATION REQUIRED: ${req.method} ${req.originalUrl}`
     );
 
+    // Remember the page (e.g. an incident link from an email) to open after login.
+    if (req.method === "GET" && req.session) {
+        req.session.returnTo = req.originalUrl;
+    }
+
     return res.redirect("/login");
 }
 
@@ -64,7 +69,7 @@ const checklistRoutes = require("./routes/checklists");
 const usersRoutes = require("./routes/users");
 
 const { guard, requireAdmin } = require("./lib/access");
-const { fmtDate, fmtDateTime, slug } = require("./lib/format");
+const { fmtDate, fmtDateTime, slug, safeReturn } = require("./lib/format");
 
 
 // =====================================================
@@ -436,6 +441,10 @@ app.post("/login", async (req, res) => {
         // SAVE SESSION BEFORE REDIRECT
         // ------------------------------------------
 
+        // Page the user was sent to before logging in (e.g. from an email link).
+        const returnTo = safeReturn(req.session.returnTo, "/dashboard");
+        delete req.session.returnTo;
+
         req.session.save((err) => {
 
             if (err) {
@@ -468,7 +477,7 @@ app.post("/login", async (req, res) => {
 
 
             console.log(
-                "Redirecting to /dashboard"
+                `Redirecting to ${returnTo}`
             );
 
 
@@ -479,7 +488,7 @@ app.post("/login", async (req, res) => {
             console.log("");
 
 
-            return res.redirect("/dashboard");
+            return res.redirect(returnTo);
 
         });
 
