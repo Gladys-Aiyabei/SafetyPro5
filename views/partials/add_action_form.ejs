@@ -1,4 +1,5 @@
-<%# Form that adds an action. locals: P (panel), url (form action), rootCauses (array, may be empty) %>
+<%# Form that adds an action. locals: P (panel), url (form action), rootCauses (array, may be empty),
+    person / lineManager (defaults, e.g. the finding's; may be null) %>
 <form method="POST" action="<%= url %>" class="mini-form wide">
     <input type="hidden" name="return_to" value="<%= P.returnTo %>">
 
@@ -20,26 +21,18 @@
         </div>
     </div>
 
+    <%- include('people_fields', { P, personField: 'assigned_employee_id', person, lineManager }) %>
+
     <div class="form-row">
         <div class="form-group">
-            <label>Responsible role</label>
+            <label>Fallback role (optional)</label>
             <select name="responsible_role_id">
-                <option value="">-- choose role --</option>
+                <option value="">-- the person's own role --</option>
                 <% P.roles.forEach(r => { %>
                     <option value="<%= r.role_id %>"><%= r.role_name %></option>
                 <% }); %>
             </select>
-            <div class="hint">Whoever holds this role is responsible, now and in future.</div>
-        </div>
-        <div class="form-group">
-            <label>Or a named person (optional)</label>
-            <select name="assigned_employee_id">
-                <option value="">-- role holder --</option>
-                <% P.employees.forEach(e => { %>
-                    <option value="<%= e.employee_id %>"><%= e.employee_name %></option>
-                <% }); %>
-            </select>
-            <div class="hint">If they leave, the action moves to the role holder.</div>
+            <div class="hint">If the responsible person leaves, the action moves to whoever holds this role.</div>
         </div>
     </div>
 

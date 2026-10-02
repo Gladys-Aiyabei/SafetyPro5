@@ -69,6 +69,8 @@ const checklistRoutes = require("./routes/checklists");
 const usersRoutes = require("./routes/users");
 
 const { guard, requireAdmin } = require("./lib/access");
+const { startDueReminders } = require("./lib/actionNotify");
+const { ensureSchema } = require("./lib/engine");
 const { fmtDate, fmtDateTime, slug, safeReturn } = require("./lib/format");
 
 
@@ -840,6 +842,13 @@ app.listen(
         );
 
         console.log("");
+
+
+        // Responsible person / line manager columns, then email owners when their
+        // actions fall due (checked now and every hour)
+        ensureSchema()
+            .catch(error => console.error("Findings schema update failed:", error.message))
+            .then(startDueReminders);
 
     }
 );

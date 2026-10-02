@@ -15,15 +15,16 @@
     </td>
 
     <td>
-        <div><strong><%= a.role_name || 'Named person' %></strong></div>
+        <div><strong><%= a.responsible_name || a.role_name || 'Not set' %></strong></div>
         <div class="hint">
-            <% if (a.owner_names) { %>
-                Now: <%= a.owner_names %>
-            <% } else { %>
-                <span style="color:#b02a37;">No active holder &mdash; assign someone to this role</span>
+            <% if (!a.owner_names) { %>
+                <span style="color:#b02a37;">No active responsible person &mdash; edit the action</span><br>
+            <% } else if (a.owner_names !== a.responsible_name) { %>
+                Now: <%= a.owner_names %><br>
             <% } %>
+            Line manager: <% if (a.approver_names) { %><%= a.approver_names %><% } else { %><span style="color:#b02a37;">not set</span><% } %>
+            <% if (a.role_name) { %><br>Role: <%= a.role_name %><% } %>
             <% if (a.action_party) { %><br>Party: <%= a.action_party %><% } %>
-            <% if (a.approver_names) { %><br>Approver: <%= a.approver_names %><% } %>
         </div>
     </td>
 
@@ -62,7 +63,7 @@
                     <textarea name="completion_notes" required></textarea>
                     <label>Evidence (optional)</label>
                     <input type="file" name="evidence">
-                    <button class="btn btn-add btn-sm">Send to line manager</button>
+                    <button class="btn btn-add btn-sm">Send to <%= a.approver_names || 'line manager' %></button>
                 </form>
             </details>
 
@@ -98,18 +99,12 @@
                     <textarea name="description" required><%= a.description %></textarea>
                     <label>Due date</label>
                     <input type="date" name="due_date" value="<%= fmtDate(a.due_date) %>" required>
-                    <label>Responsible role</label>
+                    <%- include('people_fields', { P, personField: 'assigned_employee_id', person: a.assigned_employee_id, lineManager: a.line_manager_id }) %>
+                    <label>Fallback role (optional)</label>
                     <select name="responsible_role_id">
-                        <option value="">-- none --</option>
+                        <option value="">-- the person's own role --</option>
                         <% P.roles.forEach(r => { %>
                             <option value="<%= r.role_id %>" <%= a.responsible_role_id === r.role_id ? 'selected' : '' %>><%= r.role_name %></option>
-                        <% }); %>
-                    </select>
-                    <label>Named person (optional)</label>
-                    <select name="assigned_employee_id">
-                        <option value="">-- role holder --</option>
-                        <% P.employees.forEach(e => { %>
-                            <option value="<%= e.employee_id %>" <%= a.assigned_employee_id === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
                         <% }); %>
                     </select>
                     <label>Action party</label>

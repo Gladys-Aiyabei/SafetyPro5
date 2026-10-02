@@ -34,6 +34,10 @@
                     <span class="badge sev-<%= slug(f.severity) %>"><%= f.severity %></span>
                     <span class="badge st-<%= slug(f.status) %>"><%= f.status %></span>
                     <span class="hint">Finding #<%= f.finding_id %> &middot; raised <%= fmtDate(f.raised_at) %></span>
+                    <div class="hint">
+                        Responsible: <strong><%= f.responsible_name || 'not set' %></strong>
+                        &middot; Line manager: <strong><%= f.line_manager_name || 'not set' %></strong>
+                    </div>
                 </div>
                 <% if (P.admin) { %>
                     <div class="finding-tools">
@@ -49,6 +53,7 @@
                                         <option <%= f.severity === s ? 'selected' : '' %>><%= s %></option>
                                     <% }); %>
                                 </select>
+                                <%- include('people_fields', { P, personField: 'responsible_employee_id', person: f.responsible_employee_id, lineManager: f.line_manager_id }) %>
                                 <button class="btn btn-edit btn-sm">Save</button>
                             </form>
                         </details>
@@ -114,7 +119,7 @@
                 <div class="table-wrap">
                 <table class="actions-table">
                     <thead>
-                        <tr><th>Action</th><th>Due</th><th>Responsible</th><th>Status</th><th></th></tr>
+                        <tr><th>Action</th><th>Due</th><th>Responsible / Line manager</th><th>Status</th><th></th></tr>
                     </thead>
                     <tbody>
                         <% f.actions.forEach(a => { %>
@@ -128,7 +133,7 @@
             <% if (P.canAdd) { %>
                 <details>
                     <summary class="btn btn-add btn-sm">+ Add action</summary>
-                    <%- include('add_action_form', { P, url: '/findings/f/' + f.finding_id + '/actions', rootCauses: f.rootCauses }) %>
+                    <%- include('add_action_form', { P, url: '/findings/f/' + f.finding_id + '/actions', rootCauses: f.rootCauses, person: f.responsible_employee_id, lineManager: f.line_manager_id }) %>
                 </details>
             <% } %>
 
@@ -148,6 +153,7 @@
                 <select name="severity">
                     <% P.severities.forEach(s => { %><option <%= s === 'Minor' ? 'selected' : '' %>><%= s %></option><% }); %>
                 </select>
+                <%- include('people_fields', { P, personField: 'responsible_employee_id', person: null, lineManager: null }) %>
                 <button class="btn btn-add btn-sm">Add finding</button>
             </form>
         </details>
@@ -162,7 +168,7 @@
             <div class="table-wrap">
             <table class="actions-table">
                 <thead>
-                    <tr><th>Action</th><th>Due</th><th>Responsible</th><th>Status</th><th></th></tr>
+                    <tr><th>Action</th><th>Due</th><th>Responsible / Line manager</th><th>Status</th><th></th></tr>
                 </thead>
                 <tbody>
                     <% P.generalActions.forEach(a => { %>
@@ -179,8 +185,22 @@
     <% if (P.canAdd && (P.moduleKey === 'meetings' || P.generalActions.length > 0)) { %>
         <details>
             <summary class="btn btn-add btn-sm">+ Add action</summary>
-            <%- include('add_action_form', { P, url: '/findings/' + P.moduleKey + '/' + P.recordId + '/actions', rootCauses: [] }) %>
+            <%- include('add_action_form', { P, url: '/findings/' + P.moduleKey + '/' + P.recordId + '/actions', rootCauses: [], person: null, lineManager: null }) %>
         </details>
     <% } %>
 
 </div>
+
+<script>
+    // Picking a responsible person fills in their line manager (people_fields partial).
+    if (!window.peopleFieldsReady) {
+        window.peopleFieldsReady = true;
+        document.addEventListener("change", function (e) {
+            if (!e.target.matches || !e.target.matches("[data-person]")) return;
+            var box = e.target.closest("[data-people]");
+            var lm = box && box.querySelector("[data-line-manager]");
+            var opt = e.target.options[e.target.selectedIndex];
+            if (lm && opt && opt.getAttribute("data-lm")) lm.value = opt.getAttribute("data-lm");
+        });
+    }
+</script>

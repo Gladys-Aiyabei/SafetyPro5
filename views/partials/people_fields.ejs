@@ -1,0 +1,24 @@
+<%# Responsible person + line manager pickers for a finding or action form.
+    locals: P (panel), personField (input name), person (selected id), lineManager (selected id)
+    Picking a person fills in their line manager from the employee record (script in findings_panel). %>
+<div class="form-row" data-people>
+    <div class="form-group">
+        <label>Responsible person</label>
+        <select name="<%= personField %>" required data-person>
+            <option value="">-- choose person --</option>
+            <% P.employees.forEach(e => { %>
+                <option value="<%= e.employee_id %>" data-lm="<%= e.line_manager_id || '' %>" <%= Number(person) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Line manager</label>
+        <select name="line_manager_id" required data-line-manager>
+            <option value="">-- choose line manager --</option>
+            <% P.employees.forEach(e => { %>
+                <option value="<%= e.employee_id %>" <%= Number(lineManager) === e.employee_id ? 'selected' : '' %>><%= e.employee_name %></option>
+            <% }); %>
+        </select>
+        <div class="hint">Filled in from the person's employee record; change it if needed.</div>
+    </div>
+</div>

@@ -362,10 +362,14 @@ router.post("/:module/:id/checklist", moduleParam, run(async (req, res) => {
                     const text = `Checklist non-compliance: ${item.question}` +
                         (comment ? ` - ${comment}` : "");
 
+                    // Responsible: whoever answered the checklist, with their line manager on file.
                     const [f] = await conn.query(`
-                        INSERT INTO record_findings (module, record_id, description, severity, raised_by)
-                        VALUES (?, ?, ?, 'Minor', ?)
-                    `, [moduleKey, recordId, text.slice(0, 2000), user.user_id]);
+                        INSERT INTO record_findings
+                            (module, record_id, description, severity, responsible_employee_id, line_manager_id, raised_by)
+                        SELECT ?, ?, ?, 'Minor', e.employee_id, e.line_manager_id, ?
+                        FROM (SELECT 1) one
+                        LEFT JOIN employees e ON e.employee_id = ?
+                    `, [moduleKey, recordId, text.slice(0, 2000), user.user_id, user.employee_id || null]);
 
                     findingId = f.insertId;
                 }
